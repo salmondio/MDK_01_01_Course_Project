@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Course_project/Course_project_wpf.csproj" />
+  <Project Path="Couse_project_RestAPI/Couse_project_RestAPI.csproj" />
+</Solution>

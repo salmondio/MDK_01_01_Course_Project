@@ -1,0 +1,20 @@
+## Игнорируем служебные папки Visual Studio
+.vs/
+bin/
+obj/
+Debug/
+Release/
+
+## Игнорируем пользовательские файлы
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Игнорируем результаты сборки
+*.dll
+*.exe
+*.pdb
+
+## Игнорируем папки с пакетами
+packages/

@@ -1,0 +1,127 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\VisualStudioProjects\\Course_project\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{744B320C-131D-449A-AA88-EC55FE30E474}|Couse_project_RestAPI\\Couse_project_RestAPI.csproj|c:\\visualstudioprojects\\course_project\\couse_project_restapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{744B320C-131D-449A-AA88-EC55FE30E474}|Couse_project_RestAPI\\Couse_project_RestAPI.csproj|solutionrelative:couse_project_restapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{744B320C-131D-449A-AA88-EC55FE30E474}|Couse_project_RestAPI\\Couse_project_RestAPI.csproj|c:\\visualstudioprojects\\course_project\\couse_project_restapi\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{744B320C-131D-449A-AA88-EC55FE30E474}|Couse_project_RestAPI\\Couse_project_RestAPI.csproj|solutionrelative:couse_project_restapi\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF8F778E-0A53-40F0-B818-3BDBBA4865E0}|Course_project\\Course_project.csproj|c:\\visualstudioprojects\\course_project\\course_project\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{BF8F778E-0A53-40F0-B818-3BDBBA4865E0}|Course_project\\Course_project.csproj|solutionrelative:course_project\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF8F778E-0A53-40F0-B818-3BDBBA4865E0}|Course_project\\Course_project.csproj|c:\\visualstudioprojects\\course_project\\course_project\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BF8F778E-0A53-40F0-B818-3BDBBA4865E0}|Course_project\\Course_project.csproj|solutionrelative:course_project\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 11,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "Couse_project_RestAPI\\appsettings.Development.json",
+              "ToolTip": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\appsettings.Development.json",
+              "RelativeToolTip": "Couse_project_RestAPI\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-21T17:51:30.819Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "Couse_project_RestAPI\\appsettings.json",
+              "ToolTip": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\appsettings.json",
+              "RelativeToolTip": "Couse_project_RestAPI\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-21T17:51:25.026Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\VisualStudioProjects\\Course_project\\Course_project\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "Course_project\\MainWindow.xaml",
+              "ToolTip": "C:\\VisualStudioProjects\\Course_project\\Course_project\\MainWindow.xaml",
+              "RelativeToolTip": "Course_project\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-05-21T17:33:29.882Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\VisualStudioProjects\\Course_project\\Course_project\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Course_project\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\VisualStudioProjects\\Course_project\\Course_project\\MainWindow.xaml.cs",
+              "RelativeToolTip": "Course_project\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T17:33:28.465Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
