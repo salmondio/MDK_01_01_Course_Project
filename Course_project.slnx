@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path="project_topic.txt" />
+    <File Path="sql_script.txt" />
+  </Folder>
   <Project Path="Course_project/Course_project_wpf.csproj" />
   <Project Path="Couse_project_RestAPI/Couse_project_RestAPI.csproj" />
 </Solution>
