@@ -7,45 +7,79 @@ namespace Couse_project_RestAPI.Models
     public class User
     {
         [Key]
-        public int Id {  get; set; }
+        [Column("Id")]
+        public int Id { get; set; }
+
         /// <summary>
         /// Роль пользователя
         /// </summary>
+        [Column("Id_role")]
         public int Id_role { get; set; }
+
         /// <summary>
         /// Имя пользователя
         /// </summary>
-        public string Name { get; set; }
+        [Column("Name")]
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// Фамилия пользователя
         /// </summary>
-        public string Lastname { get; set; }
+        [Column("Lastname")]
+        [Required]
+        [MaxLength(100)]
+        public string Lastname { get; set; } = string.Empty;
+
         /// <summary>
         /// Отчество пользователя
         /// </summary>
-        public string Surname { get; set; }
+        [Column("Surname")]
+        [MaxLength(100)]
+        public string? Surname { get; set; }
+
         /// <summary>
         /// Адрес почты пользователя
         /// </summary>
-        public string Email { get; set; }
+        [Column("Email")]
+        [Required]
+        [MaxLength(100)]
+        [EmailAddress]  // Доп. валидация
+        public string Email { get; set; } = string.Empty;
+
         /// <summary>
         /// Номер телефона пользователя
         /// </summary>
-        public string Phone_number { get; set; }
+        [Column("Phone_number")]
+        [MaxLength(20)]
+        public string? Phone_number { get; set; }
+
         /// <summary>
         /// Зашифрованный пароль пользователя
         /// </summary>
-        public string Password { get; set; }
+        [Column("Password")]
+        [Required]
+        [MaxLength(256)]
+        public string Password { get; set; } = string.Empty;
+
         /// <summary>
         /// Токен доступа пользователя
         /// </summary>
-        public string Token { get; set; }
+        [Column("Token")]
+        [MaxLength(256)]
+        public string? Token { get; set; }
         /// <summary>
         /// Флаг Is_active определяет, есть ли у пользователя
         /// полномочия, соответсвующие его роли. Если пользователь
         /// не активен, он будет считаться неавторизованным пользователем.
         /// Активировать и дизактивировать пользователей может администратор.
         /// </summary>
-        public bool Is_active { get; set; }
+        [Column("Is_active")]
+        public bool Is_active { get; set; } = true;
+
+        
+        [ForeignKey(nameof(Id_role))]
+        public virtual Role? Role { get; set; }
     }
 }
