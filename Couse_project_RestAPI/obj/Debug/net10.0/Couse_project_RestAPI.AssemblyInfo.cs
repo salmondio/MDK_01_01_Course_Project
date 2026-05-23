@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Couse_project_RestAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7c9682570b32cc2ec6b96beac6abb93e5162b2c0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3af1e181a9a603738654deb6e7f96e97c3a130d4")]
 [assembly: System.Reflection.AssemblyProductAttribute("Couse_project_RestAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Couse_project_RestAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

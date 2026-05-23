@@ -1,34 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj": {}
+    "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj": {}
   },
   "projects": {
-    "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj": {
+    "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
+        "projectUniqueName": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
         "projectName": "Couse_project_RestAPI",
-        "projectPath": "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
-        "packagesPath": "C:\\Users\\student-b414\\.nuget\\packages\\",
-        "outputPath": "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\obj\\",
+        "projectPath": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
+        "packagesPath": "C:\\Users\\Сергей\\.nuget\\packages\\",
+        "outputPath": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\student-b414\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Сергей\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -47,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
@@ -78,6 +75,10 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[9.0.12, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.6, )"
             }
           },
           "imports": [
@@ -99,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
