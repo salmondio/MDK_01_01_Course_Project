@@ -15,10 +15,13 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Название дисциплины
         /// </summary>
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
         /// <summary>
         /// Описание дисциплины
         /// </summary>
+        [MaxLength(1000)]
         public string Description { get; set; }
     }
 }

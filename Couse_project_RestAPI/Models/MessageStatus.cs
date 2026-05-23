@@ -15,10 +15,12 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Название статуса
         /// </summary>
+        [MaxLength(100)]
         public string Name { get; set; }
         /// <summary>
         /// Описание статуса
         /// </summary>
+        [MaxLength(1000)]
         public string Description { get; set; }
     }
 }

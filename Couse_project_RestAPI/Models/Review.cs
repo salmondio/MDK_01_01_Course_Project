@@ -11,14 +11,17 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Id студента, отправившего отзыв
         /// </summary>
+        [Required]
         public int Id_student { get; set; }
         /// <summary>
         /// Id преподавателя, на которого оставлен отзыв
         /// </summary>
+        [Required]
         public int Id_teacher { get; set; }
         /// <summary>
         /// Id статуса отзыва
         /// </summary>
+        [Required]
         public int Id_status { get; set; }
         /// <summary>
         /// Id модератора, который проверит отзыв
@@ -27,6 +30,20 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Текст отзыва
         /// </summary>
+        [Required]
         public string Text { get; set; }
+
+
+        [ForeignKey(nameof(Id_student))]
+        public virtual User? Student { get; set; }
+
+        [ForeignKey(nameof(Id_teacher))]
+        public virtual User? Teacher { get; set; }
+
+        [ForeignKey(nameof(Id_status))]
+        public virtual User? Status { get; set; }
+
+        [ForeignKey(nameof(Id_inspector))]
+        public virtual User? Inspector { get; set; }
     }
 }

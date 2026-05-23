@@ -11,10 +11,19 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Id преподавателя
         /// </summary>
+        [Required]
         public int Id_teacher { get; set; }
         /// <summary>
         /// Id дисциплины, которой обучает преподаватель
         /// </summary>
+        [Required]
         public int Id_discipline { get; set; }
+
+
+        [ForeignKey(nameof(Id_teacher))]
+        public virtual User? Teacher { get; set; }
+
+        [ForeignKey(nameof(Id_discipline))]
+        public virtual User? Discipline { get; set; }
     }
 }

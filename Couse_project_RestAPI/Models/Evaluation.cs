@@ -7,11 +7,27 @@ namespace Couse_project_RestAPI.Models
     public class Evaluation
     {
         [Key]
-        public int Id { get; set; }
+        [Column(Order = 0)]
         public int Id_student { get; set; }
+
+        [Key]
+        [Column(Order = 1)]
         public int Id_teacher { get; set; }
-        public sbyte Presentation { get; set; }
-        public sbyte Attitude { get; set; }
-        public sbyte Responsiveness { get; set; }
+
+        [Required]
+        [Range(1, 9)]
+        public byte Presentation { get; set; }
+
+        [Required]
+        [Range(1, 9)]
+        public byte Attitude { get; set; }
+
+        [Required]
+        [Range(1, 9)]
+        public byte Responsiveness { get; set; }
+
+
+        [NotMapped]
+        public double AverageScore => (Presentation + Attitude + Responsiveness) / 3.0;
     }
 }
