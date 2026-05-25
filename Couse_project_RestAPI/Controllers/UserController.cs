@@ -17,15 +17,17 @@ namespace Couse_project_RestAPI.Controllers
             _context = context;
         }
 
+
+
         [HttpGet("List")]
-        [ProducesResponseType(typeof(ICollection<User>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<ICollection<User>>> UserList()
+        public async Task<ActionResult<IEnumerable<User>>> List()
         {
             try
             {
-                ICollection<User> userList = await _context.Users.ToListAsync();
+                IEnumerable<User> userList = await _context.Users.ToArrayAsync();
 
                 return Ok(userList);
             }
@@ -35,11 +37,12 @@ namespace Couse_project_RestAPI.Controllers
             }
         }
 
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<ICollection<User>>> GetUser(int id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
             try
             {
@@ -56,11 +59,12 @@ namespace Couse_project_RestAPI.Controllers
             }
         }
 
+
         [HttpPost("Add")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<User>> UserAdd([FromBody] User user)
+        public async Task<ActionResult<User>> Add([FromBody] User user)
         {
             try
             {
@@ -69,7 +73,7 @@ namespace Couse_project_RestAPI.Controllers
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                     return BadRequest("Email пользователя должен быть уникальным");
 
-                _context.Users.Add(user);
+                await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction(nameof(GetUser), new {id = user.Id}, user);
@@ -80,43 +84,19 @@ namespace Couse_project_RestAPI.Controllers
             }
         }
 
-        [HttpDelete("Delete/{id}")]
+
+        [HttpPost("ChangeActive/{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult> UserDelete(int id)
+        public async Task<ActionResult> ChangeActive(int id)
         {
-
             try
             {
                 User user = await _context.Users.FindAsync(id);
 
                 if (user == null)
                     return NotFound($"Пользователя с id = {id} не существует");
-
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-
-                return StatusCode(200);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpPost("ChangeActive/{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(500)]
-        public async Task<ActionResult> UserChangeActive(int id)
-        {
-            try
-            {
-                User user = await _context.Users.FindAsync(id);
-
-                if (user == null)
-                    return StatusCode(404);
 
                 user.Is_active = !user.Is_active;
                 _context.SaveChanges();
@@ -129,11 +109,12 @@ namespace Couse_project_RestAPI.Controllers
             }
         }
 
+
         [HttpPut("Update")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult> UserUpdate([FromBody] User user)
+        public async Task<ActionResult> Update([FromBody] User user)
         {
             try
             {
@@ -160,7 +141,33 @@ namespace Couse_project_RestAPI.Controllers
 
                 return StatusCode(200);
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpDelete("Delete/{id}")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult<User>> Delete(int id)
+        {
+
+            try
+            {
+                User user = await _context.Users.FindAsync(id);
+
+                if (user == null)
+                    return NotFound($"Пользователя с id = {id} не существует");
+
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+
+                return Ok(user);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }

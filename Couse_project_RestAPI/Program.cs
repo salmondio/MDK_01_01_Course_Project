@@ -1,17 +1,25 @@
-using Microsoft.EntityFrameworkCore;
 using Couse_project_RestAPI.Contexts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Строка подключение к БД из файла appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Подключаем контекст к БД
 builder.Services.AddDbContext<DbContextMain>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Загрузка xml комментариев в документацию
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    options.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
