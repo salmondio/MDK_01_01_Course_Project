@@ -17,10 +17,14 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Название роли
         /// </summary>
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
         /// <summary>
         /// Описание роли
         /// </summary>
+        [Required]
+        [MaxLength(1000)]
         public string Description { get; set; }
     }
 }
