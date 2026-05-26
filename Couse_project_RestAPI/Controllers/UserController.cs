@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Couse_project_RestAPI.Contexts;
 using Couse_project_RestAPI.Models;
-using Couse_project_RestAPI.Contexts;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Couse_project_RestAPI.Controllers
 {
@@ -11,10 +16,12 @@ namespace Couse_project_RestAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly DbContextMain _context;
+        private readonly string _configuration;
 
         public UserController(DbContextMain context)
         {
             _context = context;
+            _configuration = new System.Configuration.ConfigurationManager();
         }
 
 
@@ -57,6 +64,67 @@ namespace Couse_project_RestAPI.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+
+        [HttpPost("Login")]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            // Ищем пользователя в БД
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            // Проверяем пароль (надо сделать хэширование)
+            if (user == null || user.Password != request.Password)
+                return Unauthorized(new { message = "Неверный email или пароль" });
+
+            // Формируем claims
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("roleId", user.Id_role.ToString()),
+                new Claim("roleName", user.Role?.Name ?? "User"),
+                new Claim("isActive", user.Is_active.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // уникальный ID токена
+            };
+
+            // Создаём ключ и подпись
+            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            // Генерируем токен
+            var token = new JwtSecurityToken(
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["AccessTokenExpiryMinutes"])),
+                signingCredentials: creds
+            );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // Возвращаем токен и базовую информацию о пользователе
+            return Ok(new
+            {
+                Token = tokenString,
+                ExpiresIn = jwtSettings["AccessTokenExpiryMinutes"],
+                User = new
+                {
+                    user.Id,
+                    user.Email,
+                    user.Name,
+                    user.Lastname,
+                    user.Surname,
+                    user.Id_role,
+                    user.Is_active,
+                    Role = user.Role?.Name
+                }
+            });
         }
 
 
