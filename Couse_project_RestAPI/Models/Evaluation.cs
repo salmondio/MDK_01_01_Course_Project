@@ -6,22 +6,38 @@ namespace Couse_project_RestAPI.Models
     [Table("Evaluation")]
     public class Evaluation
     {
+        /// <summary>
+        /// Id студента, поставившего оценку
+        /// </summary>
         [Key]
         [Column(Order = 0)]
         public int Id_student { get; set; }
-
+        /// <summary>
+        /// Id преподавателя, которому поставлена оценка
+        /// </summary>
         [Key]
         [Column(Order = 1)]
         public int Id_teacher { get; set; }
-
+        /// <summary>
+        /// Дата и время выставления оценки
+        /// </summary>
+        [Required]
+        public DateTime Date_time { get; set; }
+        /// <summary>
+        /// Оценка способности подачи материала преподаателя
+        /// </summary>
         [Required]
         [Range(1, 9)]
         public byte Presentation { get; set; }
-
+        /// <summary>
+        /// Оценка отношения преподавателя к студентам
+        /// </summary>
         [Required]
         [Range(1, 9)]
         public byte Attitude { get; set; }
-
+        /// <summary>
+        /// Оценка отзывчивости преподавателя к студентам
+        /// </summary>
         [Required]
         [Range(1, 9)]
         public byte Responsiveness { get; set; }
@@ -29,5 +45,12 @@ namespace Couse_project_RestAPI.Models
 
         [NotMapped]
         public double AverageScore => (Presentation + Attitude + Responsiveness) / 3.0;
+
+        [ForeignKey(nameof(Id_student))]
+        public virtual User? Student { get; set; }
+
+        [ForeignKey(nameof(Id_teacher))]
+        public virtual User? Teacher { get; set; }
+
     }
 }

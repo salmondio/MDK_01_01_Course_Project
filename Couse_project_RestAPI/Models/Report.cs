@@ -28,6 +28,11 @@ namespace Couse_project_RestAPI.Models
         /// </summary>
         public int Id_inspector { get; set; }
         /// <summary>
+        /// Дата и время отправки жалобы
+        /// </summary>
+        [Required]
+        public DateTime Date_time { get; set; }
+        /// <summary>
         /// Текст жалобы
         /// </summary>
         [Required]

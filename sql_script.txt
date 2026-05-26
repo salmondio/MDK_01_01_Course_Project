@@ -59,6 +59,7 @@ CREATE TABLE Review
 	Id_teacher INT NOT NULL,
 	Id_status INT NOT NULL,
 	Id_inspector INT,
+	Date_time DATETIME NOT NULL,
 	Text NVARCHAR(MAX) NOT NULL,
 	
 	FOREIGN KEY(Id_student) REFERENCES [User](Id)
@@ -81,6 +82,7 @@ CREATE TABLE Report
 	Id_teacher INT NOT NULL,
 	Id_status INT NOT NULL,
 	Id_inspector INT,
+	Date_time DATETIME NOT NULL,
 	Text NVARCHAR(MAX) NOT NULL,
 	
 	FOREIGN KEY(Id_student) REFERENCES [User](Id)
@@ -100,6 +102,7 @@ CREATE TABLE Evaluation
 (
 	Id_student INT NOT NULL,
 	Id_teacher INT NOT NULL,
+	Date_time DATETIME NOT NULL,
 	Presentation TINYINT NOT NULL CHECK (Presentation BETWEEN 1 AND 9),
 	Attitude TINYINT NOT NULL CHECK (Attitude BETWEEN 1 AND 9),
 	Responsiveness TINYINT NOT NULL CHECK (Responsiveness BETWEEN 1 AND 9),

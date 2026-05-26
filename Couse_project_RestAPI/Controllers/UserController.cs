@@ -1,5 +1,8 @@
 ﻿using Couse_project_RestAPI.Contexts;
+using Couse_project_RestAPI.Helpers;
 using Couse_project_RestAPI.Models;
+using Couse_project_RestAPI.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +19,12 @@ namespace Couse_project_RestAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly DbContextMain _context;
-        private readonly string _configuration;
+        private IConfiguration _configuration;
 
-        public UserController(DbContextMain context)
+        public UserController(DbContextMain context, IConfiguration configuration)
         {
             _context = context;
-            _configuration = new System.Configuration.ConfigurationManager();
+            _configuration = configuration;
         }
 
 
@@ -30,6 +33,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<User>>> List()
         {
             try
@@ -45,10 +49,42 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
+        [HttpGet("ListTeacher")]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> ListTeacher()
+        {
+            try
+            {
+                IEnumerable<UserDTO> teacherList = await _context.Users
+                    .Include(u => u.Role)
+                    .Where(u => u.Role.Name == "Teacher")
+                    .Select(u => new UserDTO
+                    {
+                        Id = u.Id,
+                        Name = u.Name,
+                        Lastname = u.Lastname,
+                        Surname = u.Surname,
+                        RoleName = u.Role.Name
+                    })
+                    .ToArrayAsync();
+
+                return Ok(teacherList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
@@ -81,38 +117,16 @@ namespace Couse_project_RestAPI.Controllers
             if (user == null || user.Password != request.Password)
                 return Unauthorized(new { message = "Неверный email или пароль" });
 
-            // Формируем claims
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("roleId", user.Id_role.ToString()),
-                new Claim("roleName", user.Role?.Name ?? "User"),
-                new Claim("isActive", user.Is_active.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // уникальный ID токена
-            };
-
-            // Создаём ключ и подпись
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            // Генерируем токен
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["AccessTokenExpiryMinutes"])),
-                signingCredentials: creds
-            );
-
+            // Создание токена
+            TokenHelper tokenHelper = new TokenHelper(_configuration);
+            JwtSecurityToken token = tokenHelper.CreateToken(user);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            // Возвращаем токен и базовую информацию о пользователе
+            // Возвращаем токен и необходимую информацию о пользователе
             return Ok(new
             {
                 Token = tokenString,
-                ExpiresIn = jwtSettings["AccessTokenExpiryMinutes"],
+                ValidTo = token.ValidTo,
                 User = new
                 {
                     user.Id,
@@ -132,6 +146,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<User>> Add([FromBody] User user)
         {
             try
@@ -157,6 +172,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> ChangeActive(int id)
         {
             try
@@ -178,10 +194,54 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
+        [HttpPut("UpdateForUser")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
+        [Authorize]
+        public async Task<ActionResult> UpdateForUser([FromBody] User user)
+        {
+            try
+            {
+                // Проверяем наличие полномочий для выполнения запроса
+                if (User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value != user.Id.ToString())
+                    return Forbid("Доступ на обновление пользователя запрещен");
+
+                if (user == null)
+                    return BadRequest("Пользователь не может быть равен null-значению");
+                if (await _context.Users.AnyAsync(u => u.Email == user.Email && u.Id != user.Id))
+                    return BadRequest("Такой Email-адрес уже используется");
+
+                User oldUser = await _context.Users.FindAsync(user.Id);
+
+                if (oldUser == null)
+                    return NotFound($"Пользователя с id = {user.Id} не существует");
+
+                oldUser.Name = user.Name;
+                oldUser.Lastname = user.Lastname;
+                oldUser.Surname = user.Surname;
+                oldUser.Email = user.Email;
+                oldUser.Phone_number = user.Phone_number;
+                oldUser.Password = user.Password;
+
+                await _context.SaveChangesAsync();
+
+                return StatusCode(200);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [HttpPut("Update")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(401)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Update([FromBody] User user)
         {
             try
@@ -220,6 +280,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<User>> Delete(int id)
         {
 
