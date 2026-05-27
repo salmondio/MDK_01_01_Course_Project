@@ -45,7 +45,7 @@ namespace Couse_project_RestAPI.Models
         [Column("Email")]
         [Required]
         [MaxLength(100)]
-        [EmailAddress]  // Доп. валидация
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         /// <summary>

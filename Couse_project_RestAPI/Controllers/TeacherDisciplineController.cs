@@ -1,5 +1,6 @@
 ﻿using Couse_project_RestAPI.Contexts;
 using Couse_project_RestAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,6 +67,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(TeacherDiscipline), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TeacherDiscipline>> Add([FromBody] TeacherDiscipline teacherDiscipline)
         {
             try
@@ -82,10 +84,11 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPost("Update")]
+        [HttpPut("Update")]
         [ProducesResponseType(typeof(TeacherDiscipline), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TeacherDiscipline>> Update([FromBody] TeacherDiscipline teacherDiscipline)
         {
             try
@@ -119,6 +122,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(TeacherDiscipline), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TeacherDiscipline>> Delete(int id)
         {
 

@@ -20,10 +20,12 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-
-        [HttpGet("List")]
+        /// <summary>
+        /// Позволяет админу получить одну/список оценок
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Admin/List")]
         [ProducesResponseType(typeof(IEnumerable<Evaluation>), 200)]
-        [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Evaluation>>> List()
@@ -41,7 +43,11 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpGet("ListForTeacherOrStudent")]
+        /// <summary>
+        /// Позволяет получить студенту список оценок, выставленных им или список оценок преподу, выставленных ему
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("List")]
         [ProducesResponseType(typeof(IEnumerable<EvaluationDTO>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -50,122 +56,41 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
-                IEnumerable<EvaluationDTO> evaluationList;
+                // Id и роль пользователя, отправившего запрос
+                var userId = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value);
+                var role = User.FindFirst("role").Value;
 
-                if (User.FindFirst("role")?.Value == "Teacher")
-                {
-                    evaluationList = await _context.Evaluations
-                    .Where(e => e.Id_teacher == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value ?? "0"))
-                    .Select(e => new EvaluationDTO
-                    {
-                        Presentation = e.Presentation,
-                        Attitude = e.Attitude,
-                        Responsiveness = e.Responsiveness,
-                        Date = DateOnly.FromDateTime(e.Date_time)
-                    })
-                    .ToArrayAsync();
+                // Берем таблицу оценок для запроса
+                var query = _context.Evaluations.AsQueryable();
 
-                    if (!evaluationList.Any())
-                        return NotFound($"Нет оценок, выставленных преподавателю с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
-                }
-                else
-                {
-                    evaluationList = await _context.Evaluations
-                    .Where(e => e.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value ?? "0"))
-                    .Include(e => e.Teacher)
+                // Если запрос отправил преподаватель, то отбираем оценки, поставленные ему
+                if (role == "Teacher")
+                    query = query.Where(e => e.Id_teacher == userId);
+                else // Иначе отбираем оценки, поставленные студентом
+                    query = query.Where(e => e.Id_student == userId);
+
+                // Преобразуем выборку оценок в выборку оценок с обрезанной информацией,
+                // в зависимости от того, кто отправил запрос возвращаемая информация разная
+                var evaluationList = await query
                     .Select(e => new EvaluationDTO
                     {
                         Presentation = e.Presentation,
                         Attitude = e.Attitude,
                         Responsiveness = e.Responsiveness,
                         Date = DateOnly.FromDateTime(e.Date_time),
-                        Date_time = e.Date_time,
-                        Teacher = new UserDTO
+                        Teacher = role == "Student" ? new UserDTO
                         {
                             Id = e.Teacher.Id,
                             Name = e.Teacher.Name,
                             Lastname = e.Teacher.Lastname,
                             Surname = e.Teacher.Surname
-                        }
+                        } : null
                     })
                     .ToArrayAsync();
 
-                    if (!evaluationList.Any())
-                        return NotFound($"Нет оценок, выставленных студентом с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
-                }
-
-                return Ok(evaluationList);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
-        [HttpGet("ListOfStudentEvaluations")]
-        [ProducesResponseType(typeof(IEnumerable<EvaluationDTO>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(500)]
-        [Authorize(Roles = "Student")]
-        public async Task<ActionResult<IEnumerable<EvaluationDTO>>> ListOfStudentEvaluations()
-        {
-            try
-            {
-                IEnumerable<EvaluationDTO> evaluationList = await _context.Evaluations
-                    .Where(e => e.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
-                    .Include(e => e.Teacher)
-                    .Select(e => new EvaluationDTO
-                    {
-                        Presentation = e.Presentation,
-                        Attitude = e.Attitude,
-                        Responsiveness = e.Responsiveness,
-                        Date = DateOnly.FromDateTime(e.Date_time),
-                        Date_time = e.Date_time,
-                        Teacher = new UserDTO
-                        {
-                            Id = e.Teacher.Id,
-                            Name = e.Teacher.Name,
-                            Lastname = e.Teacher.Lastname,
-                            Surname = e.Teacher.Surname
-                        }
-                    })
-                    .ToArrayAsync();
-
+                // Если нужных оценок нет
                 if (!evaluationList.Any())
-                    return NotFound($"Не существует оценок, поставленных студентом с id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
-
-                return Ok(evaluationList);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
-        [HttpGet("ListOfTeacherEvaluations")]
-        [ProducesResponseType(typeof(IEnumerable<EvaluationDTO>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(500)]
-        [Authorize(Roles = "Teacher")]
-        public async Task<ActionResult<IEnumerable<EvaluationDTO>>> ListOfTeacherEvaluations()
-        {
-            try
-            {
-                IEnumerable<EvaluationDTO> evaluationList = await _context.Evaluations
-                    .Where(e => e.Id_teacher == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
-                    .Select(e => new EvaluationDTO
-                    {
-                        Presentation = e.Presentation,
-                        Attitude = e.Attitude,
-                        Responsiveness = e.Responsiveness,
-                        Date = DateOnly.FromDateTime(e.Date_time),
-                    })
-                    .ToArrayAsync();
-
-                if (!evaluationList.Any())
-                    return NotFound($"Не существует оценок, поставленных преподавателю с id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
+                    return NotFound($"Нет оценок для пользователя {userId}");
 
                 return Ok(evaluationList);
             }
@@ -192,59 +117,42 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
-                // Возвращаемый объект
-                EvaluationDTO evaluationDTO;
+                // Id и роль пользователя, отправившего запрос
+                var userId = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value);
+                var role = User.FindFirst("role").Value;
 
-                // Если преподаватель хочет посмотреть оценку
-                if (User.FindFirst("role")?.Value == "Student")
+                // Проверка прав
+                if (role == "Student" && idStudent != userId)
+                    return Forbid("Вы можете просматривать только свои оценки");
+                if (role == "Teacher" && idTeacher != userId)
+                    return Forbid("Вы можете просматривать только оценки, выставленные вам");
+
+                // Ищем нужную оценку
+                var evaluation = await _context.Evaluations
+                    .Include(e => e.Teacher)
+                    .FirstOrDefaultAsync(e => e.Id_student == idStudent && e.Id_teacher == idTeacher);
+                if (evaluation == null)
+                    return NotFound($"Оценка не найдена");
+
+                // Преобразуем в упрощенную модель
+                var evaluationDTO = new EvaluationDTO
                 {
-                    // Проверка полномочий
-                    if (idStudent != int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value ?? "0"))
-                        return Forbid("Вы не можете просматривать оценки, поставленные не вами");
+                    Presentation = evaluation.Presentation,
+                    Attitude = evaluation.Attitude,
+                    Responsiveness = evaluation.Responsiveness,
+                    Date = DateOnly.FromDateTime(evaluation.Date_time),
+                    Date_time = evaluation.Date_time
+                };
 
-                    // Поиск оценки с соответствующими id студента и препода
-                    Evaluation evaluation = await _context.Evaluations
-                        .Include(e => e.Teacher)
-                        .FirstOrDefaultAsync(e => e.Id_student == idStudent && e.Id_teacher == idTeacher);
-                    if (evaluation == null)
-                        return NotFound($"Не существует оценки, выставленной студентом с Id = {idStudent} преподавателю с Id = {idTeacher}");
-
-                    // Препобразую полноценную модель оценки в модель с обрезанными данными
-                    evaluationDTO = new EvaluationDTO()
-                    {
-                        Presentation = evaluation.Presentation,
-                        Attitude = evaluation.Attitude,
-                        Responsiveness = evaluation.Responsiveness,
-                        Date = DateOnly.FromDateTime(evaluation.Date_time),
-                        Date_time = evaluation.Date_time,
-                        Teacher = new UserDTO
-                        {
-                            Id = evaluation.Teacher.Id,
-                            Name = evaluation.Teacher.Name,
-                            Lastname = evaluation.Teacher.Lastname,
-                            Surname = evaluation.Teacher.Surname
-                        }
-                    };
-                }
-                else // Если же студент хочет посмотреть оценку
+                // Для студента добавляем информацию о преподе
+                if (role == "Student")
                 {
-                    // Проверка полномочий
-                    if (idTeacher != int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value ?? "0"))
-                        return Forbid("Вы не можете просматривать оценки, выставленные не вам");
-
-                    // Поиск оценки с соответствующими id студента и препода
-                    Evaluation evaluation = await _context.Evaluations
-                        .FirstOrDefaultAsync(e => e.Id_student == idStudent && e.Id_teacher == idTeacher);
-                    if (evaluation == null)
-                        return NotFound($"Не существует оценки, выставленной студентом с Id = {idStudent} преподавателю с Id = {idTeacher}");
-
-                    // Препобразую полноценную модель оценки в модель с обрезанными данными
-                    evaluationDTO = new EvaluationDTO()
+                    evaluationDTO.Teacher = new UserDTO
                     {
-                        Presentation = evaluation.Presentation,
-                        Attitude = evaluation.Attitude,
-                        Responsiveness = evaluation.Responsiveness,
-                        Date = DateOnly.FromDateTime(evaluation.Date_time)
+                        Id = evaluation.Teacher.Id,
+                        Name = evaluation.Teacher.Name,
+                        Lastname = evaluation.Teacher.Lastname,
+                        Surname = evaluation.Teacher.Surname
                     };
                 }
 
@@ -263,7 +171,7 @@ namespace Couse_project_RestAPI.Controllers
         /// <param name="idStudent"></param>
         /// <param name="idTeacher"></param>
         /// <returns></returns>
-        [HttpGet("{idStudent}/{idTeacher}")]
+        [HttpGet("Admin/{idStudent}/{idTeacher}")]
         [ProducesResponseType(typeof(Evaluation), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -273,7 +181,9 @@ namespace Couse_project_RestAPI.Controllers
             try
             {
                 // Поиск оценки с соответствующими id студента и препода
-                Evaluation evaluation = await _context.Evaluations.FirstOrDefaultAsync(e => e.Id_student == idStudent && e.Id_teacher == idTeacher);
+                Evaluation evaluation = await _context.Evaluations.FirstOrDefaultAsync(e => 
+                e.Id_student == idStudent && e.Id_teacher == idTeacher);
+                // Если таковой нет
                 if (evaluation == null)
                     return NotFound($"Не существует оценки, выставленной студентом с Id = {idStudent} преподавателю с Id = {idTeacher}");
 
@@ -289,7 +199,7 @@ namespace Couse_project_RestAPI.Controllers
         /// <summary>
         /// Добавление оценки преподавателя студентом в БД
         /// </summary>
-        /// <param name="evaluation"></param>
+        /// <param name="evaluationDTO"></param>
         /// <returns></returns>
         [HttpPost("Add")]
         [ProducesResponseType(typeof(EvaluationDTO), 200)]
@@ -300,14 +210,14 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
-                // Проверка полномочий
+                // Если студент уже поставил оценку этому преподу
                 if (await _context.Evaluations.AnyAsync(e =>
                 e.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value) &&
                 e.Id_teacher == evaluationDTO.Teacher.Id))
                     return BadRequest($"Оценка студента с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value} " +
                         $"преподавателю с Id = {evaluationDTO.Teacher.Id} уже существует");
 
-                // Создание объекта полноценной модели из урезанной
+                // Создание объекта оценки полноценной модели из урезанной
                 Evaluation evaluation = new Evaluation()
                 {
                     Id_student = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value),
@@ -331,7 +241,12 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPost("Update")]
+        /// <summary>
+        /// Позволяет обновить оценку студенту, который её выставил
+        /// </summary>
+        /// <param name="evaluationDTO"></param>
+        /// <returns></returns>
+        [HttpPut("Update")]
         [ProducesResponseType(typeof(Evaluation), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -363,30 +278,5 @@ namespace Couse_project_RestAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-
-        //[HttpDelete("Delete")]
-        //[ProducesResponseType(typeof(Evaluation), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(500)]
-        //public async Task<ActionResult<Evaluation>> Delete(int idStudent, int idTeacher)
-        //{
-        //    try
-        //    {
-        //        Evaluation evaluation = await _context.Evaluations.FirstOrDefaultAsync(e => e.Id_student == idStudent && e.Id_teacher == idTeacher);
-
-        //        if (evaluation == null)
-        //            return NotFound($"Не существует оценки, поставленной студентом с id = {evaluation.Id_student} преподавателю с id = {evaluation.Id_teacher}");
-
-        //        _context.Evaluations.Remove(evaluation);
-        //        await _context.SaveChangesAsync();
-
-        //        return Ok(evaluation);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
     }
 }

@@ -37,7 +37,11 @@ namespace Couse_project_RestAPI.Models
         /// </summary>
         [Required]
         public string Text { get; set; }
-
+        /// <summary>
+        /// Флаг Is_active определяет активна ли жалоба на данный момент, или была отозванна отправителем
+        /// </summary>
+        [Required]
+        public bool Is_active { get; set; }
 
         [ForeignKey(nameof(Id_student))]
         public virtual User? Student { get; set; }
@@ -46,7 +50,7 @@ namespace Couse_project_RestAPI.Models
         public virtual User? Teacher { get; set; }
 
         [ForeignKey(nameof(Id_status))]
-        public virtual User? Status { get; set; }
+        public virtual MessageStatus? Status { get; set; }
 
         [ForeignKey(nameof(Id_inspector))]
         public virtual User? Inspector { get; set; }

@@ -15,6 +15,7 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Название статуса
         /// </summary>
+        [Required]
         [MaxLength(100)]
         public string Name { get; set; }
         /// <summary>

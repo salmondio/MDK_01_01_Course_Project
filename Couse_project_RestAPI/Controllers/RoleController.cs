@@ -1,5 +1,6 @@
 ﻿using Couse_project_RestAPI.Contexts;
 using Couse_project_RestAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<Role>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Role>>> List()
         {
             try
@@ -40,6 +42,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(Role), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Role>> GetRole(int id)
         {
             try
@@ -47,7 +50,7 @@ namespace Couse_project_RestAPI.Controllers
                 Role role = await _context.Roles.FindAsync(id);
 
                 if (role == null)
-                    return NotFound($"Пользователя с id = {id} не существует");
+                    return NotFound($"Роли с id = {id} не существует");
 
                 return Ok(role);
             }

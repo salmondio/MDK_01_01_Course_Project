@@ -29,7 +29,7 @@ namespace Couse_project_RestAPI.Controllers
 
 
 
-        [HttpGet("List")]
+        [HttpGet("Admin/List")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -49,11 +49,34 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
+        [HttpGet("Admin/{id}")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<User>> GetUser(int id)
+        {
+            try
+            {
+                User user = await _context.Users.FindAsync(id);
+
+                if (user == null)
+                    return NotFound($"Пользователя с id = {id} не существует");
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [HttpGet("ListTeacher")]
         [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> ListTeacher()
         {
             try
@@ -70,6 +93,8 @@ namespace Couse_project_RestAPI.Controllers
                         RoleName = u.Role.Name
                     })
                     .ToArrayAsync();
+                if (!teacherList.Any())
+                    return NotFound("Преподавателей.net");
 
                 return Ok(teacherList);
             }
@@ -80,21 +105,32 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(User), 200)]
+        [HttpGet("ListTeacher/{id}")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        [Authorize(Roles = "Student")]
+        public async Task<ActionResult<UserDTO>> GetTeacher(int id)
         {
             try
             {
-                User user = await _context.Users.FindAsync(id);
+                UserDTO teacher = await _context.Users
+                    .Where(u => u.Id == id)
+                    .Include(u => u.Role)
+                    .Where(u => u.Role.Name == "Teacher")
+                    .Select(u => new UserDTO
+                    {
+                        Id = u.Id,
+                        Name = u.Name,
+                        Lastname = u.Lastname,
+                        Surname = u.Surname,
+                        RoleName = u.Role.Name
+                    })
+                    .FirstAsync();
+                if (teacher == null)
+                    return NotFound($"Не существует преподавателя с id = {id}");
 
-                if (user == null)
-                    return NotFound($"Пользователя с id = {id} не существует");
-
-                return Ok(user);
+                return Ok(teacher);
             }
             catch (Exception ex)
             {
@@ -168,7 +204,7 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPost("ChangeActive/{id}")]
+        [HttpPatch("ChangeActive/{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -194,13 +230,44 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPut("UpdateForUser")]
+        [HttpPatch("ChangePassword")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<ActionResult> UpdateForUser([FromBody] User user)
+        public async Task<ActionResult> UpdateForUser([FromBody] string password)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(password))
+                    return BadRequest("Пароль не может быть пустым");
+
+                User oldUser = await _context.Users.FindAsync(int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value));
+
+                // Если тебя не существует..?
+                if (oldUser == null)
+                    return NotFound($"Вы не существуете...");
+
+                oldUser.Password = password;
+                await _context.SaveChangesAsync();
+
+                return StatusCode(200);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpPut("Update")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
+        [Authorize]
+        public async Task<ActionResult<UserDTO>> UpdateForUser([FromBody] UserDTO user)
         {
             try
             {
@@ -223,7 +290,6 @@ namespace Couse_project_RestAPI.Controllers
                 oldUser.Surname = user.Surname;
                 oldUser.Email = user.Email;
                 oldUser.Phone_number = user.Phone_number;
-                oldUser.Password = user.Password;
 
                 await _context.SaveChangesAsync();
 
@@ -236,13 +302,13 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPut("Update")]
-        [ProducesResponseType(200)]
+        [HttpPut("Admin/Update")]
+        [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> Update([FromBody] User user)
+        public async Task<ActionResult<User>> Update([FromBody] User user)
         {
             try
             {
@@ -267,7 +333,7 @@ namespace Couse_project_RestAPI.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return StatusCode(200);
+                return Ok(oldUser);
             }
             catch (Exception ex)
             {
