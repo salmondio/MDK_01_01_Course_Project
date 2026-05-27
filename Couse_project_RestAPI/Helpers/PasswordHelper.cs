@@ -25,7 +25,7 @@ namespace Couse_project_RestAPI.Helpers
 
                     var preHashPassword = Convert.ToBase64String(preHashBytes);
 
-                    return HashPassword(preHashPassword);
+                    return BCrypt.Net.BCrypt.HashPassword(preHashPassword);
                 }
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace Couse_project_RestAPI.Helpers
             }
         }
 
-        public bool VerifyPassword(string passwordInput, string passwordFromDb)
+        public async Task<bool> VerifyPassword(string passwordInput, string passwordFromDb)
         {
             try
             {
@@ -46,11 +46,12 @@ namespace Couse_project_RestAPI.Helpers
 
                     var preHashPassword = Convert.ToBase64String(preHashBytes);
 
-                    return VerifyPassword(preHashPassword, passwordFromDb);
+                    return BCrypt.Net.BCrypt.Verify(preHashPassword, passwordFromDb);
                 }
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось проверить пароль PasswordHelper/VerifyPassword. " + ex.Message);
                 return false;
             }
         }

@@ -1,21 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Couse_project_RestAPI.Models
 {
     [Table("Evaluation")]
+    [PrimaryKey(nameof(Id_student), nameof(Id_teacher))]
     public class Evaluation
     {
         /// <summary>
         /// Id студента, поставившего оценку
         /// </summary>
-        [Key]
         [Column(Order = 0)]
         public int Id_student { get; set; }
         /// <summary>
         /// Id преподавателя, которому поставлена оценка
         /// </summary>
-        [Key]
         [Column(Order = 1)]
         public int Id_teacher { get; set; }
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Couse_project_RestAPI.Contexts;
+using Couse_project_RestAPI.Helpers;
 using Couse_project_RestAPI.Models;
 using Couse_project_RestAPI.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -217,6 +218,9 @@ namespace Couse_project_RestAPI.Controllers
                     return BadRequest($"Оценка студента с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value} " +
                         $"преподавателю с Id = {evaluationDTO.Teacher.Id} уже существует");
 
+                if (!await _context.Evaluations.AnyAsync(e => e.Id_teacher == evaluationDTO.Teacher.Id))
+                    return NotFound($"Не существует преподавателя с Id = {evaluationDTO.Teacher.Id}");
+
                 // Создание объекта оценки полноценной модели из урезанной
                 Evaluation evaluation = new Evaluation()
                 {
@@ -236,6 +240,7 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось добавить оценку Add. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }

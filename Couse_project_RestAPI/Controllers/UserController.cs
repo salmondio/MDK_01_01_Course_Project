@@ -14,6 +14,9 @@ using System.Text;
 
 namespace Couse_project_RestAPI.Controllers
 {
+    /// <summary>
+    /// Контроллер для управления взаимодействия с таблице пользователей
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -28,7 +31,10 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-
+        /// <summary>
+        /// Позволяет админу получить список всех пользователей
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("Admin/List")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
@@ -44,11 +50,17 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось получить список пользователей Admin/List. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет админу получить информацию о конкретном пользователе
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("Admin/{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
@@ -67,11 +79,16 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log($"Error: Не удалось получить информацию о пользователе Admin/{id}. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет студенту получить список учителей
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("ListTeacher")]
         [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
         [ProducesResponseType(404)]
@@ -100,11 +117,17 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось получить список преподавателей ListTeacher. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет студенту получить информацию о конкретном преподавателе
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("ListTeacher/{id}")]
         [ProducesResponseType(typeof(UserDTO), 200)]
         [ProducesResponseType(404)]
@@ -134,52 +157,75 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log($"Error: Не удалось получить информацию о преподавателе ListTeacher/{id}. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет войти в систему по Email и паролю
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("Login")]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            // Ищем пользователя в БД
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
-
-            // Проверяем пароль
-            PasswordHelper passwordHelper = new PasswordHelper(_configuration);
-            if (passwordHelper.VerifyPassword(request.Password, user.Password))
-                return Unauthorized(new { message = "Неверный email или пароль" });
-
-            // Создание токена
-            TokenHelper tokenHelper = new TokenHelper(_configuration);
-            JwtSecurityToken token = tokenHelper.CreateToken(user);
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-            // Возвращаем токен и необходимую информацию о пользователе
-            return Ok(new
+            try
             {
-                Token = tokenString,
-                ValidTo = token.ValidTo,
-                User = new
+                // Ищем пользователя в БД
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+                if (user == null)
+                    return Unauthorized("Неверный email");
+
+                // Проверяем пароль
+                PasswordHelper passwordHelper = new PasswordHelper(_configuration);
+                if (!await passwordHelper.VerifyPassword(request.Password, user.Password))
+                    return Unauthorized(new { message = "Неверный email или пароль" });
+
+                // Создание токена
+                TokenHelper tokenHelper = new TokenHelper(_configuration);
+                JwtSecurityToken token = tokenHelper.CreateToken(user);
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+                // Возвращаем токен и необходимую информацию о пользователе
+                return Ok(new
                 {
-                    user.Id,
-                    user.Email,
-                    user.Name,
-                    user.Lastname,
-                    user.Surname,
-                    user.Id_role,
-                    user.Is_active,
-                    Role = user.Role?.Name
-                }
-            });
+                    Token = tokenString,
+                    ValidTo = token.ValidTo,
+                    User = new
+                    {
+                        user.Id,
+                        user.Email,
+                        user.Name,
+                        user.Lastname,
+                        user.Surname,
+                        user.Id_role,
+                        user.Is_active,
+                        Role = user.Role?.Name
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                await LogHelper.Log("Error: Не удалось войти в аккаунт Login. " + ex.Message);
+                return StatusCode(500);
+            }
         }
 
 
-        [HttpPost("Add")]
+        /// <summary>
+        /// Позволяет добавить нового пользователя в БД
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpPost("Admin/Add")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -188,6 +234,9 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
+                // Очищаем вспомогательное поле роли из-за причуд EF
+                user.Role = null;
+
                 if (user == null)
                     return BadRequest("Пользователь не может быть равен null-значению");
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
@@ -204,12 +253,18 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось создать пользователя Admin/Add. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
-        [HttpPatch("ChangeActive/{id}")]
+        /// <summary>
+        /// Позволяет админу активировать/деактивировать пользователя
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPatch("Admin/ChangeActive/{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -230,18 +285,24 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log($"Error: Не удалось сменить флаг активности пользователя Admin/ChangeActive/{id}. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет пользователю сменить пароль
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
         [HttpPatch("ChangePassword")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<ActionResult> UpdateForUser([FromBody] string password)
+        public async Task<ActionResult> ChangePassword([FromBody] string password)
         {
             try
             {
@@ -254,18 +315,25 @@ namespace Couse_project_RestAPI.Controllers
                 if (oldUser == null)
                     return NotFound($"Вы не существуете...");
 
-                oldUser.Password = password;
+                PasswordHelper passwordHelper = new PasswordHelper(_configuration);
+                oldUser.Password = passwordHelper.HashPassword(password);
                 await _context.SaveChangesAsync();
 
                 return StatusCode(200);
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось сменить пароль пользователя ChangePassword. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет пользователю изменить некоторую информацию своего аккаунта
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPut("Update")]
         [ProducesResponseType(typeof(UserDTO), 200)]
         [ProducesResponseType(404)]
@@ -302,11 +370,17 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось обновить пользователя Update. " +  ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет админу изменить данные пользователя
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPut("Admin/Update")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
@@ -342,11 +416,17 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log("Error: Не удалось обновить данные пользователя Admin/Update. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
 
 
+        /// <summary>
+        /// Позволяет удалить пользователя
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("Delete/{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
@@ -369,6 +449,7 @@ namespace Couse_project_RestAPI.Controllers
             }
             catch (Exception ex)
             {
+                await LogHelper.Log($"Error: Не удалось удалить пользователя Delete/{id}. " + ex.Message);
                 return StatusCode(500, ex.Message);
             }
         }
