@@ -149,8 +149,9 @@ namespace Couse_project_RestAPI.Controllers
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-            // Проверяем пароль (надо сделать хэширование)
-            if (user == null || user.Password != request.Password)
+            // Проверяем пароль
+            PasswordHelper passwordHelper = new PasswordHelper(_configuration);
+            if (passwordHelper.VerifyPassword(request.Password, user.Password))
                 return Unauthorized(new { message = "Неверный email или пароль" });
 
             // Создание токена
@@ -191,6 +192,10 @@ namespace Couse_project_RestAPI.Controllers
                     return BadRequest("Пользователь не может быть равен null-значению");
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                     return BadRequest("Email пользователя должен быть уникальным");
+
+                // Хэшируем пароль
+                PasswordHelper passwordHelper = new PasswordHelper(_configuration);
+                user.Password = passwordHelper.HashPassword(user.Password);
 
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
