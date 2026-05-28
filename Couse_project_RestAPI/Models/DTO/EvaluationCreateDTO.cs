@@ -2,16 +2,18 @@
 
 namespace Couse_project_RestAPI.Models.DTO
 {
-    public class EvaluationDTO
+    public class EvaluationCreateDTO
     {
+        [Required]
         [Range(1, 9)]
         public byte Presentation { get; set; }
+        [Required]
         [Range(1, 9)]
         public byte Attitude { get; set; }
+        [Required]
         [Range(1, 9)]
         public byte Responsiveness { get; set; }
-        public DateOnly Date { get; set; }
-        public DateTime? Date_time { get; set; }
-        public UserDTO? Teacher { get; set; }
+        [Required]
+        public int Id_teacher { get; set; }
     }
 }

@@ -23,7 +23,6 @@ namespace Couse_project_RestAPI.Models
         /// <summary>
         /// Описание роли
         /// </summary>
-        [Required]
         [MaxLength(1000)]
         public string Description { get; set; }
     }

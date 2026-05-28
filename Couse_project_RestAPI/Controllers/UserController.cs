@@ -39,7 +39,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<IEnumerable<User>>> List()
         {
             try
@@ -65,7 +65,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
@@ -229,7 +229,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<User>> Add([FromBody] User user)
         {
             try
@@ -237,8 +237,6 @@ namespace Couse_project_RestAPI.Controllers
                 // Очищаем вспомогательное поле роли из-за причуд EF
                 user.Role = null;
 
-                if (user == null)
-                    return BadRequest("Пользователь не может быть равен null-значению");
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                     return BadRequest("Email пользователя должен быть уникальным");
 
@@ -306,10 +304,7 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
-                if (String.IsNullOrEmpty(password))
-                    return BadRequest("Пароль не может быть пустым");
-
-                User oldUser = await _context.Users.FindAsync(int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value));
+                User oldUser = await _context.Users.FindAsync(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value));
 
                 // Если тебя не существует..?
                 if (oldUser == null)
@@ -345,7 +340,7 @@ namespace Couse_project_RestAPI.Controllers
             try
             {
                 // Проверяем наличие полномочий для выполнения запроса
-                if (User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value != user.Id.ToString())
+                if (User.FindFirst(ClaimTypes.NameIdentifier)?.Value != user.Id.ToString())
                     return Forbid("Доступ на обновление пользователя запрещен");
 
                 if (user == null)
@@ -386,7 +381,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<User>> Update([FromBody] User user)
         {
             try
@@ -431,7 +426,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<User>> Delete(int id)
         {
 

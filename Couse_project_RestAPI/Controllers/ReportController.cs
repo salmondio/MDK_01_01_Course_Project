@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Couse_project_RestAPI.Controllers
 {
@@ -28,7 +29,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<Report>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<IEnumerable<Report>>> List()
         {
             try
@@ -54,7 +55,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<Report>> GetReportForAdmin(int id)
         {
             try
@@ -90,7 +91,7 @@ namespace Couse_project_RestAPI.Controllers
             {
                 // Ищем жалобы, отправленные студентом с таким-то Id
                 IEnumerable<ReportDTO> reportList = await _context.Reports
-                    .Where(r => r.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
+                    .Where(r => r.Id_student == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                     .Include(r => r.Status)
                     .Include(r => r.Teacher)
                     .Select(r => new ReportDTO
@@ -111,7 +112,7 @@ namespace Couse_project_RestAPI.Controllers
                     .ToArrayAsync();
                 // Если таких жалоб нет
                 if (!reportList.Any())
-                    return NotFound($"Не существует жалоб, отпарвленных студентом с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
+                    return NotFound($"Не существует жалоб, отпарвленных студентом с Id = {User.FindFirst(ClaimTypes.NameIdentifier).Value}");
 
                 return Ok(reportList);
 
@@ -138,7 +139,7 @@ namespace Couse_project_RestAPI.Controllers
             {
                 // Ищем жалобу, с запрашиваемым Id и с Id студента, сделавшего запрос
                 ReportDTO report = await _context.Reports
-                    .Where(r => r.Id == id && r.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
+                    .Where(r => r.Id == id && r.Id_student == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                     .Include(r => r.Status)
                     .Include(r => r.Teacher)
                     .Select(r => new ReportDTO
@@ -159,7 +160,7 @@ namespace Couse_project_RestAPI.Controllers
                     .FirstAsync();
                 // Если такой жалобы нет
                 if (report == null)
-                    return NotFound($"Не существует жалобы с Id = {id} и отправителем с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
+                    return NotFound($"Не существует жалобы с Id = {id} и отправителем с Id = {User.FindFirst(ClaimTypes.NameIdentifier).Value}");
 
                 return Ok(report);
             }
@@ -176,19 +177,19 @@ namespace Couse_project_RestAPI.Controllers
         /// <param name="report"></param>
         /// <returns></returns>
         [HttpPost("Add")]
-        [ProducesResponseType(typeof(ReportDTO), 200)]
+        [ProducesResponseType(typeof(ReportCreateDTO), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<ReportDTO>> Add([FromBody] ReportDTO report)
+        public async Task<ActionResult<ReportCreateDTO>> Add([FromBody] ReportCreateDTO report)
         {
             try
             {
                 // Создаем объект полноценной модели жалобы
                 Report newReport = new Report()
                 {
-                    Id_student = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value),
-                    Id_teacher = report.Teacher.Id,
+                    Id_student = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value),
+                    Id_teacher = report.Id_teacher,
                     Date_time = DateTime.Now,
                     Text = report.Text
                 };
@@ -200,6 +201,36 @@ namespace Couse_project_RestAPI.Controllers
                 return Ok(report);
             }
             catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Метод позволяет студенту отправить жалобу на преподавателя
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        [HttpPost("Owner/Add")]
+        [ProducesResponseType(typeof(Report), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Report>> OwnerAdd([FromBody] Report report)
+        {
+            try
+            {
+                if (await _context.Reports.AnyAsync(r => r.Id == report.Id))
+                    return BadRequest($"Жалоба с Id = {report.Id} уже существует");
+
+                // Добавляем и сохраняем жалобу в БД
+                await _context.Reports.AddAsync(report);
+                await _context.SaveChangesAsync();
+
+                return Ok(report);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -264,7 +295,7 @@ namespace Couse_project_RestAPI.Controllers
                     return NotFound($"Жалобы с id = {id} не существует");
 
                 // Если студент пытается отозвать/возобновить чужую жалобу
-                if (report.Id_student != int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
+                if (report.Id_student != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                     return Forbid("Вы не можете отзывать/возобновить жалобы, отправленные не вами");
 
                 // Изменяем жалобу и сохраняем в БД
@@ -278,6 +309,80 @@ namespace Couse_project_RestAPI.Controllers
                     Text = report.Text,
                     Is_active = report.Is_active
                 });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Метод позволяет обновить статус жалобы администратору
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        [HttpPatch("Owner/Update")]
+        [ProducesResponseType(typeof(Report), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Report>> Update([FromBody] Report report)
+        {
+            try
+            {
+                // Ищем жалобу по Id
+                Report updatedReport = await _context.Reports.FindAsync(report.Id);
+
+                // Если такой жалобы нет
+                if (updatedReport == null)
+                    return NotFound($"Жалобы с id = {report.Id} не существует");
+
+                // Обновляем статус и сохраняем изменения
+                updatedReport.Id_student = report.Id_status;
+                updatedReport.Id_teacher = report.Id_teacher;
+                updatedReport.Id_status = report.Id_status;
+                updatedReport.Id_inspector = report.Id_inspector;
+                updatedReport.Date_time = DateTime.Now;
+                updatedReport.Text = report.Text;
+                updatedReport.Is_active = report.Is_active;
+                await _context.SaveChangesAsync();
+
+                return Ok(updatedReport);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Метод позволяет обновить статус жалобы администратору
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPatch("Owner/Delete/{id}")]
+        [ProducesResponseType(typeof(Report), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Report>> Delete(int id)
+        {
+            try
+            {
+                // Ищем жалобу по Id
+                Report deletedReport = await _context.Reports.FindAsync(id);
+
+                // Если такой жалобы нет
+                if (deletedReport == null)
+                    return NotFound($"Жалобы с id = {id} не существует");
+
+                // Обновляем статус и сохраняем изменения
+                _context.Reports.Remove(deletedReport);
+                await _context.SaveChangesAsync();
+
+                return Ok(deletedReport);
             }
             catch (Exception ex)
             {

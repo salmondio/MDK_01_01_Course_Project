@@ -63,15 +63,18 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPost("Add")]
+        [HttpPost("Admin/Add")]
         [ProducesResponseType(typeof(TeacherDiscipline), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<TeacherDiscipline>> Add([FromBody] TeacherDiscipline teacherDiscipline)
         {
             try
             {
+                if (await _context.TeacherDisciplines.AnyAsync(td => td.Id == teacherDiscipline.Id))
+                    return BadRequest($"Запись с Id = {teacherDiscipline.Id} уже существует");
+
                 await _context.TeacherDisciplines.AddAsync(teacherDiscipline);
                 await _context.SaveChangesAsync();
 
@@ -84,19 +87,15 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpPut("Update")]
+        [HttpPut("Admin/Update")]
         [ProducesResponseType(typeof(TeacherDiscipline), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<TeacherDiscipline>> Update([FromBody] TeacherDiscipline teacherDiscipline)
         {
             try
             {
-                if (_context.TeacherDisciplines.Any(td =>
-                td.Id_teacher == teacherDiscipline.Id_teacher && td.Id_discipline == teacherDiscipline.Id_discipline))
-                    return BadRequest("Такая запись уже существует");
-
                 TeacherDiscipline updatedTeacherDiscipline = await _context.TeacherDisciplines
                     .FirstOrDefaultAsync(td => td.Id == teacherDiscipline.Id);
 
@@ -118,11 +117,11 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("Admin/Delete/{id}")]
         [ProducesResponseType(typeof(TeacherDiscipline), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<TeacherDiscipline>> Delete(int id)
         {
 

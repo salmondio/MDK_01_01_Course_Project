@@ -4,7 +4,9 @@ using Couse_project_RestAPI.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Composition;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Couse_project_RestAPI.Controllers
 {
@@ -28,7 +30,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<Review>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<IEnumerable<Review>>> List()
         {
             try
@@ -54,7 +56,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<Review>> GetReviewForAdmin(int id)
         {
             try
@@ -90,7 +92,7 @@ namespace Couse_project_RestAPI.Controllers
             {
                 // Ищем жалобы, отправленные студентом с таким-то Id
                 IEnumerable<ReviewDTO> reviewList = await _context.Reviews
-                    .Where(r => r.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
+                    .Where(r => r.Id_student == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                     .Include(r => r.Status)
                     .Include(r => r.Teacher)
                     .Select(r => new ReviewDTO
@@ -111,7 +113,7 @@ namespace Couse_project_RestAPI.Controllers
                     .ToArrayAsync();
                 // Если таких жалоб нет
                 if (!reviewList.Any())
-                    return NotFound($"Не существует жалоб, отпарвленных студентом с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
+                    return NotFound($"Не существует жалоб, отпарвленных студентом с Id = {User.FindFirst(ClaimTypes.NameIdentifier).Value}");
 
                 return Ok(reviewList);
 
@@ -138,7 +140,7 @@ namespace Couse_project_RestAPI.Controllers
             {
                 // Ищем жалобу, с запрашиваемым Id и с Id студента, сделавшего запрос
                 ReviewDTO review = await _context.Reviews
-                    .Where(r => r.Id == id && r.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
+                    .Where(r => r.Id == id && r.Id_student == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                     .Include(r => r.Status)
                     .Include(r => r.Teacher)
                     .Select(r => new ReviewDTO
@@ -159,7 +161,7 @@ namespace Couse_project_RestAPI.Controllers
                     .FirstAsync();
                 // Если такой жалобы нет
                 if (review == null)
-                    return NotFound($"Не существует жалобы с Id = {id} и отправителем с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value}");
+                    return NotFound($"Не существует жалобы с Id = {id} и отправителем с Id = {User.FindFirst(ClaimTypes.NameIdentifier).Value}");
 
                 return Ok(review);
             }
@@ -176,25 +178,56 @@ namespace Couse_project_RestAPI.Controllers
         /// <param name="review"></param>
         /// <returns></returns>
         [HttpPost("Add")]
-        [ProducesResponseType(typeof(ReviewDTO), 200)]
+        [ProducesResponseType(typeof(ReviewCreateDTO), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<ReviewDTO>> Add([FromBody] ReviewDTO review)
+        public async Task<ActionResult<ReviewCreateDTO>> Add([FromBody] ReviewCreateDTO review)
         {
             try
             {
                 // Создаем объект полноценной модели жалобы
                 Review newReview = new Review()
                 {
-                    Id_student = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value),
-                    Id_teacher = review.Teacher.Id,
+                    Id_student = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value),
+                    Id_teacher = review.Id_teacher,
                     Date_time = DateTime.Now,
                     Text = review.Text
                 };
 
                 // Добавляем и сохраняем жалобу в БД
                 await _context.Reviews.AddAsync(newReview);
+                await _context.SaveChangesAsync();
+
+                return Ok(review);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Метод позволяет студенту отправить жалобу на преподавателя
+        /// </summary>
+        /// <param name="review"></param>
+        /// <returns></returns>
+        [HttpPost("Owner/Add")]
+        [ProducesResponseType(typeof(Review), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Review>> OwnerAdd([FromBody] Review review)
+        {
+            try
+            {
+                // Создаем объект полноценной модели жалобы
+                if (await _context.Reviews.AnyAsync(r => r.Id == review.Id))
+                    return BadRequest($"Отзыв с Id = {review.Id} уже существует");
+
+                // Добавляем и сохраняем жалобу в БД
+                await _context.Reviews.AddAsync(review);
                 await _context.SaveChangesAsync();
 
                 return Ok(review);
@@ -217,7 +250,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin,Moderator")]
-        public async Task<ActionResult<Review>> Update([FromBody] MessageStatus status, int id)
+        public async Task<ActionResult<Review>> UpdateStatus([FromBody] MessageStatus status, int id)
         {
             try
             {
@@ -264,7 +297,7 @@ namespace Couse_project_RestAPI.Controllers
                     return NotFound($"Жалобы с id = {id} не существует");
 
                 // Если студент пытается отозвать/возобновить чужую жалобу
-                if (review.Id_student != int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value))
+                if (review.Id_student != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                     return Forbid("Вы не можете отзывать/возобновить жалобы, отправленные не вами");
 
                 // Изменяем жалобу и сохраняем в БД
@@ -278,6 +311,80 @@ namespace Couse_project_RestAPI.Controllers
                     Text = review.Text,
                     Is_active = review.Is_active
                 });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Метод позволяет обновить статус жалобы администратору
+        /// </summary>
+        /// <param name="review"></param>
+        /// <returns></returns>
+        [HttpPatch("Owner/Update")]
+        [ProducesResponseType(typeof(Review), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Moderator")]
+        public async Task<ActionResult<Review>> OwnerUpdate([FromBody] Review review)
+        {
+            try
+            {
+                // Ищем жалобу по Id
+                Review updatedReview = await _context.Reviews.FindAsync(review.Id);
+
+                // Если такой жалобы нет
+                if (updatedReview == null)
+                    return NotFound($"Жалобы с id = {review.Id} не существует");
+
+                // Обновляем статус и сохраняем изменения
+                updatedReview.Id_student = review.Id_status;
+                updatedReview.Id_teacher = review.Id_teacher;
+                updatedReview.Id_status = review.Id_status;
+                updatedReview.Id_inspector = review.Id_inspector;
+                updatedReview.Date_time = DateTime.Now;
+                updatedReview.Text = review.Text;
+                updatedReview.Is_active = review.Is_active;
+                await _context.SaveChangesAsync();
+
+                return Ok(updatedReview);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Метод позволяет обновить статус жалобы администратору
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPatch("Owner/Delete/{id}")]
+        [ProducesResponseType(typeof(Review), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Review>> Delete(int id)
+        {
+            try
+            {
+                // Ищем жалобу по Id
+                Review deletedReview = await _context.Reviews.FindAsync(id);
+
+                // Если такой жалобы нет
+                if (deletedReview == null)
+                    return NotFound($"Жалобы с id = {id} не существует");
+
+                // Обновляем статус и сохраняем изменения
+                _context.Reviews.Remove(deletedReview);
+                await _context.SaveChangesAsync();
+
+                return Ok(deletedReview);
             }
             catch (Exception ex)
             {

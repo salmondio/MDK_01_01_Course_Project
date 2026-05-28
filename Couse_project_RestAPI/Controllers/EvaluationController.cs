@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Couse_project_RestAPI.Controllers
 {
@@ -28,7 +29,7 @@ namespace Couse_project_RestAPI.Controllers
         [HttpGet("Admin/List")]
         [ProducesResponseType(typeof(IEnumerable<Evaluation>), 200)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<IEnumerable<Evaluation>>> List()
         {
             try
@@ -36,6 +37,37 @@ namespace Couse_project_RestAPI.Controllers
                 IEnumerable<Evaluation> evaluationList = await _context.Evaluations.ToArrayAsync();
 
                 return Ok(evaluationList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Возвращает информацию о конкретной оценке по id студента и преподавателя.
+        /// </summary>
+        /// <param name="idStudent"></param>
+        /// <param name="idTeacher"></param>
+        /// <returns></returns>
+        [HttpGet("Admin/{idStudent}/{idTeacher}")]
+        [ProducesResponseType(typeof(Evaluation), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Admin,Owner")]
+        public async Task<ActionResult<Evaluation>> GetEvaluationAdmin(int idStudent, int idTeacher)
+        {
+            try
+            {
+                // Поиск оценки с соответствующими id студента и препода
+                Evaluation evaluation = await _context.Evaluations.FirstOrDefaultAsync(e =>
+                e.Id_student == idStudent && e.Id_teacher == idTeacher);
+                // Если таковой нет
+                if (evaluation == null)
+                    return NotFound($"Не существует оценки, выставленной студентом с Id = {idStudent} преподавателю с Id = {idTeacher}");
+
+                return Ok(evaluation);
             }
             catch (Exception ex)
             {
@@ -58,8 +90,8 @@ namespace Couse_project_RestAPI.Controllers
             try
             {
                 // Id и роль пользователя, отправившего запрос
-                var userId = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value);
-                var role = User.FindFirst("role").Value;
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var role = User.FindFirst(ClaimTypes.Role).Value;
 
                 // Берем таблицу оценок для запроса
                 var query = _context.Evaluations.AsQueryable();
@@ -112,6 +144,7 @@ namespace Couse_project_RestAPI.Controllers
         [HttpGet("{idStudent}/{idTeacher}")]
         [ProducesResponseType(typeof(EvaluationDTO), 200)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Student, Teacher")]
         public async Task<ActionResult<EvaluationDTO>> GetEvaluationForStudentOrTeacher(int idStudent, int idTeacher)
@@ -119,8 +152,8 @@ namespace Couse_project_RestAPI.Controllers
             try
             {
                 // Id и роль пользователя, отправившего запрос
-                var userId = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value);
-                var role = User.FindFirst("role").Value;
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var role = User.FindFirst(ClaimTypes.Role).Value;
 
                 // Проверка прав
                 if (role == "Student" && idStudent != userId)
@@ -167,76 +200,45 @@ namespace Couse_project_RestAPI.Controllers
 
 
         /// <summary>
-        /// Возвращает информацию о конкретной оценке по id студента и преподавателя.
-        /// </summary>
-        /// <param name="idStudent"></param>
-        /// <param name="idTeacher"></param>
-        /// <returns></returns>
-        [HttpGet("Admin/{idStudent}/{idTeacher}")]
-        [ProducesResponseType(typeof(Evaluation), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<Evaluation>> GetEvaluationAdmin(int idStudent, int idTeacher)
-        {
-            try
-            {
-                // Поиск оценки с соответствующими id студента и препода
-                Evaluation evaluation = await _context.Evaluations.FirstOrDefaultAsync(e => 
-                e.Id_student == idStudent && e.Id_teacher == idTeacher);
-                // Если таковой нет
-                if (evaluation == null)
-                    return NotFound($"Не существует оценки, выставленной студентом с Id = {idStudent} преподавателю с Id = {idTeacher}");
-
-                return Ok(evaluation);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
-        /// <summary>
         /// Добавление оценки преподавателя студентом в БД
         /// </summary>
-        /// <param name="evaluationDTO"></param>
+        /// <param name="evaluationCreateDTO"></param>
         /// <returns></returns>
         [HttpPost("Add")]
-        [ProducesResponseType(typeof(EvaluationDTO), 200)]
+        [ProducesResponseType(typeof(EvaluationCreateDTO), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<EvaluationDTO>> Add([FromBody] EvaluationDTO evaluationDTO)
+        public async Task<ActionResult<EvaluationCreateDTO>> Add([FromBody] EvaluationCreateDTO evaluationCreateDTO)
         {
             try
             {
                 // Если студент уже поставил оценку этому преподу
                 if (await _context.Evaluations.AnyAsync(e =>
-                e.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value) &&
-                e.Id_teacher == evaluationDTO.Teacher.Id))
-                    return BadRequest($"Оценка студента с Id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value} " +
-                        $"преподавателю с Id = {evaluationDTO.Teacher.Id} уже существует");
+                e.Id_student == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) &&
+                e.Id_teacher == evaluationCreateDTO.Id_teacher))
+                    return BadRequest($"Оценка студента с Id = {User.FindFirst(ClaimTypes.NameIdentifier).Value} " +
+                        $"преподавателю с Id = {evaluationCreateDTO.Id_teacher} уже существует");
 
-                if (!await _context.Evaluations.AnyAsync(e => e.Id_teacher == evaluationDTO.Teacher.Id))
-                    return NotFound($"Не существует преподавателя с Id = {evaluationDTO.Teacher.Id}");
+                //if (!await _context.Evaluations.AnyAsync(e => e.Id_teacher == evaluationCreateDTO.Id_teacher))
+                //    return NotFound($"Вы уже поставили оценку этому преподавателю");
 
                 // Создание объекта оценки полноценной модели из урезанной
                 Evaluation evaluation = new Evaluation()
                 {
-                    Id_student = int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value),
-                    Id_teacher = evaluationDTO.Teacher.Id,
+                    Id_student = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value),
+                    Id_teacher = evaluationCreateDTO.Id_teacher,
                     Date_time = DateTime.Now,
-                    Presentation = evaluationDTO.Presentation,
-                    Attitude = evaluationDTO.Attitude,
-                    Responsiveness = evaluationDTO.Responsiveness
+                    Presentation = evaluationCreateDTO.Presentation,
+                    Attitude = evaluationCreateDTO.Attitude,
+                    Responsiveness = evaluationCreateDTO.Responsiveness
                 };
 
                 // Добавляем и сохраняем в БД оценку
                 await _context.Evaluations.AddAsync(evaluation);
                 await _context.SaveChangesAsync();
 
-                return Ok(evaluationDTO);
+                return Ok(evaluationCreateDTO);
             }
             catch (Exception ex)
             {
@@ -247,36 +249,149 @@ namespace Couse_project_RestAPI.Controllers
 
 
         /// <summary>
-        /// Позволяет обновить оценку студенту, который её выставил
+        /// Добавление оценки преподавателя студентом в БД
         /// </summary>
-        /// <param name="evaluationDTO"></param>
+        /// <param name="evaluation"></param>
         /// <returns></returns>
-        [HttpPut("Update")]
+        [HttpPost("Owner/Add")]
         [ProducesResponseType(typeof(Evaluation), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<EvaluationCreateDTO>> OwnerAdd([FromBody] Evaluation evaluation)
+        {
+            try
+            {
+                // Если студент уже поставил оценку этому преподу
+                if (await _context.Evaluations.AnyAsync(e =>
+                e.Id_student == evaluation.Id_student &&
+                e.Id_teacher == evaluation.Id_teacher))
+                    return BadRequest($"Оценка студента с Id = {evaluation.Id_student} " +
+                        $"преподавателю с Id = {evaluation.Id_teacher} уже существует");
+
+                // Добавляем и сохраняем в БД оценку
+                await _context.Evaluations.AddAsync(evaluation);
+                await _context.SaveChangesAsync();
+
+                return Ok(evaluation);
+            }
+            catch (Exception ex)
+            {
+                await LogHelper.Log("Error: Не удалось добавить оценку OwnerAdd. " + ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Позволяет обновить оценку студенту, который её выставил
+        /// </summary>
+        /// <param name="evaluationCreateDTO"></param>
+        /// <returns></returns>
+        [HttpPut("Update")]
+        [ProducesResponseType(typeof(EvaluationCreateDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<Evaluation>> Update([FromBody] EvaluationDTO evaluationDTO)
+        public async Task<ActionResult<EvaluationCreateDTO>> Update([FromBody] EvaluationCreateDTO evaluationCreateDTO)
         {
             try
             {
                 // Ищем оценку выставленную этим студентом этому преподу
                 Evaluation updatedEvaluation = await _context.Evaluations
-                    .FirstOrDefaultAsync(e => e.Id_student == int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub).Value) && 
-                    e.Id_teacher == evaluationDTO.Teacher.Id);
+                    .FirstOrDefaultAsync(e => e.Id_student == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value) && 
+                    e.Id_teacher == evaluationCreateDTO.Id_teacher);
 
                 // Если такой оценки нет
                 if (updatedEvaluation == null)
-                    return NotFound($"Не существует оценки, поставленной студентом с id = {User.FindFirst(JwtRegisteredClaimNames.Sub).Value} преподавателю с id = {evaluationDTO.Teacher.Id}");
+                    return NotFound($"Не существует оценки, поставленной студентом с id = {User.FindFirst(ClaimTypes.NameIdentifier).Value} преподавателю с id = {evaluationCreateDTO.Id_teacher}");
 
                 // Обновляем данные и сохраняем в БД
-                updatedEvaluation.Presentation = evaluationDTO.Presentation;
-                updatedEvaluation.Attitude = evaluationDTO.Attitude;
-                updatedEvaluation.Responsiveness = evaluationDTO.Responsiveness;
+                updatedEvaluation.Presentation = evaluationCreateDTO.Presentation;
+                updatedEvaluation.Attitude = evaluationCreateDTO.Attitude;
+                updatedEvaluation.Responsiveness = evaluationCreateDTO.Responsiveness;
                 updatedEvaluation.Date_time = DateTime.Now;
                 await _context.SaveChangesAsync();
 
-                return Ok(evaluationDTO);
+                return Ok(evaluationCreateDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Позволяет обновить оценку студенту, который её выставил
+        /// </summary>
+        /// <param name="evaluation"></param>
+        /// <returns></returns>
+        [HttpPut("Owner/Update")]
+        [ProducesResponseType(typeof(Evaluation), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Evaluation>> OwnerUpdate([FromBody] Evaluation evaluation)
+        {
+            try
+            {
+                // Ищем оценку выставленную этим студентом этому преподу
+                Evaluation updatedEvaluation = await _context.Evaluations
+                    .FirstOrDefaultAsync(e => e.Id_student == evaluation.Id_student &&
+                    e.Id_teacher == evaluation.Id_teacher);
+
+                // Если такой оценки нет
+                if (updatedEvaluation == null)
+                    return NotFound($"Не существует оценки, поставленной студентом с id = {evaluation.Id_student} преподавателю с id = {evaluation.Id_teacher}");
+
+                // Обновляем данные и сохраняем в БД
+                updatedEvaluation.Id_student = evaluation.Id_student;
+                updatedEvaluation.Id_teacher = evaluation.Id_teacher;
+                updatedEvaluation.Presentation = evaluation.Presentation;
+                updatedEvaluation.Attitude = evaluation.Attitude;
+                updatedEvaluation.Responsiveness = evaluation.Responsiveness;
+                updatedEvaluation.Date_time = DateTime.Now;
+                await _context.SaveChangesAsync();
+
+                return Ok(updatedEvaluation);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Позволяет обновить оценку студенту, который её выставил
+        /// </summary>
+        /// <param name="idStudent"></param>
+        /// <param name="idTeacher"></param>
+        /// <returns></returns>
+        [HttpPut("Owner/Delete/{idStudent}/{idTeacher}")]
+        [ProducesResponseType(typeof(Evaluation), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Evaluation>> Delete(int idStudent, int idTeacher)
+        {
+            try
+            {
+                // Ищем оценку выставленную этим студентом этому преподу
+                Evaluation deletedEvaluation = await _context.Evaluations
+                    .FirstOrDefaultAsync(e => e.Id_student == idStudent &&
+                    e.Id_teacher == idTeacher);
+
+                // Если такой оценки нет
+                if (deletedEvaluation == null)
+                    return NotFound($"Не существует оценки, поставленной студентом с id = {idStudent} преподавателю с id = {idTeacher}");
+
+                // Обновляем данные и сохраняем в БД
+                _context.Remove(deletedEvaluation);
+                await _context.SaveChangesAsync();
+
+                return Ok(deletedEvaluation);
             }
             catch (Exception ex)
             {

@@ -22,11 +22,11 @@ namespace Couse_project_RestAPI.Models
         /// Id статуса отзыва
         /// </summary>
         [Required]
-        public int Id_status { get; set; }
+        public int Id_status { get; set; } = 1;
         /// <summary>
         /// Id модератора, который проверит отзыв
         /// </summary>
-        public int Id_inspector { get; set; }
+        public int? Id_inspector { get; set; }
         /// <summary>
         /// Дата и время отправки отзыва
         /// </summary>
@@ -41,7 +41,7 @@ namespace Couse_project_RestAPI.Models
         /// Флаг Is_active определяет активен ли отзыв на данный момент, или был удален отправителем
         /// </summary>
         [Required]
-        public bool Is_active { get; set; }
+        public bool Is_active { get; set; } = true;
 
 
         [ForeignKey(nameof(Id_student))]

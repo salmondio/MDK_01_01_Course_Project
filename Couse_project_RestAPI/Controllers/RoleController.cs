@@ -19,11 +19,11 @@ namespace Couse_project_RestAPI.Controllers
 
 
 
-        [HttpGet("List")]
+        [HttpGet("Admin/List")]
         [ProducesResponseType(typeof(IEnumerable<Role>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<IEnumerable<Role>>> List()
         {
             try
@@ -38,11 +38,11 @@ namespace Couse_project_RestAPI.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("Admin/{id}")]
         [ProducesResponseType(typeof(Role), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<Role>> GetRole(int id)
         {
             try
@@ -53,6 +53,83 @@ namespace Couse_project_RestAPI.Controllers
                     return NotFound($"Роли с id = {id} не существует");
 
                 return Ok(role);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("Owner/Add")]
+        [ProducesResponseType(typeof(Role), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Role>> Add([FromBody] Role role)
+        {
+            try
+            {
+                if (await _context.Roles.AnyAsync(d => d.Name == role.Name))
+                    return BadRequest("Роль с таким имененм уже существует");
+
+                await _context.Roles.AddAsync(role);
+                await _context.SaveChangesAsync();
+
+                return Ok(role);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("Owner/Update")]
+        [ProducesResponseType(typeof(Role), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Role>> Update([FromBody] Role role)
+        {
+            try
+            {
+                Role updatedRole = await _context.Roles.FindAsync(role.Id);
+                if (updatedRole == null)
+                    return BadRequest($"Не существует роли с Id = {role.Id}");
+
+                updatedRole.Name = role.Name;
+                updatedRole.Description = role.Description;
+
+                await _context.Roles.AddAsync(updatedRole);
+                await _context.SaveChangesAsync();
+
+                return Ok(updatedRole);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("Owner/Delete/{id}")]
+        [ProducesResponseType(typeof(Role), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        [Authorize(Roles = "Owner")]
+        public async Task<ActionResult<Role>> Delete(int id)
+        {
+            try
+            {
+                Role deletedRole = await _context.Roles.FindAsync(id);
+                if (deletedRole == null)
+                    return BadRequest($"Не существует роли с Id = {id}");
+
+                _context.Roles.Remove(deletedRole);
+                await _context.SaveChangesAsync();
+
+                return Ok(deletedRole);
             }
             catch (Exception ex)
             {

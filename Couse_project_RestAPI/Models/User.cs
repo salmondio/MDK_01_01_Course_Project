@@ -14,6 +14,7 @@ namespace Couse_project_RestAPI.Models
         /// Роль пользователя
         /// </summary>
         [Column("Id_role")]
+        [Required]
         public int Id_role { get; set; }
 
         /// <summary>
@@ -76,6 +77,7 @@ namespace Couse_project_RestAPI.Models
         /// Активировать и дизактивировать пользователей может администратор.
         /// </summary>
         [Column("Is_active")]
+        [Required]
         public bool Is_active { get; set; } = true;
 
         

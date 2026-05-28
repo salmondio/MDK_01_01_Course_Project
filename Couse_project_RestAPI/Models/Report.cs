@@ -22,11 +22,11 @@ namespace Couse_project_RestAPI.Models
         /// Id статуса жалобы
         /// </summary>
         [Required]
-        public int Id_status { get; set; }
+        public int Id_status { get; set; } = 1;
         /// <summary>
         /// Id модератора/администратора, который проверит жалобу
         /// </summary>
-        public int Id_inspector { get; set; }
+        public int? Id_inspector { get; set; }
         /// <summary>
         /// Дата и время отправки жалобы
         /// </summary>
@@ -41,7 +41,7 @@ namespace Couse_project_RestAPI.Models
         /// Флаг Is_active определяет активна ли жалоба на данный момент, или была отозванна отправителем
         /// </summary>
         [Required]
-        public bool Is_active { get; set; }
+        public bool Is_active { get; set; } = true;
 
         [ForeignKey(nameof(Id_student))]
         public virtual User? Student { get; set; }

@@ -10,3 +10,36 @@
 28.05.2026 0:37:06: Приложение готово к запуску!
 28.05.2026 0:45:11: Приложение готово к запуску!
 28.05.2026 0:46:28: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 10:42:52: Приложение готово к запуску!
+28.05.2026 10:45:30: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 10:46:42: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 10:47:26: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 10:50:52: Приложение готово к запуску!
+28.05.2026 10:51:46: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 11:09:17: Приложение готово к запуску!
+28.05.2026 11:12:48: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 11:18:40: Приложение готово к запуску!
+28.05.2026 11:21:50: Приложение готово к запуску!
+28.05.2026 11:24:43: Error: Не удалось добавить оценку Add. An exception was thrown while attempting to evaluate a LINQ query parameter expression. See the inner exception for more information. To show additional information call 'DbContextOptionsBuilder.EnableSensitiveDataLogging'.
+28.05.2026 11:29:08: Приложение готово к запуску!
+28.05.2026 11:32:14: Приложение готово к запуску!
+28.05.2026 11:35:06: Error: Не удалось сменить пароль пользователя ChangePassword. Object reference not set to an instance of an object.
+28.05.2026 11:41:40: Приложение готово к запуску!
+28.05.2026 11:44:08: Приложение готово к запуску!
+28.05.2026 11:47:45: Приложение готово к запуску!
+28.05.2026 11:48:35: User claims: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier = 1, http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress = serg.serzhanin@yandex.ru, roleId = 2, http://schemas.microsoft.com/ws/2008/06/identity/claims/role = Admin, isActive = True, jti = e564cb3c-6665-44cd-b0b3-6731b8124642, exp = 1779952694, iss = CourseProjectAPI, aud = CourseProjectWPF
+28.05.2026 11:50:50: Приложение готово к запуску!
+28.05.2026 11:51:39: User claims: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier = 1, http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress = serg.serzhanin@yandex.ru, roleId = 2, http://schemas.microsoft.com/ws/2008/06/identity/claims/role = Admin, isActive = True, jti = 44b8d59e-2e98-44ba-9446-f48e48017443, exp = 1779952876, iss = CourseProjectAPI, aud = CourseProjectWPF
+28.05.2026 11:51:47: User claims: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier = 1, http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress = serg.serzhanin@yandex.ru, roleId = 2, http://schemas.microsoft.com/ws/2008/06/identity/claims/role = Admin, isActive = True, jti = 44b8d59e-2e98-44ba-9446-f48e48017443, exp = 1779952876, iss = CourseProjectAPI, aud = CourseProjectWPF
+28.05.2026 12:40:36: Приложение готово к запуску!
+28.05.2026 12:44:22: Приложение готово к запуску!
+28.05.2026 12:48:46: Приложение готово к запуску!
+28.05.2026 12:53:09: Приложение готово к запуску!
+28.05.2026 12:56:14: Приложение готово к запуску!
+28.05.2026 12:56:45: Приложение готово к запуску!
+28.05.2026 13:06:50: Приложение готово к запуску!
+28.05.2026 13:20:57: Приложение готово к запуску!
+28.05.2026 13:26:11: Приложение готово к запуску!
+28.05.2026 13:33:43: Приложение готово к запуску!
+28.05.2026 13:38:50: Приложение готово к запуску!
+28.05.2026 13:45:43: Error: Не удалось получить информацию о преподавателе ListTeacher/4. Sequence contains no elements.
