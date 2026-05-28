@@ -322,7 +322,7 @@ namespace Couse_project_RestAPI.Controllers
         /// </summary>
         /// <param name="report"></param>
         /// <returns></returns>
-        [HttpPatch("Owner/Update")]
+        [HttpPut("Owner/Update")]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -362,7 +362,7 @@ namespace Couse_project_RestAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPatch("Owner/Delete/{id}")]
+        [HttpDelete("Owner/Delete/{id}")]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]

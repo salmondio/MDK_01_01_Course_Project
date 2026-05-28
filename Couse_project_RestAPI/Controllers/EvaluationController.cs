@@ -369,7 +369,7 @@ namespace Couse_project_RestAPI.Controllers
         /// <param name="idStudent"></param>
         /// <param name="idTeacher"></param>
         /// <returns></returns>
-        [HttpPut("Owner/Delete/{idStudent}/{idTeacher}")]
+        [HttpDelete("Owner/Delete/{idStudent}/{idTeacher}")]
         [ProducesResponseType(typeof(Evaluation), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]

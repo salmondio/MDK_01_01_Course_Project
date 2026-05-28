@@ -228,6 +228,7 @@ namespace Couse_project_RestAPI.Controllers
         [HttpPost("Admin/Add")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult<User>> Add([FromBody] User user)
@@ -239,6 +240,8 @@ namespace Couse_project_RestAPI.Controllers
 
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                     return BadRequest("Email пользователя должен быть уникальным");
+                if (User.FindFirst(ClaimTypes.Role).Value == "Admin" && user.Id_role <= 2)
+                    return Forbid("Вы не можете создавать пользователей с такими же как у вас или большими полномочиями");
 
                 // Хэшируем пароль
                 PasswordHelper passwordHelper = new PasswordHelper(_configuration);
@@ -426,7 +429,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin,Owner")]
+        [Authorize(Roles = "Owner")]
         public async Task<ActionResult<User>> Delete(int id)
         {
 

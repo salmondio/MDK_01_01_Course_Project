@@ -61,7 +61,7 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpGet("Owner/Add")]
+        [HttpPost("Owner/Add")]
         [ProducesResponseType(typeof(Role), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -85,7 +85,7 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpGet("Owner/Update")]
+        [HttpPut("Owner/Update")]
         [ProducesResponseType(typeof(Role), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -113,7 +113,7 @@ namespace Couse_project_RestAPI.Controllers
         }
 
 
-        [HttpGet("Owner/Delete/{id}")]
+        [HttpDelete("Owner/Delete/{id}")]
         [ProducesResponseType(typeof(Role), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
