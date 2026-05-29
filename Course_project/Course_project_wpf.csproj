@@ -9,8 +9,126 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Fonts\Inter\Inter-Italic-VariableFont_opsz,wght.ttf" />
+    <None Remove="Resources\Fonts\Inter\Inter-VariableFont_opsz,wght.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Black.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-BlackItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Bold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-BoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-ExtraBold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-ExtraBoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-ExtraLight.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-ExtraLightItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Italic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Light.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-LightItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Medium.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-MediumItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Regular.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-SemiBold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-SemiBoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-Thin.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_18pt-ThinItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Black.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-BlackItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Bold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-BoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-ExtraBold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-ExtraBoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-ExtraLight.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-ExtraLightItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Italic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Light.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-LightItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Medium.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-MediumItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Regular.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-SemiBold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-SemiBoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-Thin.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_24pt-ThinItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Black.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-BlackItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Bold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-BoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-ExtraBold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-ExtraBoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-ExtraLight.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-ExtraLightItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Italic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Light.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-LightItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Medium.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-MediumItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Regular.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-SemiBold.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-SemiBoldItalic.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Thin.ttf" />
+    <None Remove="Resources\Fonts\Inter\static\Inter_28pt-ThinItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.16" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Fonts\Inter\Inter-Italic-VariableFont_opsz,wght.ttf" />
+    <Resource Include="Resources\Fonts\Inter\Inter-VariableFont_opsz,wght.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Black.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-BlackItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-BoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-ExtraBold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-ExtraBoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-ExtraLight.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-ExtraLightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Light.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-LightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Medium.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-MediumItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Regular.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-SemiBold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-SemiBoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-Thin.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_18pt-ThinItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Black.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-BlackItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-BoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-ExtraBold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-ExtraBoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-ExtraLight.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-ExtraLightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Light.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-LightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Medium.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-MediumItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Regular.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-SemiBold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-SemiBoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-Thin.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_24pt-ThinItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Black.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-BlackItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-BoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-ExtraBold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-ExtraBoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-ExtraLight.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-ExtraLightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Italic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Light.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-LightItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Medium.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-MediumItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Regular.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-SemiBold.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-SemiBoldItalic.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Thin.ttf" />
+    <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-ThinItalic.ttf" />
   </ItemGroup>
 
 </Project>

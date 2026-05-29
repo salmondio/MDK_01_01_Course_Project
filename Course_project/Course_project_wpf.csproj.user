@@ -5,5 +5,23 @@
     <Compile Update="Elements\RatingScale.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Windows\MainWindowAdmin.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\MainWindowAuthorization.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\MainWindowModerator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\MainWindowOwner.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\MainWindowStudent.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\MainWindowTeacher.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
