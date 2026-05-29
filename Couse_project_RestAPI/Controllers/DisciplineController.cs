@@ -71,6 +71,7 @@ namespace Couse_project_RestAPI.Controllers
                 if (await _context.Disciplines.AnyAsync(d => d.Name == discipline.Name))
                     return BadRequest("Дисциплина с таким имененм уже существует");
 
+                discipline.Id = 0;
                 await _context.Disciplines.AddAsync(discipline);
                 await _context.SaveChangesAsync();
 
@@ -99,7 +100,6 @@ namespace Couse_project_RestAPI.Controllers
                 updatedDiscipline.Name = discipline.Name;
                 updatedDiscipline.Description = discipline.Description;
 
-                await _context.Disciplines.AddAsync(discipline);
                 await _context.SaveChangesAsync();
 
                 return Ok(discipline);

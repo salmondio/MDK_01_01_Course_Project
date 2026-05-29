@@ -177,7 +177,7 @@ namespace Couse_project_RestAPI.Controllers
             try
             {
                 // Ищем пользователя в БД
-                var user = await _context.Users
+                var user = await _context.Users?
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -237,6 +237,7 @@ namespace Couse_project_RestAPI.Controllers
             {
                 // Очищаем вспомогательное поле роли из-за причуд EF
                 user.Role = null;
+                user.Id = 0;
 
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                     return BadRequest("Email пользователя должен быть уникальным");
