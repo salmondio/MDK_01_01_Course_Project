@@ -19,13 +19,20 @@
             <Setter Property="FontSize" Value="12"/>
         </Style>
         
-        <!-- Цвета приложения -->
+        <!-- Цвета тем -->
         <SolidColorBrush x:Key="OwnerColor" Color="#6A1B9A"/>
         <SolidColorBrush x:Key="AdminColor" Color="#1565C0"/>
         <SolidColorBrush x:Key="ModerColor" Color="#2E7D32"/>
         <SolidColorBrush x:Key="StudentColor" Color="#00838F"/>
         <SolidColorBrush x:Key="TeacherColor" Color="#E65100"/>
         <SolidColorBrush x:Key="BaseColor" Color="#F5F5F5"/>
+        <!-- Цвета оценок -->
+        <SolidColorBrush x:Key="GoodColor" Color="#6F9E7B"/>
+        <SolidColorBrush x:Key="NormalColor" Color="#DCC06D"/>
+        <SolidColorBrush x:Key="BadColor" Color="#BC7777"/>
+        <!-- Цвета действий -->
+        <SolidColorBrush x:Key="UpdateColor" Color="#4A7B9D"/>
+        <SolidColorBrush x:Key="DeleteColor" Color="#C75C5C"/>
 
         <!-- Стили навигационного меню -->
         <Style TargetType="TabControl">
@@ -39,7 +46,7 @@
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#5F6368"/>
+            <Setter Property="Foreground" Value="{StaticResource BaseColor}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="15,8"/>
             <Setter Property="Margin" Value="0"/>

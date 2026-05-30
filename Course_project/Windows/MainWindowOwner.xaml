@@ -8,12 +8,12 @@
         Title="MainWindowOwner" Height="450" Width="800">
     <Grid x:Name="MainGrid" Background="{StaticResource BaseColor}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0"
               x:Name="Header"
-              Background="{StaticResource OwnerColor}"
-              Height="50">
+              Background="{StaticResource OwnerColor}">
             <Label Content="Owner"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
@@ -25,23 +25,51 @@
                         HorizontalAlignment="Right">
                 <TabControl Height="Auto">
 
-                    <TabItem Header="Все пользователи"/>
-                    <TabItem Header="Жалобы"/>
+                    <TabItem Header="Все пользователи">
+                        
+                    </TabItem>
+                    <TabItem Header="Жалобы">
+
+                    </TabItem>
+                    <TabItem Header="Отзывы">
+
+                    </TabItem>
+                    <TabItem Header="Оценки">
+
+                    </TabItem>
                 </TabControl>
-                <Button x:Name="MenuButton"
-                        Click="MenuButtonClick"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Margin="10, 0, 10, 0">
+                <ToggleButton x:Name="MenuButton"
+                            Checked="MenuButton_Checked"
+                            Unchecked="MenuButton_Unchecked"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Margin="10, 0, 10, 0"
+                            VerticalAlignment="Center"
+                            FocusVisualStyle="{x:Null}">
+                    <ToggleButton.Resources>
+                        <Style TargetType="ToggleButton">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ToggleButton.Resources>
                     <Image Source="\Resources\Icons\ThreeBards.png"
-                           Height="30"/>
-                </Button>
+                           Height="25"/>
+                </ToggleButton>
             </StackPanel>
 
             <!-- Popup с меню -->
-            <Popup x:Name="MenuPopup" 
+            <Popup x:Name="MenuPopup"
+                   Closed="MenuPopup_Closed"
            PlacementTarget="{Binding ElementName=MenuButton}"
            Placement="Bottom"
+           HorizontalOffset="-170"
+           VerticalOffset="+5"
            StaysOpen="False"
            AllowsTransparency="True">
                 <Border x:Name="MenuBorder"

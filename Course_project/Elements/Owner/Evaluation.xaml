@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="Course_project_wpf.Elements.Owner.Evaluation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Course_project_wpf.Elements.Owner"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Height="70"
+          Background="#6A9C78">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Id -->
+        <Grid>
+            <Label Content="1"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+        </Grid>
+        
+        <!-- Кто кому -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="Student"
+                    Click="GoToStudent"
+                    Content="Сержанин Сергей Александрович"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Height="20"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"/>
+            <Button x:Name="Teacher"
+                    Click="GoToTeacher"
+                    Content="Ощепков Александр Попович"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Height="20"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Grid.Row="1"/>
+        </Grid>
+        
+        <!-- Оценки -->
+        <Grid Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Оценка подачи материала -->
+            <StackPanel>
+                <Label x:Name="Presentation"
+                       Content="9"
+                       HorizontalContentAlignment="Center"/>
+                <Image Grid.Row="1"  Source="/Resources/Icons/Presentation.png"
+                       Height="30"
+                       HorizontalAlignment="Center"/>
+            </StackPanel>
+            <!-- Оценка подачи материала -->
+            <StackPanel Grid.Column="1">
+                <Label x:Name="Responsiveness"
+                        Content="9"
+                        HorizontalContentAlignment="Center"/>
+                <Image Source="/Resources/Icons/Responsiveness.png"
+                       Height="30"/>
+            </StackPanel>
+            <!-- Оценка подачи материала -->
+            <StackPanel Grid.Column="2">
+                <Label x:Name="Attitude"
+                       Content="9"
+                       HorizontalContentAlignment="Center"/>
+                <Image Source="/Resources/Icons/Attitude.png"
+                       Height="30"/>
+            </StackPanel>
+        </Grid>
+        
+        <!-- Действия -->
+        <Grid Grid.Column="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Click="Update"
+                    Grid.Column="0"
+                    Background="{StaticResource UpdateColor}"/>
+            <Button Click="Delete"
+                    Grid.Column="1"
+                    Background="{StaticResource DeleteColor}"/>
+        </Grid>
+    </Grid>
+</UserControl>

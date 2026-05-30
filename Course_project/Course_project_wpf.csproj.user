@@ -2,7 +2,10 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Elements\RatingScale.xaml.cs">
+    <Compile Update="Elements\Owner\Evaluation.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Elements\Student\RatingScale.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Windows\MainWindowAdmin.xaml.cs">

@@ -23,6 +23,7 @@ namespace Course_project_wpf.Windows
         public MainWindowOwner()
         {
             InitializeComponent();
+            MenuButton.IsChecked = true;
         }
 
         private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -30,20 +31,34 @@ namespace Course_project_wpf.Windows
 
         }
 
-        private void MenuButtonClick(object sender, RoutedEventArgs e)
+        private void MenuButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (!MenuPopup.IsOpen)
+            var originalStoryboard = (Storyboard)FindResource("HideMenuAnimation");
+
+            // Клонируем Storyboard, чтобы можно было изменять
+            var cloneStoryboard = originalStoryboard.Clone();
+            cloneStoryboard.Completed += (s, a) =>
             {
-                MenuPopup.IsOpen = true;
-                var showStoryboard = (Storyboard)FindResource("ShowMenuAnimation");
-                showStoryboard.Begin(MenuBorder);
-            }
-            else
-            {
-                var hideStoryboard = (Storyboard)FindResource("HideMenuAnimation");
-                hideStoryboard.Completed += (s, a) => MenuPopup.IsOpen = false;
-                hideStoryboard.Begin(MenuBorder);
-            }
+                MenuPopup.IsOpen = false;
+                // Опционально: снимаем обработчик
+                cloneStoryboard.Completed -= (s2, a2) => { };
+            };
+            cloneStoryboard.Begin(MenuBorder);
+        }
+
+        private void MenuButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MenuPopup.IsOpen = true;
+            var showStoryboard = (Storyboard)FindResource("ShowMenuAnimation");
+
+            // Для показа анимации клонирование необязательно, если нет изменений
+            var cloneShow = showStoryboard.Clone();
+            cloneShow.Begin(MenuBorder);
+        }
+
+        private void MenuPopup_Closed(object sender, EventArgs e)
+        {
+            MenuButton.IsChecked = true;
         }
     }
 }
