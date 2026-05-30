@@ -4,6 +4,7 @@ using Couse_project_RestAPI.Models;
 using Couse_project_RestAPI.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -176,18 +177,18 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
+                if (String.IsNullOrEmpty(request.Email) || String.IsNullOrEmpty(request.Password))
+                    return BadRequest("Поля email и пароля должны быть заполнены");
+
                 // Ищем пользователя в БД
                 var user = await _context.Users?
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-                if (user == null)
-                    return Unauthorized("Неверный email");
-
                 // Проверяем пароль
                 PasswordHelper passwordHelper = new PasswordHelper(_configuration);
-                if (!await passwordHelper.VerifyPassword(request.Password, user.Password))
-                    return Unauthorized(new { message = "Неверный email или пароль" });
+                if (user == null || !await passwordHelper.VerifyPassword(request.Password, user.Password))
+                    return Unauthorized("Неверный email или пароль");
 
                 // Создание токена
                 TokenHelper tokenHelper = new TokenHelper(_configuration);

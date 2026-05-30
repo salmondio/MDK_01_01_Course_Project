@@ -6,7 +6,86 @@
         xmlns:local="clr-namespace:Course_project_wpf.Windows"
         mc:Ignorable="d"
         Title="MainWindowOwner" Height="450" Width="800">
-    <Grid>
-        
+    <Grid x:Name="MainGrid" Background="{StaticResource BaseColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0"
+              x:Name="Header"
+              Background="{StaticResource OwnerColor}"
+              Height="50">
+            <Label Content="Owner"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Foreground="White"
+                   Margin="10, 0, 0, 0"
+                   />
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+                <TabControl Height="Auto">
+
+                    <TabItem Header="Все пользователи"/>
+                    <TabItem Header="Жалобы"/>
+                </TabControl>
+                <Button x:Name="MenuButton"
+                        Click="MenuButtonClick"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Margin="10, 0, 10, 0">
+                    <Image Source="\Resources\Icons\ThreeBards.png"
+                           Height="30"/>
+                </Button>
+            </StackPanel>
+
+            <!-- Popup с меню -->
+            <Popup x:Name="MenuPopup" 
+           PlacementTarget="{Binding ElementName=MenuButton}"
+           Placement="Bottom"
+           StaysOpen="False"
+           AllowsTransparency="True">
+                <Border x:Name="MenuBorder"
+                        Background="White" 
+                        CornerRadius="8" 
+                        BorderBrush="#DADCE0" 
+                        BorderThickness="1"
+                        Margin="0,5,0,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" 
+                                  ShadowDepth="2" 
+                                  Opacity="0.15"/>
+                    </Border.Effect>
+                    <ListBox x:Name="MenuListBox"
+                     Style="{StaticResource DropdownMenuStyle}"
+                     SelectionChanged="MenuListBox_SelectionChanged">
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Icons/ProfileIcon.png" 
+                               Width="16" Height="16" 
+                               Margin="0,0,10,0"/>
+                                <TextBlock Text="Профиль"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Icons/SettingsIcon.png" 
+                               Width="16" Height="16" 
+                               Margin="0,0,10,0"/>
+                                <TextBlock Text="Настройки"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <Separator Margin="0,5" Background="#DADCE0" Height="1"/>
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Icons/LogoutIcon.png" 
+                               Width="16" Height="16" 
+                               Margin="0,0,10,0"/>
+                                <TextBlock Text="Выйти"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </Border>
+            </Popup>
+        </Grid>
     </Grid>
 </Window>

@@ -15,8 +15,7 @@ namespace Course_project
         public static UserAllInfo? CurrentUser { get; set; }
         public static string? JwtToken { get; set; }
 
-
-        private void AppStartup()
+        private void AppStartup(object sender, StartupEventArgs e)
         {
             // Инициализируем ApiClient
             ApiClient.Initialize("https://localhost:7205/");

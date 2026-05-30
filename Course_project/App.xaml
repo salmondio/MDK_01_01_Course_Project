@@ -2,8 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Course_project"
-             StartupUri="Windows/Login.xaml">
+             StartupUri="Windows/MainWindowOwner.xaml">
+             <!-- Startup="AppStartup" -->
     <Application.Resources>
+        <!-- Стили для текстовых полей (шрифт, размер) -->
         <Style TargetType="Label">
             <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
             <Setter Property="FontSize" Value="24"/>
@@ -16,16 +18,117 @@
             <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
-        <!--
-        <Style TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
-            <Setter Property="FontSize" Value="24"/>
-        </Style>-->
+        
+        <!-- Цвета приложения -->
         <SolidColorBrush x:Key="OwnerColor" Color="#6A1B9A"/>
         <SolidColorBrush x:Key="AdminColor" Color="#1565C0"/>
         <SolidColorBrush x:Key="ModerColor" Color="#2E7D32"/>
         <SolidColorBrush x:Key="StudentColor" Color="#00838F"/>
         <SolidColorBrush x:Key="TeacherColor" Color="#E65100"/>
         <SolidColorBrush x:Key="BaseColor" Color="#F5F5F5"/>
+
+        <!-- Стили навигационного меню -->
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <!-- Вкладка навигационного меню -->
+        <Style TargetType="TabItem">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#5F6368"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0"
+                            CornerRadius="8,8,0,0"
+                            Margin="2,0">
+                            <ContentPresenter x:Name="ContentSite"
+                                          ContentSource="Header"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="#1A73E8"/>
+                                <Setter Property="FontWeight" Value="Semibold"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#E8EAED"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стили выпадающего списка -->
+        <Style x:Key="DropdownMenuStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DADCE0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" 
+                                  ShadowDepth="2" 
+                                  Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для пунктов списка -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0">
+                            <ContentPresenter VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#F1F3F4"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#E8EAED"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Анимация выпадающего списка -->
+        <!-- Открытие -->
+        <Storyboard x:Key="ShowMenuAnimation">
+            <DoubleAnimation From="0" To="1" 
+                         Duration="0:0:0.15"
+                         Storyboard.TargetProperty="Opacity"/>
+        </Storyboard>
+        <!-- Закрытие -->
+        <Storyboard x:Key="HideMenuAnimation">
+            <DoubleAnimation From="1" To="0" 
+                         Duration="0:0:0.1"
+                         Storyboard.TargetProperty="Opacity"/>
+        </Storyboard>
     </Application.Resources>
 </Application>

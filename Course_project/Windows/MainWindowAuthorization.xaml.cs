@@ -42,6 +42,22 @@ namespace Course_project_wpf.Windows
         }
 
 
+        private void WindowKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                LoginRequest loginRequest = new LoginRequest()
+                {
+                    Email = tbEmail.Text,
+                    Password = pbPassword.Password
+                };
+
+                TryLogIn(loginRequest);
+            }
+        }
+
+
+
         private async void TryLogIn(LoginRequest loginRequest)
         {
             btnLogIn.IsEnabled = false;
@@ -67,7 +83,7 @@ namespace Course_project_wpf.Windows
                 }
                 else
                 {
-                    var error = (int)response.StatusCode == 401 ? "Неверный email или пароль" : "Ошибка сервера";
+                    var error = (int)response.StatusCode == 500 ? "Ошибка сервера" : "Ошибка" + await response.Content.ReadAsStringAsync();
                     MessageBox.Show(error, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }

@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // Строка подключение к БД из файла appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("LocalDBConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 // Подключаем контекст к БД
 builder.Services.AddDbContext<DbContextMain>(options =>
     options.UseSqlServer(connectionString));
