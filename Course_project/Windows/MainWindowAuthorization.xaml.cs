@@ -1,5 +1,5 @@
 ﻿using Course_project;
-using Course_project_wpf.Common;
+using Course_project_wpf.Helpers;
 using Course_project_wpf.Models;
 using Microsoft.AspNetCore.Identity.Data;
 using System;
@@ -62,63 +62,10 @@ namespace Course_project_wpf.Windows
         {
             btnLogIn.IsEnabled = false;
 
-            try
-            {
-                var response = await ApiClient.PostAsync("api/User/Login", loginRequest);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    var loginResponse = JsonSerializer.Deserialize<LoginResponse>(responseBody,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-                    App.JwtToken = loginResponse.Token;
-                    App.CurrentUser = loginResponse.User;
-
-                    // Устанавливаем токен для всех следующих запросов
-                    ApiClient.SetAuthToken(loginResponse.Token);
-
-                    OpenMainWindowByRole(loginResponse.User.Role);
-                    this.Close();
-                }
-                else
-                {
-                    var error = (int)response.StatusCode == 500 ? "Ошибка сервера" : "Ошибка" + await response.Content.ReadAsStringAsync();
-                    MessageBox.Show(error, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                btnLogIn.IsEnabled = true;
-            }
-        }
-
-
-        private void OpenMainWindowByRole(string role)
-        {
-            Window mainWindow = role switch
-            {
-                "Student" => new MainWindowStudent(),
-                "Teacher" => new MainWindowTeacher(),
-                "Moderator" => new MainWindowModerator(),
-                "Admin" => new MainWindowAdmin(),
-                "Owner" => new MainWindowOwner(),
-                _ => null
-            };
-
-            if (mainWindow != null)
-            {
-                mainWindow.Show();
-            }
+            if (await AuthorizationHelper.TryLogIn(loginRequest))
+                this.Close();
             else
-            {
-                MessageBox.Show($"Неизвестная роль: {role}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                btnLogIn.IsEnabled = true;
         }
     }
 }

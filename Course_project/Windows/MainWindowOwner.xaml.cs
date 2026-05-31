@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace Course_project_wpf.Windows
 {
@@ -20,45 +21,38 @@ namespace Course_project_wpf.Windows
     /// </summary>
     public partial class MainWindowOwner : Window
     {
+        public static MainWindowOwner OwnerWindow { get; private set; }
+        private List<string> tabItems = new List<string>();
+        private List<(string imgPath, string name)> listBoxItems = new List<(string, string)>();
         public MainWindowOwner()
         {
             InitializeComponent();
-            MenuButton.IsChecked = true;
+            OwnerWindow = this;
+            InitializeNavigationItems();
+
+            
+            MainGrid.Children.Add(new Elements.Header("Owner", tabItems, "Оценки", listBoxItems));
         }
 
-        private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void InitializeNavigationItems()
         {
-
+            tabItems.Add("Жалобы");
+            tabItems.Add("Отзывы");
+            tabItems.Add("Оценки");
+            tabItems.Add("Пользователи");
         }
 
-        private void MenuButton_Checked(object sender, RoutedEventArgs e)
+        public void MoveToPage(string nameOfPage)
         {
-            var originalStoryboard = (Storyboard)FindResource("HideMenuAnimation");
-
-            // Клонируем Storyboard, чтобы можно было изменять
-            var cloneStoryboard = originalStoryboard.Clone();
-            cloneStoryboard.Completed += (s, a) =>
+            switch (nameOfPage)
             {
-                MenuPopup.IsOpen = false;
-                // Опционально: снимаем обработчик
-                cloneStoryboard.Completed -= (s2, a2) => { };
-            };
-            cloneStoryboard.Begin(MenuBorder);
-        }
-
-        private void MenuButton_Unchecked(object sender, RoutedEventArgs e)
-        {
-            MenuPopup.IsOpen = true;
-            var showStoryboard = (Storyboard)FindResource("ShowMenuAnimation");
-
-            // Для показа анимации клонирование необязательно, если нет изменений
-            var cloneShow = showStoryboard.Clone();
-            cloneShow.Begin(MenuBorder);
-        }
-
-        private void MenuPopup_Closed(object sender, EventArgs e)
-        {
-            MenuButton.IsChecked = true;
+                case "Оценки":
+                    PageParent.Navigate(new Pages.Owner.Evaluations());
+                    break;
+                default:
+                    MessageBox.Show("Ошибка: неизвестное имя страницы");
+                    break;
+            }
         }
     }
 }

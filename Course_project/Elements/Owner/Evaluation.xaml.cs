@@ -24,5 +24,25 @@ namespace Course_project_wpf.Elements.Owner
         {
             InitializeComponent();
         }
+
+        private void GoToStudent(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void GoToTeacher(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Update(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Delete(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

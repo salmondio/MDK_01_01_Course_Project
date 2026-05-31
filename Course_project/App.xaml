@@ -137,5 +137,32 @@
                          Duration="0:0:0.1"
                          Storyboard.TargetProperty="Opacity"/>
         </Storyboard>
+        
+        <!-- Кнопка изменить -->
+        <Style x:Key="HoverOverButtonUpdate" TargetType="Button">
+            <Setter Property="Background" Value="#F1F3F4"/>
+            <Setter Property="Foreground" Value="#202124"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Кнопка удалить -->
+        <Style x:Key="HoverOverButtonDelete" TargetType="Button">
+            <Setter Property="Background" Value="#F1F3F4"/>
+            <Setter Property="Foreground" Value="#202124"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource DeleteColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>

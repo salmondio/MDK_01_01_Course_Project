@@ -6,18 +6,21 @@
              xmlns:local="clr-namespace:Course_project_wpf.Elements.Owner"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Height="70"
+    <Grid x:Name="MainGrid"
+          Height="70"
           Background="#6A9C78">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="0.25*"/>
+            <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
 
         <!-- Id -->
-        <Grid>
-            <Label Content="1"
+        <Grid x:Name="Id">
+            <Label x:Name="lbId"
+                   Content="1"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"/>
         </Grid>
@@ -83,18 +86,26 @@
         </Grid>
         
         <!-- Действия -->
-        <Grid Grid.Column="3">
+        <Grid Grid.Column="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
 
             <Button Click="Update"
                     Grid.Column="0"
-                    Background="{StaticResource UpdateColor}"/>
+                    Background="Transparent"
+                    Style="{StaticResource HoverOverButtonUpdate}">
+                <Image Source="/Resources/Icons/Edit.png"
+                       Height="35"/>
+            </Button>
             <Button Click="Delete"
                     Grid.Column="1"
-                    Background="{StaticResource DeleteColor}"/>
+                    Background="Transparent"
+                    Style="{StaticResource HoverOverButtonDelete}">
+                <Image Source="/Resources/Icons/Delete.png"
+                       Height="35"/>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

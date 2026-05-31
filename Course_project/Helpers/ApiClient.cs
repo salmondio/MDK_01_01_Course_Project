@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Course_project_wpf.Common
+namespace Course_project_wpf.Helpers
 {
     public static class ApiClient
     {
