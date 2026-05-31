@@ -140,27 +140,69 @@
         
         <!-- Кнопка изменить -->
         <Style x:Key="HoverOverButtonUpdate" TargetType="Button">
-            <Setter Property="Background" Value="#F1F3F4"/>
+            <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
             <Setter Property="Foreground" Value="#202124"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="10,5"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10"
+                        BorderThickness="0">
+                            <ContentPresenter x:Name="Content"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Margin="{TemplateBinding Padding}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
+                    <!-- <Setter Property="Background" Value="#4A148C"/> -->
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#4A148C"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
         <!-- Кнопка удалить -->
         <Style x:Key="HoverOverButtonDelete" TargetType="Button">
-            <Setter Property="Background" Value="#F1F3F4"/>
+            <Setter Property="Background" Value="{StaticResource DeleteColor}"/>
             <Setter Property="Foreground" Value="#202124"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="10,5"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="10"
+                                        BorderThickness="0">
+                            <ContentPresenter x:Name="Content"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource DeleteColor}"/>
+                    <!-- <Setter Property="Background" Value="#4A148C"/> -->
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#4A148C"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

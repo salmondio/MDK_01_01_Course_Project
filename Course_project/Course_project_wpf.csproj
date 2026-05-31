@@ -134,7 +134,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\" />
+    <Folder Include="Elements\Owner\" />
   </ItemGroup>
 
 </Project>

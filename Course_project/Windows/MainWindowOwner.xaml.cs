@@ -22,24 +22,25 @@ namespace Course_project_wpf.Windows
     public partial class MainWindowOwner : Window
     {
         public static MainWindowOwner OwnerWindow { get; private set; }
-        private List<string> tabItems = new List<string>();
-        private List<(string imgPath, string name)> listBoxItems = new List<(string, string)>();
+        private List<string> _tabItems = new List<string>();
+        private List<(string imgPath, string name)> _listBoxItems = new List<(string, string)>();
+        private Elements.Header _header;
         public MainWindowOwner()
         {
             InitializeComponent();
             OwnerWindow = this;
             InitializeNavigationItems();
 
-            
-            MainGrid.Children.Add(new Elements.Header("Owner", tabItems, "Оценки", listBoxItems));
+            _header = new Elements.Header("Owner", _tabItems, "Оценки", _listBoxItems);
+            MainGrid.Children.Add(_header);
         }
 
         private void InitializeNavigationItems()
         {
-            tabItems.Add("Жалобы");
-            tabItems.Add("Отзывы");
-            tabItems.Add("Оценки");
-            tabItems.Add("Пользователи");
+            _tabItems.Add("Жалобы");
+            _tabItems.Add("Отзывы");
+            _tabItems.Add("Оценки");
+            _tabItems.Add("Пользователи");
         }
 
         public void MoveToPage(string nameOfPage)
@@ -47,7 +48,7 @@ namespace Course_project_wpf.Windows
             switch (nameOfPage)
             {
                 case "Оценки":
-                    PageParent.Navigate(new Pages.Owner.Evaluations());
+                    PageParent.Navigate(new Pages.Owner.Evaluations(_header));
                     break;
                 default:
                     MessageBox.Show("Ошибка: неизвестное имя страницы");

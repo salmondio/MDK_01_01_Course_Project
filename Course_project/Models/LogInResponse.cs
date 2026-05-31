@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Course_project_wpf.Models.FullModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,6 @@ namespace Course_project_wpf.Models
     {
         public string Token { get; set; }
         public DateTime ValidTo { get; set; }
-        public UserAllInfo User { get; set; }
+        public User User { get; set; }
     }
 }

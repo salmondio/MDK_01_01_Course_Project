@@ -1,6 +1,6 @@
-﻿namespace Course_project_wpf.Models
+﻿namespace Course_project_wpf.Models.FullModels
 {
-    public class UserAllInfo
+    public class User
     {
         public int Id { get; set; }
 

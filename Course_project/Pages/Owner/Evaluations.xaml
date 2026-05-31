@@ -10,18 +10,19 @@
 
     <Grid Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="Header"
-              Grid.Row="0"/>
         <Grid x:Name="Search"
-              Grid.Row="1"/>
+              Grid.Row="0"/>
         <Grid x:Name="Body"
-              Grid.Row="2"/>
+              Grid.Row="1">
+            <ScrollViewer>
+                <StackPanel x:Name="Parent"/>
+            </ScrollViewer>
+        </Grid>
         <Grid x:Name="Footer"
-              Grid.Row="3"/>
+              Grid.Row="2"/>
     </Grid>
 </Page>

@@ -5,7 +5,10 @@
     <Compile Update="Elements\Header.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Elements\Owner\Evaluation.xaml.cs">
+    <Compile Update="Elements\OwnerAdmin\Evaluation.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Elements\SortableHeader.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Elements\Student\RatingScale.xaml.cs">

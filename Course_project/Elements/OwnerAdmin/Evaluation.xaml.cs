@@ -13,16 +13,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Course_project_wpf.Elements.Owner
+namespace Course_project_wpf.Elements.OwnerAdmin
 {
     /// <summary>
     /// Логика взаимодействия для Evaluation.xaml
     /// </summary>
     public partial class Evaluation : UserControl
     {
-        public Evaluation()
+        public Evaluation(Models.FullModels.Evaluation evaluation)
         {
             InitializeComponent();
+            DeleteButton.Visibility = Visibility.Hidden;
+            EditButton.Visibility = Visibility.Hidden;
+
+            InitializeVariables();
+        }
+
+
+        private void InitializeVariables(Models.FullModels.Evaluation evaluation)
+        {
+            Teacher.Content = evaluation.;
         }
 
         private void GoToStudent(object sender, RoutedEventArgs e)
