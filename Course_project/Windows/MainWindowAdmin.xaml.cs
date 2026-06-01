@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Course_project_wpf.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,11 @@ namespace Course_project_wpf.Windows
     /// </summary>
     public partial class MainWindowAdmin : Window
     {
+        public static AdminController AdminController { get; private set; }
         public MainWindowAdmin()
         {
             InitializeComponent();
+            AdminController = new AdminController();
         }
     }
 }

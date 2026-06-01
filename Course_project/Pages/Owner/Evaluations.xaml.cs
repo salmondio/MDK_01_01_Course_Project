@@ -1,5 +1,8 @@
-﻿using Course_project_wpf.Elements;
-using Course_project_wpf.Elements.Owner;
+﻿using Course_project_wpf.Controllers;
+using Course_project_wpf.Elements;
+using Course_project_wpf.Elements.OwnerAdmin;
+using Course_project_wpf.Models.FullModels;
+using Course_project_wpf.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,23 +26,32 @@ namespace Course_project_wpf.Pages.Owner
     public partial class Evaluations : Page
     {
         private List<Models.FullModels.Evaluation> _evaluations;
-        public Evaluations(Elements.Header header)
+        private AdminController _adminController;
+        public Evaluations(AdminController adminController)
         {
             InitializeComponent();
-            Design(header);
+            _adminController = adminController;
+
+            Design();
         }
 
-        private void Design(Elements.Header header)
+        private void Design()
         {
             // Линия сортировки
             Elements.SortableHeader sortableHeader = new Elements.SortableHeader();
             sortableHeader.SortRequested += SortHeader_SortRequested;
             Search.Children.Add(sortableHeader);
 
-            // Оценки
-            foreach(var evaluation in _evaluations)
+            // Заполнение оценками
+            GetEvaluations();
+        }
+
+        private void GetEvaluations()
+        {
+            _evaluations = MainWindowAdmin.AdminController.GetEvaluations();
+            foreach (var evaluation in _evaluations)
             {
-                Parent.Children.Add(new Elements.OwnerAdmin.Evaluation()
+                Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation, _adminController));
             }
         }
 

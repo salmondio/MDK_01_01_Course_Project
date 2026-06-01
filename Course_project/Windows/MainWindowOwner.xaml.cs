@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Course_project_wpf.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,8 @@ namespace Course_project_wpf.Windows
     public partial class MainWindowOwner : Window
     {
         public static MainWindowOwner OwnerWindow { get; private set; }
+        public static OwnerController OwnerController { get; private set; }
+        public static AdminController AdminController { get; private set; }
         private List<string> _tabItems = new List<string>();
         private List<(string imgPath, string name)> _listBoxItems = new List<(string, string)>();
         private Elements.Header _header;
@@ -29,6 +32,8 @@ namespace Course_project_wpf.Windows
         {
             InitializeComponent();
             OwnerWindow = this;
+            OwnerController = new OwnerController();
+            AdminController = new AdminController();
             InitializeNavigationItems();
 
             _header = new Elements.Header("Owner", _tabItems, "Оценки", _listBoxItems);
@@ -48,7 +53,7 @@ namespace Course_project_wpf.Windows
             switch (nameOfPage)
             {
                 case "Оценки":
-                    PageParent.Navigate(new Pages.Owner.Evaluations(_header));
+                    PageParent.Navigate(new Pages.Owner.Evaluations(AdminController));
                     break;
                 default:
                     MessageBox.Show("Ошибка: неизвестное имя страницы");
