@@ -6,127 +6,209 @@
              xmlns:local="clr-namespace:Course_project_wpf.Elements.OwnerAdmin"
              mc:Ignorable="d" 
              d:DesignHeight="450" Width="800">
-    <Grid x:Name="MainGrid"
-          Height="70">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="90"/>
-            <ColumnDefinition Width="150"/>
-        </Grid.ColumnDefinitions>
+    <UserControl.Resources>
+        <!-- Чистый стиль для кнопок без стандартных эффектов -->
+        <Style x:Key="CleanButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{DynamicResource LocalColorTheme}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" 
+                                    Property="Background" 
+                                    Value="{DynamicResource LocalDarkColorTheme}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" 
+                                    Property="Background" 
+                                    Value="{DynamicResource LocalColorTheme}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-        <!-- Кто кому -->
-        <Grid x:Name="gdPeople"
-              Grid.Column="0"
-                Background="#6A9C78">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Button x:Name="Student"
-                    Click="GoToStudent"
-                    Content="Сержанин Сергей Александрович"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Height="20"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Margin="15, 0, 0, 0"/>
-            <Button x:Name="Teacher"
-                    Click="GoToTeacher"
-                    Content="Ощепков Александр Попович"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Height="20"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Grid.Row="1"
-                    Margin="15, 0, 0, 0"/>
-        </Grid>
-        
-        <!-- Оценки -->
-        <Grid x:Name="gdEvaluation"
-              Grid.Column="1"
-                Background="#6A9C78">
+    <!-- Border для пэддингов -->
+    <Border Padding="0, 5, 0, 5"
+            Height="80"
+            MouseEnter="MainGrid_MouseEnter"
+            MouseLeave="MainGrid_MouseLeave"
+            Background="Transparent">
+        <!-- Основной grid -->
+        <Grid x:Name="MainGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <!-- Оценка подачи материала -->
-            <StackPanel>
-                <Label x:Name="Presentation"
-                       Content="9"
-                       HorizontalContentAlignment="Center"/>
-                <Image Grid.Row="1"  Source="/Resources/Icons/Presentation2.png"
-                       Height="30"
-                       HorizontalAlignment="Center"/>
-            </StackPanel>
-            <!-- Оценка подачи материала -->
-            <StackPanel Grid.Column="1">
-                <Label x:Name="Responsiveness"
-                        Content="9"
-                        HorizontalContentAlignment="Center"/>
-                <Image Source="/Resources/Icons/Responsiveness.png"
-                       Height="30"/>
-            </StackPanel>
-            <!-- Оценка подачи материала -->
-            <StackPanel Grid.Column="2">
-                <Label x:Name="Attitude"
-                       Content="9"
-                       HorizontalContentAlignment="Center"/>
-                <Image Source="/Resources/Icons/Attitude.png"
-                       Height="30"/>
-            </StackPanel>
-        </Grid>
-
-        <!-- Дата и время -->
-        <Grid x:Name="gdDateTime"
-              Grid.Column="2"
-                Background="#6A9C78">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Label x:Name="lbDate"
-                   Grid.Row="0"
-                   Content="01.10.2026"
-                   FontSize="14"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Bottom"/>
-            <Label x:Name="lbTime"
-                   Grid.Row="1"
-                   Content="10:51"
-                   FontSize="14"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="top"/>
-        </Grid>
-
-        <!-- Действия -->
-        <Grid Name="gdActions"
-              Grid.Column="3"
-              Background="{x:Null}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="EditButton"
-                    Click="Update"
-                    Grid.Column="0"
-                    Style="{StaticResource HoverOverButtonUpdate}"
-                    Margin="5, 0, 5, 0">
-                <Image Source="/Resources/Icons/Edit.png"
-                       Height="35"/>
-            </Button>
-            <Button x:Name="DeleteButton"
-                    Click="Delete"
+            <!-- Id студента и препода -->
+            <Border x:Name="bdId"
+                    CornerRadius="8, 0, 0, 8"
+                    ClipToBounds="True"
+                    Background="{StaticResource LocalColorTheme}">
+                <Grid x:Name="gdId">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Label x:Name="lbIdStudent"
+                            Grid.Row="0"
+                            Content="1"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Bottom"
+                            FontSize="16"/>
+                    <Label x:Name="lbIdTeacher"
+                            Grid.Row="1"
+                            Content="2"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Top"
+                            FontSize="16"/>
+                </Grid>
+            </Border>
+            <!-- Кто кому -->
+            <Grid x:Name="gdPeople"
                     Grid.Column="1"
-                    Style="{StaticResource HoverOverButtonDelete}">
-                <Image Source="/Resources/Icons/Delete.png"
-                       Height="35"/>
-            </Button>
+                    Background="{StaticResource LocalColorTheme}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Button x:Name="Student"
+                        Style="{StaticResource CleanButtonStyle}"
+                        MouseEnter="StudentButton_MouseEnter"
+                        MouseLeave="StudentButton_MouseLeave"
+                        Click="GoToStudent"
+                        Content="Сержанин Сергей Александрович"
+                        BorderThickness="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        FontSize="16"
+                        Cursor="Hand"/>
+                <Button x:Name="Teacher"
+                        Style="{StaticResource CleanButtonStyle}"
+                        MouseEnter="TeacherButton_MouseEnter"
+                        MouseLeave="TeacherButton_MouseLeave"
+                        Click="GoToTeacher"
+                        Content="Ощепков Александр Попович"
+                        BorderThickness="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Grid.Row="1"
+                        FontSize="16"
+                        Cursor="Hand"/>
+            </Grid>
+
+            <!-- Оценки -->
+            <Grid x:Name="gdEvaluation"
+                    Grid.Column="2"
+                    Background="{StaticResource LocalColorTheme}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Оценка подачи материала -->
+                <StackPanel>
+                    <Label x:Name="Presentation"
+                            Content="9"
+                            HorizontalContentAlignment="Center"/>
+                    <Image Grid.Row="1"  Source="/Resources/Icons/PresentationWhite.png"
+                            Height="30"
+                            HorizontalAlignment="Center"/>
+                </StackPanel>
+                <!-- Оценка подачи материала -->
+                <StackPanel Grid.Column="1">
+                    <Label x:Name="Responsiveness"
+                            Content="9"
+                            HorizontalContentAlignment="Center"/>
+                    <Image Source="/Resources/Icons/ResponsivenessWhite.png"
+                            Height="30"/>
+                </StackPanel>
+                <!-- Оценка подачи материала -->
+                <StackPanel Grid.Column="2">
+                    <Label x:Name="Attitude"
+                            Content="9"
+                            HorizontalContentAlignment="Center"/>
+                    <Image Source="/Resources/Icons/AttitudeWhite.png"
+                            Height="30"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Дата и время -->
+            <Border x:Name="bdDateTime"
+                    Grid.Column="3"
+                    CornerRadius="0, 8, 8, 0"
+                    ClipToBounds="True"
+                    Background="{StaticResource LocalColorTheme}">
+                <Grid x:Name="gdDateTime">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label x:Name="lbDate"
+                        Grid.Row="0"
+                        Content="01.10.2026"
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"/>
+                    <Label x:Name="lbTime"
+                        Grid.Row="1"
+                        Content="10:51"
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="top"/>
+                </Grid>
+            </Border>
+            <!-- Действия -->
+            <Grid Name="gdActions"
+                    Grid.Column="4"
+                    Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="EditButton"
+                        Click="Update"
+                        Grid.Column="0"
+                        Style="{StaticResource HoverOverButtonUpdate}"
+                        Margin="5, 0, 5, 0"
+                        Visibility="Collapsed">
+                    <Image Source="/Resources/Icons/EditWhite.png"
+                            Height="35"/>
+                </Button>
+                <Button x:Name="DeleteButton"
+                        Click="Delete"
+                        Grid.Column="1"
+                        Style="{StaticResource HoverOverButtonDelete}"
+                        Visibility="Collapsed">
+                    <Image Source="/Resources/Icons/DeleteWhite.png"
+                            Height="35"/>
+                </Button>
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </UserControl>

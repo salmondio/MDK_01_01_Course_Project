@@ -12,8 +12,8 @@ namespace Course_project_wpf.Controllers
     {
         public List<Discipline> Disciplines { get; private set; }
         public List<Role> Roles { get; private set; }
-        public List<Evaluation> Evaluations { get; private set; } = new List<Evaluation>() { 
-        new Evaluation() 
+        public List<Evaluation> Evaluations { get; private set; } = new List<Evaluation>() {
+        new Evaluation()
         {
             Id_student = 1,
             Id_teacher = 2,
@@ -21,7 +21,89 @@ namespace Course_project_wpf.Controllers
             Attitude = 2,
             Responsiveness = 8,
             Date_time = DateTime.Now
-        } };
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 8,
+            Attitude = 9,
+            Responsiveness = 7,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 1,
+            Attitude = 2,
+            Responsiveness = 5,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 7,
+            Attitude = 7,
+            Responsiveness = 8,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 1,
+            Attitude = 1,
+            Responsiveness = 1,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 5,
+            Attitude = 5,
+            Responsiveness = 5,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 7,
+            Attitude = 6,
+            Responsiveness = 3,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 7,
+            Attitude = 9,
+            Responsiveness = 8,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 5,
+            Attitude = 5,
+            Responsiveness = 2,
+            Date_time = DateTime.Now
+        },
+        new Evaluation()
+        {
+            Id_student = 1,
+            Id_teacher = 2,
+            Presentation = 9,
+            Attitude = 2,
+            Responsiveness = 1,
+            Date_time = DateTime.Now
+        },
+        };
         public List<Report> Reports { get; private set; }
         public List<Review> Reviews { get; private set; }
         public List<User> Users { get; private set; }

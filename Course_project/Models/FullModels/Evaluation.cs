@@ -19,5 +19,7 @@ namespace Course_project_wpf.Models.FullModels
         public byte Attitude { get; set; }
         [Range(1, 9)]
         public byte Responsiveness { get; set; }
+
+        public double Average => (Presentation + Attitude + Responsiveness) / 3;
     }
 }

@@ -48,7 +48,7 @@ namespace Course_project_wpf.Pages.Owner
 
         private void GetEvaluations()
         {
-            _evaluations = MainWindowAdmin.AdminController.GetEvaluations();
+            _evaluations = _adminController.GetEvaluations();
             foreach (var evaluation in _evaluations)
             {
                 Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation, _adminController));

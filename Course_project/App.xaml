@@ -9,6 +9,14 @@
         <Style TargetType="Label">
             <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
             <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
@@ -30,9 +38,14 @@
         <SolidColorBrush x:Key="GoodColor" Color="#6F9E7B"/>
         <SolidColorBrush x:Key="NormalColor" Color="#DCC06D"/>
         <SolidColorBrush x:Key="BadColor" Color="#BC7777"/>
+        <SolidColorBrush x:Key="GoodColorDark" Color="#4D7A5B"/>
+        <SolidColorBrush x:Key="NormalColorDark" Color="#C4A84D"/>
+        <SolidColorBrush x:Key="BadColorDark" Color="#A15555"/>
         <!-- Цвета действий -->
         <SolidColorBrush x:Key="UpdateColor" Color="#4A7B9D"/>
         <SolidColorBrush x:Key="DeleteColor" Color="#C75C5C"/>
+        <SolidColorBrush x:Key="UpdateColorDark" Color="#3A6280"/>
+        <SolidColorBrush x:Key="DeleteColorDark" Color="#A84A4A"/>
 
         <!-- Стили навигационного меню -->
         <Style TargetType="TabControl">
@@ -138,6 +151,7 @@
                          Storyboard.TargetProperty="Opacity"/>
         </Storyboard>
         
+        <!-- Скругленные углы для оценки -->
         <!-- Кнопка изменить -->
         <Style x:Key="HoverOverButtonUpdate" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
@@ -163,12 +177,15 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
+                <Trigger Property="IsMouseOver" Value="False">
                     <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource UpdateColorDark}"/>
                     <!-- <Setter Property="Background" Value="#4A148C"/> -->
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#4A148C"/>
+                    <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -197,12 +214,15 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
+                <Trigger Property="IsMouseOver" Value="False">
                     <Setter Property="Background" Value="{StaticResource DeleteColor}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource DeleteColorDark}"/>
                     <!-- <Setter Property="Background" Value="#4A148C"/> -->
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#4A148C"/>
+                    <Setter Property="Background" Value="{StaticResource DeleteColor}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

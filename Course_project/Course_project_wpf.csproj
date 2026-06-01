@@ -65,6 +65,18 @@
     <None Remove="Resources\Fonts\Inter\static\Inter_28pt-SemiBoldItalic.ttf" />
     <None Remove="Resources\Fonts\Inter\static\Inter_28pt-Thin.ttf" />
     <None Remove="Resources\Fonts\Inter\static\Inter_28pt-ThinItalic.ttf" />
+    <None Remove="Resources\Icons\Attitude.png" />
+    <None Remove="Resources\Icons\AttitudeWhite.png" />
+    <None Remove="Resources\Icons\Delete.png" />
+    <None Remove="Resources\Icons\DeleteWhite.png" />
+    <None Remove="Resources\Icons\Edit.png" />
+    <None Remove="Resources\Icons\EditWhite.png" />
+    <None Remove="Resources\Icons\Exit.png" />
+    <None Remove="Resources\Icons\Presentation.png" />
+    <None Remove="Resources\Icons\Presentation2.png" />
+    <None Remove="Resources\Icons\PresentationWhite.png" />
+    <None Remove="Resources\Icons\Responsiveness.png" />
+    <None Remove="Resources\Icons\ResponsivenessWhite.png" />
     <None Remove="Resources\Icons\ThreeBards.png" />
   </ItemGroup>
 
@@ -130,6 +142,25 @@
     <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-SemiBoldItalic.ttf" />
     <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-Thin.ttf" />
     <Resource Include="Resources\Fonts\Inter\static\Inter_28pt-ThinItalic.ttf" />
+    <Resource Include="Resources\Icons\Attitude.png" />
+    <Resource Include="Resources\Icons\Attitude1.png" />
+    <Resource Include="Resources\Icons\AttitudeWhite.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\Delete.png" />
+    <Resource Include="Resources\Icons\Delete1.png" />
+    <Resource Include="Resources\Icons\DeleteWhite.png" />
+    <Resource Include="Resources\Icons\Edit.png" />
+    <Resource Include="Resources\Icons\Edit1.png" />
+    <Resource Include="Resources\Icons\EditWhite.png" />
+    <Resource Include="Resources\Icons\Exit.png" />
+    <Resource Include="Resources\Icons\Presentation.png" />
+    <Resource Include="Resources\Icons\Presentation1.png" />
+    <Resource Include="Resources\Icons\Presentation2.png" />
+    <Resource Include="Resources\Icons\PresentationWhite.png" />
+    <Resource Include="Resources\Icons\Responsiveness.png" />
+    <Resource Include="Resources\Icons\Responsiveness1.png" />
+    <Resource Include="Resources\Icons\ResponsivenessWhite.png" />
     <Resource Include="Resources\Icons\ThreeBards.png" />
   </ItemGroup>
 
