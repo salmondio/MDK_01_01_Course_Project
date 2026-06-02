@@ -2,8 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Course_project"
-             StartupUri="Windows/MainWindowOwner.xaml">
-             <!-- Startup="AppStartup" -->
+             Startup="AppStartup">
+             <!-- StartupUri="Windows/MainWindowOwner.xaml"> -->
     <Application.Resources>
         <!-- Стили для текстовых полей (шрифт, размер) -->
         <Style TargetType="Label">
@@ -46,6 +46,8 @@
         <SolidColorBrush x:Key="DeleteColor" Color="#C75C5C"/>
         <SolidColorBrush x:Key="UpdateColorDark" Color="#3A6280"/>
         <SolidColorBrush x:Key="DeleteColorDark" Color="#A84A4A"/>
+        <!-- Цвета текста -->
+        <SolidColorBrush x:Key="Hint" Color="Black"/>
 
         <!-- Стили навигационного меню -->
         <Style TargetType="TabControl">

@@ -25,7 +25,7 @@ namespace Course_project_wpf.Pages.Owner
     /// </summary>
     public partial class Evaluations : Page
     {
-        private List<Models.FullModels.Evaluation> _evaluations;
+        private List<Models.FullModels.Evaluation>? _evaluations;
         private AdminController _adminController;
         public Evaluations(AdminController adminController)
         {
@@ -46,13 +46,22 @@ namespace Course_project_wpf.Pages.Owner
             GetEvaluations();
         }
 
-        private void GetEvaluations()
+        private async void GetEvaluations()
         {
-            _evaluations = _adminController.GetEvaluations();
-            foreach (var evaluation in _evaluations)
-            {
-                Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation, _adminController));
-            }
+            Parent.Children.Clear();
+            await _adminController.GetUsers();
+            _evaluations = await _adminController.GetEvaluations();
+            if (_evaluations != null && _evaluations.Count != 0)
+                foreach (var evaluation in _evaluations)
+                    Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation, _adminController));
+            else
+                Parent.Children.Add(new Label()
+                {
+                    Content = "Оценок.net",
+                    FontSize = 20,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Foreground = (SolidColorBrush)FindResource("Hint")
+                });
         }
 
         private void SortHeader_SortRequested(object sender, SortEventArgs e)

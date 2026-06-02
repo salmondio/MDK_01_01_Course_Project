@@ -4,21 +4,33 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Course_project_wpf.Models.FullModels
 {
     public class Evaluation
     {
-        public int Id_student { get; set; }
-        public int Id_teacher { get; set; }
-        public DateTime Date_time { get; set; }
+        [JsonPropertyName("id_student")]
+        public int IdStudent { get; set; }
+
+        [JsonPropertyName("id_teacher")]
+        public int IdTeacher { get; set; }
+
+        [JsonPropertyName("date_time")]
+        public DateTime DateTime { get; set; }
+
+        [JsonPropertyName("presentation")]
         [Range(1, 9)]
-        public byte Presentation { get; set; }
+        public int Presentation { get; set; }
+
+        [JsonPropertyName("attitude")]
         [Range(1, 9)]
-        public byte Attitude { get; set; }
+        public int Attitude { get; set; }
+
+        [JsonPropertyName("responsiveness")]
         [Range(1, 9)]
-        public byte Responsiveness { get; set; }
+        public int Responsiveness { get; set; }
 
         public double Average => (Presentation + Attitude + Responsiveness) / 3;
     }

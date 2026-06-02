@@ -1,112 +1,25 @@
-﻿using Course_project_wpf.Models.FullModels;
+﻿using Course_project_wpf.Helpers;
+using Course_project_wpf.Models.FullModels;
 using Couse_project_RestAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Course_project_wpf.Controllers
 {
     public class AdminController
     {
-        public List<Discipline> Disciplines { get; private set; }
-        public List<Role> Roles { get; private set; }
-        public List<Evaluation> Evaluations { get; private set; } = new List<Evaluation>() {
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 5,
-            Attitude = 2,
-            Responsiveness = 8,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 8,
-            Attitude = 9,
-            Responsiveness = 7,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 1,
-            Attitude = 2,
-            Responsiveness = 5,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 7,
-            Attitude = 7,
-            Responsiveness = 8,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 1,
-            Attitude = 1,
-            Responsiveness = 1,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 5,
-            Attitude = 5,
-            Responsiveness = 5,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 7,
-            Attitude = 6,
-            Responsiveness = 3,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 7,
-            Attitude = 9,
-            Responsiveness = 8,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 5,
-            Attitude = 5,
-            Responsiveness = 2,
-            Date_time = DateTime.Now
-        },
-        new Evaluation()
-        {
-            Id_student = 1,
-            Id_teacher = 2,
-            Presentation = 9,
-            Attitude = 2,
-            Responsiveness = 1,
-            Date_time = DateTime.Now
-        },
-        };
-        public List<Report> Reports { get; private set; }
-        public List<Review> Reviews { get; private set; }
-        public List<User> Users { get; private set; }
+        public List<Discipline>? Disciplines { get; private set; }
+        public List<Role>? Roles { get; private set; }
+        public List<Evaluation>? Evaluations { get; private set; }
+        public List<Report>? Reports { get; private set; }
+        public List<Review>? Reviews { get; private set; }
+        public List<User>? Users { get; private set; }
 
 
         // Действия над Дисциплинами
@@ -135,14 +48,26 @@ namespace Course_project_wpf.Controllers
 
 
         // Действия над Оцнеками
-        public List<Evaluation> GetEvaluations()
+        public async Task<List<Evaluation>?> GetEvaluations()
         {
+            var response = await ApiClient.GetAsync("/api/Evaluation/Admin/List");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var evaluationsBody = JsonSerializer.Deserialize<List<Evaluation>>(responseBody);
+
+                Evaluations = evaluationsBody?.ToList();
+            }
+            else
+                MessageBox.Show("Ошибка: Не удалось получить список оценок: " + response.RequestMessage + " код ошибки: " + response.StatusCode, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
             return Evaluations;
         }
 
         public Evaluation? GetEvaluation(int idStudent, int idTeacher)
         {
-            return Evaluations.FirstOrDefault(x => x.Id_student == idStudent && x.Id_teacher == idTeacher);
+            return Evaluations?.FirstOrDefault(x => x.IdStudent == idStudent && x.IdTeacher == idTeacher);
         }
 
 
@@ -190,14 +115,26 @@ namespace Course_project_wpf.Controllers
 
 
         // Действия над пользователями
-        public List<User> GetUsers()
+        public async Task<List<User>?> GetUsers()
         {
+            var response = await ApiClient.GetAsync("api/User/List");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var usersResponse = JsonSerializer.Deserialize<List<User>>(responseBody);
+
+                Users = usersResponse?.ToList();
+            }
+            else
+                MessageBox.Show("Ошибка: Не удалось получить список пользователей: " + response.RequestMessage + " код ошибки: " + response.StatusCode, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
             return Users;
         }
 
         public User? GetUser(int id)
         {
-            return Users.FirstOrDefault(x => x.Id == id);
+            return Users?.FirstOrDefault(x => x.Id == id);
         }
 
         public User? AddUser(User newUser)

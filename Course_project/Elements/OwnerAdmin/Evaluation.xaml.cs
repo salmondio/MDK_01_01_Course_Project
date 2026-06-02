@@ -50,8 +50,8 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         private void InitializeVariables(Models.FullModels.Evaluation evaluation)
         {
             // Заполняем текстовые поля
-            User? student = _adminController.Users?.FirstOrDefault(x => x.Id == evaluation.Id_student);
-            User? teacher = _adminController.Users?.FirstOrDefault(x => x.Id == evaluation.Id_teacher);
+            User? student = _adminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdStudent);
+            User? teacher = _adminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdTeacher);
             if( student != null)
             {
                 Student.Content = $"{student.Lastname} {student.Name} {student.Surname}";
@@ -62,11 +62,13 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 Teacher.Content = $"{teacher.Lastname} {teacher.Name} {teacher.Surname}";
                 lbIdTeacher.Content = teacher.Id;
             }
+            lbIdStudent.Content = evaluation.IdStudent;
+            lbIdTeacher.Content= evaluation.IdTeacher;
             Presentation.Content = evaluation.Presentation.ToString();
             Responsiveness.Content = evaluation.Responsiveness.ToString();
             Attitude.Content = evaluation.Attitude.ToString();
-            lbDate.Content = evaluation.Date_time.Date.ToString("dd.MM.yyyy");
-            lbTime.Content = evaluation.Date_time.ToString("HH:mm");
+            lbDate.Content = evaluation.DateTime.Date.ToString("dd.MM.yyyy");
+            lbTime.Content = evaluation.DateTime.ToString("HH:mm");
 
 
             // Если пользователь не Owner, 

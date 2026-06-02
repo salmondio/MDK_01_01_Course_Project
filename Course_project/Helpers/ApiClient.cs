@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Course_project_wpf.Helpers
 {
@@ -33,9 +34,17 @@ namespace Course_project_wpf.Helpers
             return await _httpClient.PostAsync(endpoint, content);
         }
 
-        public static async Task<HttpResponseMessage> GetAsync(string endpoint)
+        public static async Task<HttpResponseMessage>? GetAsync(string endpoint)
         {
-            return await _httpClient.GetAsync(endpoint);
+            try
+            {
+                return await _httpClient.GetAsync(endpoint);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Ошибка: Не удалось выполнить Get-запрос. " +  ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public static async Task<HttpResponseMessage> PutAsync<T>(string endpoint, T data)
