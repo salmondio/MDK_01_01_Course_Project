@@ -53,7 +53,7 @@
         <!-- Основной grid -->
         <Grid x:Name="MainGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="60"/>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="100"/>
@@ -71,18 +71,38 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
+                    <!-- Id Студента -->
                     <Label x:Name="lbIdStudent"
                             Grid.Row="0"
                             Content="1"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Bottom"
                             FontSize="16"/>
+                    <TextBox x:Name="tbIdStudent"
+                            Grid.Row="0"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Bottom"
+                            FontSize="16"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Visibility="Collapsed"
+                             TextChanged="tbIdStudent_TextChanged"/>
+                    <!-- Id Препода -->
                     <Label x:Name="lbIdTeacher"
                             Grid.Row="1"
                             Content="2"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Top"
                             FontSize="16"/>
+                    <TextBox x:Name="tbIdTeacher"
+                            Grid.Row="1"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Top"
+                            FontSize="16"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Visibility="Collapsed"
+                             TextChanged="tbIdTeacher_TextChanged"/>
                 </Grid>
             </Border>
             <!-- Кто кому -->
@@ -93,6 +113,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+                <!-- ФИО Студента -->
                 <Button x:Name="Student"
                         Style="{StaticResource CleanButtonStyle}"
                         MouseEnter="StudentButton_MouseEnter"
@@ -105,6 +126,7 @@
                         HorizontalContentAlignment="Left"
                         FontSize="16"
                         Cursor="Hand"/>
+                <!-- ФИО Препода -->
                 <Button x:Name="Teacher"
                         Style="{StaticResource CleanButtonStyle}"
                         MouseEnter="TeacherButton_MouseEnter"
@@ -135,6 +157,11 @@
                     <Label x:Name="Presentation"
                             Content="9"
                             HorizontalContentAlignment="Center"/>
+                    <TextBox x:Name="tbPresentation"
+                            HorizontalContentAlignment="Center"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Visibility="Collapsed"/>
                     <Image Grid.Row="1"  Source="/Resources/Icons/PresentationWhite.png"
                             Height="30"
                             HorizontalAlignment="Center"/>
@@ -144,6 +171,11 @@
                     <Label x:Name="Responsiveness"
                             Content="9"
                             HorizontalContentAlignment="Center"/>
+                    <TextBox x:Name="tbResponsiveness"
+                            HorizontalContentAlignment="Center"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Visibility="Collapsed"/>
                     <Image Source="/Resources/Icons/ResponsivenessWhite.png"
                             Height="30"/>
                 </StackPanel>
@@ -152,6 +184,11 @@
                     <Label x:Name="Attitude"
                             Content="9"
                             HorizontalContentAlignment="Center"/>
+                    <TextBox x:Name="tbAttitude"
+                            HorizontalContentAlignment="Center"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Visibility="Collapsed"/>
                     <Image Source="/Resources/Icons/AttitudeWhite.png"
                             Height="30"/>
                 </StackPanel>
@@ -168,18 +205,34 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+                    <!-- Дата -->
                     <Label x:Name="lbDate"
                         Grid.Row="0"
                         Content="01.10.2026"
                         FontSize="16"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"/>
+                    <TextBox x:Name="tbDate"
+                            Grid.Row="0"
+                            FontSize="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                             Background="Transparent"
+                             BorderThickness="0"/>
+                    <!-- Время -->
                     <Label x:Name="lbTime"
                         Grid.Row="1"
                         Content="10:51"
                         FontSize="16"
                         HorizontalAlignment="Center"
                         VerticalAlignment="top"/>
+                    <TextBox x:Name="tbTime"
+                            Grid.Row="1"
+                            FontSize="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="top"
+                            Background="Transparent"
+                            BorderThickness="0"/>
                 </Grid>
             </Border>
             <!-- Действия -->
@@ -191,6 +244,7 @@
                     <ColumnDefinition Width="0.5*"/>
                 </Grid.ColumnDefinitions>
 
+                <!-- Изменить -->
                 <Button x:Name="EditButton"
                         Click="Update"
                         Grid.Column="0"
@@ -200,10 +254,32 @@
                     <Image Source="/Resources/Icons/EditWhite.png"
                             Height="35"/>
                 </Button>
+                <!-- Сохранить -->
+                <Button x:Name="SaveButton"
+                        Click="Save"
+                        Grid.Column="0"
+                        Style="{StaticResource HoverOverButtonUpdate}"
+                        Margin="5, 0, 5, 0"
+                        Background="Green"
+                        Visibility="Collapsed">
+                    <Image Source="/Resources/Icons/EditWhite.png"
+                            Height="35"/>
+                </Button>
+                <!-- Удалить -->
                 <Button x:Name="DeleteButton"
                         Click="Delete"
                         Grid.Column="1"
                         Style="{StaticResource HoverOverButtonDelete}"
+                        Visibility="Collapsed">
+                    <Image Source="/Resources/Icons/DeleteWhite.png"
+                            Height="35"/>
+                </Button>
+                <!-- Отменить изменения -->
+                <Button x:Name="CancelButton"
+                        Click="Cancel"
+                        Grid.Column="1"
+                        Style="{StaticResource HoverOverButtonDelete}"
+                        Background="DarkOrange"
                         Visibility="Collapsed">
                     <Image Source="/Resources/Icons/DeleteWhite.png"
                             Height="35"/>

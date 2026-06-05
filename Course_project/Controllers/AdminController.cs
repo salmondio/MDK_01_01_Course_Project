@@ -14,12 +14,12 @@ namespace Course_project_wpf.Controllers
 {
     public class AdminController
     {
-        public List<Discipline>? Disciplines { get; private set; }
-        public List<Role>? Roles { get; private set; }
-        public List<Evaluation>? Evaluations { get; private set; }
-        public List<Report>? Reports { get; private set; }
-        public List<Review>? Reviews { get; private set; }
-        public List<User>? Users { get; private set; }
+        public static List<Discipline>? Disciplines { get; private set; }
+        public static List<Role>? Roles { get; private set; }
+        public static List<Evaluation>? Evaluations { get; private set; }
+        public static List<Report>? Reports { get; private set; }
+        public static List<Review>? Reviews { get; private set; }
+        public static List<User>? Users { get; private set; }
 
 
         // Действия над Дисциплинами
@@ -149,11 +149,21 @@ namespace Course_project_wpf.Controllers
             return GetUser(id);
         }
 
-        public User? UpdateUser(User user)
+        public async Task<User?> UpdateUser(User user)
         {
             User updatedUser = new User();
-            GetUsers();
-            return GetUser(user.Id);
+
+            var response = await ApiClient.PutAsync("api/User/AdminUpdate", user);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                updatedUser = JsonSerializer.Deserialize<User>(responseBody);
+            }
+            else
+                MessageBox.Show("Ошибка: Не удалось обновить пользователя: " + response.RequestMessage + " код ошибки: " + response.StatusCode, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            return updatedUser;
         }
     }
 }

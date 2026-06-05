@@ -34,5 +34,8 @@ namespace Course_project_wpf.Models.FullModels
         public bool Is_active { get; set; }
         [JsonPropertyName("role")]
         public string Role { get; set; }
+
+
+        public string FullName => $"{Lastname} {Name} {Surname}";
     }
 }

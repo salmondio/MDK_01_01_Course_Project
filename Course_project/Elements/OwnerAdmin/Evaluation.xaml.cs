@@ -26,16 +26,32 @@ namespace Course_project_wpf.Elements.OwnerAdmin
     public partial class Evaluation : UserControl
     {
         private AdminController _adminController;
+        private OwnerController? _ownerController;
         private Models.FullModels.Evaluation _evaluation;
-        public Evaluation(Models.FullModels.Evaluation evaluation, AdminController adminController)
+        private bool _isAdd;
+        public Evaluation( bool isAdd)
+        {
+            InitializeComponent();
+
+            // Если это новая оценка, вызываю метод обновления
+            if(isAdd)
+            {
+                _isAdd = true;
+                Update(this, new RoutedEventArgs());
+            }
+        }
+        public Evaluation(Models.FullModels.Evaluation evaluation, AdminController adminController, OwnerController? ownerController = null) : this(false)
         {
             InitializeResources(evaluation);
-            InitializeComponent();
+            //InitializeComponent();
             _evaluation = evaluation;
             _adminController = adminController;
+            _ownerController = ownerController;
 
             DeleteButton.Visibility = Visibility.Collapsed;
             EditButton.Visibility = Visibility.Collapsed;
+
+
 
             //var themeBrush = Resources["LocalColorTheme"] as SolidColorBrush;
             //if (themeBrush != null)
@@ -50,8 +66,8 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         private void InitializeVariables(Models.FullModels.Evaluation evaluation)
         {
             // Заполняем текстовые поля
-            User? student = _adminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdStudent);
-            User? teacher = _adminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdTeacher);
+            User? student = AdminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdStudent);
+            User? teacher = AdminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdTeacher);
             if( student != null)
             {
                 Student.Content = $"{student.Lastname} {student.Name} {student.Surname}";
@@ -127,16 +143,6 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
         }
 
-        private void Update(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Delete(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void MainGrid_MouseEnter(object sender, MouseEventArgs e)
         {
             DeleteButton.Visibility = Visibility.Visible;
@@ -167,6 +173,149 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         private void TeacherButton_MouseLeave(object sender, MouseEventArgs e)
         {
             Teacher.Background = (SolidColorBrush)Resources["LocalColorTheme"];
+        }
+
+        
+        // Действия
+
+        // Изменить запись
+        private void Update(object sender, RoutedEventArgs e)
+        {
+            // Показываю текстбоксы вместо лейблов
+            GetVisionTextBox();
+            // Меняю кнопки
+            EditButton.Visibility = Visibility.Collapsed;
+            DeleteButton.Visibility = Visibility.Collapsed;
+            SaveButton.Visibility = Visibility.Visible;
+            CancelButton.Visibility = Visibility.Visible;
+        }
+        // Скрывает лейблы, показывает текстбоксы
+        private void GetVisionTextBox()
+        {
+            // Устанавливаю соответствующий текст в текстбоксы
+            tbIdStudent.Text = lbIdStudent.Content.ToString();
+            tbIdTeacher.Text = lbIdTeacher.Content.ToString();
+            tbPresentation.Text = Presentation.Content.ToString();
+            tbAttitude.Text = Attitude.Content.ToString();
+            tbResponsiveness.Text = Responsiveness.Content.ToString();
+            tbDate.Text = lbDate.Content.ToString();
+            tbTime.Text = lbTime.Content.ToString();
+            // Скрываю лейблы
+            lbIdStudent.Visibility = Visibility.Collapsed;
+            lbIdTeacher.Visibility = Visibility.Collapsed;
+            Presentation.Visibility = Visibility.Collapsed;
+            Attitude.Visibility = Visibility.Collapsed;
+            Responsiveness.Visibility = Visibility.Collapsed;
+            lbDate.Visibility = Visibility.Collapsed;
+            lbTime.Visibility = Visibility.Collapsed;
+            // Раскрываю текстбоксы
+            tbIdStudent.Visibility = Visibility.Visible;
+            tbIdTeacher.Visibility = Visibility.Visible;
+            tbPresentation.Visibility = Visibility.Visible;
+            tbAttitude.Visibility = Visibility.Visible;
+            tbResponsiveness.Visibility = Visibility.Visible;
+            tbDate.Visibility = Visibility.Visible;
+            tbTime.Visibility = Visibility.Visible;
+        }
+        // Скрываю текстбоксы, показываю лейблы
+        private void GetVisionLabel()
+        {
+            // Скрываю текстбоксы
+            tbIdStudent.Visibility = Visibility.Collapsed;
+            tbIdTeacher.Visibility = Visibility.Collapsed;
+            tbPresentation.Visibility = Visibility.Collapsed;
+            tbAttitude.Visibility = Visibility.Collapsed;
+            tbResponsiveness.Visibility = Visibility.Collapsed;
+            tbDate.Visibility = Visibility.Collapsed;
+            tbTime.Visibility = Visibility.Collapsed;
+            // Раскрываю лейблы
+            lbIdStudent.Visibility = Visibility.Visible;
+            lbIdTeacher.Visibility = Visibility.Visible;
+            Presentation.Visibility = Visibility.Visible;
+            Attitude.Visibility = Visibility.Visible;
+            Responsiveness.Visibility = Visibility.Visible;
+            lbDate.Visibility = Visibility.Visible;
+            lbTime.Visibility = Visibility.Visible;
+        }
+        // При изменении Id студента пытаюсь сразу вывести его ФИО
+        private void tbIdStudent_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(int.TryParse(tbIdStudent.Text, out int id))
+            {
+                User? student = AdminController.Users?.FirstOrDefault(x => x.Id == id);
+                if(student != null)
+                {
+                    Student.Content = student.FullName;
+                    return;
+                }
+            }
+            Student.Content = "Не удалось найти студента";
+        }
+        // При изменении Id препода пытаюсь сразу вывести его ФИО
+        private void tbIdTeacher_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (int.TryParse(tbIdTeacher.Text, out int id))
+            {
+                User? teacher = AdminController.Users?.FirstOrDefault(x => x.Id == id);
+                if (teacher != null)
+                {
+                    Teacher.Content = teacher.FullName;
+                    return;
+                }
+            }
+            Student.Content = "Не удалось найти студента";
+        }
+        // Отменить изменения
+        private void Cancel(object sender, RoutedEventArgs e)
+        {
+            if (_isAdd)
+            {
+                if (this.Parent is Panel parentPanel)
+                {
+                    parentPanel.Children.Remove(this);
+                }
+            }
+            GetVisionLabel();
+        }
+        // Сохранить изменения
+        private async void Save(object sender, RoutedEventArgs e)
+        {
+            // Если введены корректные id
+            if (int.TryParse(tbIdTeacher.Text, out int idTeacerh) &&
+                int.TryParse(tbIdStudent.Text, out int idStudent))
+            {
+                // Если студент и преподаватель с такими id существуют и нет оценки, выставленной этим этому
+                if (AdminController.Users?.FirstOrDefault(u => u.Id == idTeacerh) != null &&
+                    AdminController.Users?.FirstOrDefault(u => u.Id == idStudent) != null &&
+                    AdminController.Evaluations?.FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null)
+                {
+                    // Создаю экземпляр оценки
+                    Models.FullModels.Evaluation? updatedEvaluation = new Models.FullModels.Evaluation()
+                    {
+                        IdStudent = int.Parse(tbIdStudent.Text),
+                        IdTeacher = int.Parse(tbIdTeacher.Text),
+                        Presentation = byte.Parse(tbPresentation.Text),
+                        Attitude = byte.Parse(tbAttitude.Text),
+                        Responsiveness = byte.Parse(tbResponsiveness.Text),
+                        DateTime = DateTime.Now
+                    };
+                    updatedEvaluation = await _ownerController.UpdateEvaluation(updatedEvaluation);
+
+                    if(updatedEvaluation != null)
+                    {
+                        InitializeVariables(updatedEvaluation);
+                    }
+                }
+                else
+                    MessageBox.Show("Ошибка: Или не существует студента/преподавателя с указанным id, либо оценка этого студента этому преподавателю уже выставлена");
+            }
+            else
+                MessageBox.Show("Введены некорректные значения Id");
+        }
+
+        private void Delete(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
