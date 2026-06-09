@@ -7,6 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" Width="800">
     <UserControl.Resources>
+        <!-- Цвета по умолчанию -->
+        <SolidColorBrush x:Key="LocalColorTheme" Color="Gray"/>
+        <SolidColorBrush x:Key="LocalDarkColorTheme" Color="DarkGray"/>
         <!-- Чистый стиль для кнопок без стандартных эффектов -->
         <Style x:Key="CleanButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
@@ -119,7 +122,7 @@
                         MouseEnter="StudentButton_MouseEnter"
                         MouseLeave="StudentButton_MouseLeave"
                         Click="GoToStudent"
-                        Content="Сержанин Сергей Александрович"
+                        Content="Не удалось найти студента"
                         BorderThickness="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
@@ -132,7 +135,7 @@
                         MouseEnter="TeacherButton_MouseEnter"
                         MouseLeave="TeacherButton_MouseLeave"
                         Click="GoToTeacher"
-                        Content="Ощепков Александр Попович"
+                        Content="Не удалось найти препода"
                         BorderThickness="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"

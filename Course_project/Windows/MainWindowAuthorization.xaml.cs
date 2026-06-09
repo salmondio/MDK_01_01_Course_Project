@@ -27,6 +27,9 @@ namespace Course_project_wpf.Windows
         public MainWindowAuthorization()
         {
             InitializeComponent();
+
+            // для теста
+            pbPassword.Password = "Asdfg1233";
         }
 
 

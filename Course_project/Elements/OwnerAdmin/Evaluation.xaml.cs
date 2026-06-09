@@ -216,6 +216,11 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             tbResponsiveness.Visibility = Visibility.Visible;
             tbDate.Visibility = Visibility.Visible;
             tbTime.Visibility = Visibility.Visible;
+            // Меняю кнопки
+            EditButton.Visibility = Visibility.Collapsed;
+            DeleteButton.Visibility = Visibility.Collapsed;
+            SaveButton.Visibility = Visibility.Visible;
+            CancelButton.Visibility = Visibility.Visible;
         }
         // Скрываю текстбоксы, показываю лейблы
         private void GetVisionLabel()
@@ -236,6 +241,11 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             Responsiveness.Visibility = Visibility.Visible;
             lbDate.Visibility = Visibility.Visible;
             lbTime.Visibility = Visibility.Visible;
+            // Меняю кнопки
+            EditButton.Visibility = Visibility.Visible;
+            DeleteButton.Visibility = Visibility.Visible;
+            SaveButton.Visibility = Visibility.Collapsed;
+            CancelButton.Visibility = Visibility.Collapsed;
         }
         // При изменении Id студента пытаюсь сразу вывести его ФИО
         private void tbIdStudent_TextChanged(object sender, TextChangedEventArgs e)
@@ -287,7 +297,8 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 // Если студент и преподаватель с такими id существуют и нет оценки, выставленной этим этому
                 if (AdminController.Users?.FirstOrDefault(u => u.Id == idTeacerh) != null &&
                     AdminController.Users?.FirstOrDefault(u => u.Id == idStudent) != null &&
-                    AdminController.Evaluations?.FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null)
+                    AdminController.Evaluations?.Where(e => e.IdTeacher != idTeacerh && e.IdStudent != idStudent)
+                    .FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null)
                 {
                     // Создаю экземпляр оценки
                     Models.FullModels.Evaluation? updatedEvaluation = new Models.FullModels.Evaluation()

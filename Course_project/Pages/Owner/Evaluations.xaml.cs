@@ -27,6 +27,7 @@ namespace Course_project_wpf.Pages.Owner
     {
         private List<Models.FullModels.Evaluation>? _evaluations;
         private AdminController _adminController;
+        private OwnerController _ownerController;
         public Evaluations(AdminController adminController)
         {
             InitializeComponent();

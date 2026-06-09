@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\VisualStudioProjects\\Course_project\\Course_project_wpf.csproj": {}
+    "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Course_project\\Course_project_wpf.csproj": {}
   },
   "projects": {
-    "C:\\VisualStudioProjects\\Course_project\\Course_project_wpf.csproj": {
+    "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Course_project\\Course_project_wpf.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\VisualStudioProjects\\Course_project\\Course_project_wpf.csproj",
+        "projectUniqueName": "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Course_project\\Course_project_wpf.csproj",
         "projectName": "Course_project_wpf",
-        "projectPath": "C:\\VisualStudioProjects\\Course_project\\Course_project_wpf.csproj",
-        "packagesPath": "C:\\Users\\student-v424\\.nuget\\packages\\",
-        "outputPath": "C:\\VisualStudioProjects\\Course_project\\obj\\",
+        "projectPath": "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Course_project\\Course_project_wpf.csproj",
+        "packagesPath": "C:\\Users\\Student-A502.PERMAVIAT\\.nuget\\packages\\",
+        "outputPath": "C:\\VisualStudioProjects\\MDK_01_01_Course_Project\\Course_project\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\student-v424\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Student-A502.PERMAVIAT\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0-windows"
@@ -47,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0-windows7.0": {
@@ -81,7 +79,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

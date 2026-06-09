@@ -156,6 +156,7 @@
         <!-- Скругленные углы для оценки -->
         <!-- Кнопка изменить -->
         <Style x:Key="HoverOverButtonUpdate" TargetType="Button">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
             <Setter Property="Background" Value="{StaticResource UpdateColor}"/>
             <Setter Property="Foreground" Value="#202124"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -193,6 +194,7 @@
         </Style>
         <!-- Кнопка удалить -->
         <Style x:Key="HoverOverButtonDelete" TargetType="Button">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
             <Setter Property="Background" Value="{StaticResource DeleteColor}"/>
             <Setter Property="Foreground" Value="#202124"/>
             <Setter Property="BorderThickness" Value="0"/>
