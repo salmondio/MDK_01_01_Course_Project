@@ -5,69 +5,30 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Course_project_wpf.Helpers;
-using Course_project_wpf.Models.FullModels;
-using System.Windows;
-using Couse_project_RestAPI.Models;
 
 namespace Course_project_wpf.Controllers
 {
-    public class PutController
+    public class PostController
     {
-        private static PutController? _instance;
+        private static PostController? _instance;
         private static readonly object _instanceLock = new object();
         public event Action? DataChanged;
         private bool _isLoading;
 
-        public static PutController? Instance
+        public static PostController? Instance
         {
             get
             {
                 lock (_instanceLock)
                 {
                     if (_instance == null)
-                        _instance = new PutController();
+                        _instance = new PostController();
                     return _instance;
                 }
             }
         }
 
-
-        /*
-            Действия Админа
-        */
-
-        // Пользователь
-        public User? ChangeActiveUser(int id)
-        {
-            return GetController.Instance.GetUser(id);
-        }
-
-        public async Task<User?> UpdateUser(User user)
-        {
-            User updatedUser = ExecuteRequestAsync(
-                "api/User/Admin/Update",
-
-                )
-
-            return updatedUser;
-        }
-        public Report? ChangeStatusReport(int id)
-        {
-            GetReports();
-            return GetReport(id);
-        }
-
-
-        // Действия над отзывами
-
-
-        public Review? ChangeStatusReview(int id)
-        {
-            GetReviews();
-            return GetReview(id);
-        }
-
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, Action<T> putData, string dataName)
+        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, Action<T> postData, string dataName)
         {
             if (_isLoading)
                 return default;
@@ -76,7 +37,7 @@ namespace Course_project_wpf.Controllers
 
             try
             {
-                var response = await ApiClient.PutAsync(endpoint, putData);
+                var response = await ApiClient.PostAsync(endpoint, postData);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -85,7 +46,7 @@ namespace Course_project_wpf.Controllers
 
                     if (data != null)
                     {
-                        putData(data);
+                        postData(data);
                         DataChanged?.Invoke();
                         return data;
                     }

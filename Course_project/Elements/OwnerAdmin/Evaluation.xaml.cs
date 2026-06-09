@@ -25,8 +25,6 @@ namespace Course_project_wpf.Elements.OwnerAdmin
     /// </summary>
     public partial class Evaluation : UserControl
     {
-        private AdminController _adminController;
-        private OwnerController? _ownerController;
         private Models.FullModels.Evaluation _evaluation;
         private bool _isAdd;
         public Evaluation( bool isAdd)
@@ -40,13 +38,11 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 Update(this, new RoutedEventArgs());
             }
         }
-        public Evaluation(Models.FullModels.Evaluation evaluation, AdminController adminController, OwnerController? ownerController = null) : this(false)
+        public Evaluation(Models.FullModels.Evaluation evaluation) : this(false)
         {
             InitializeResources(evaluation);
             //InitializeComponent();
             _evaluation = evaluation;
-            _adminController = adminController;
-            _ownerController = ownerController;
 
             DeleteButton.Visibility = Visibility.Collapsed;
             EditButton.Visibility = Visibility.Collapsed;
@@ -66,9 +62,9 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         private void InitializeVariables(Models.FullModels.Evaluation evaluation)
         {
             // Заполняем текстовые поля
-            User? student = AdminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdStudent);
-            User? teacher = AdminController.Users?.FirstOrDefault(x => x.Id == evaluation.IdTeacher);
-            if( student != null)
+            User? student = GetController.Instance.GetUser(evaluation.IdStudent);
+            User? teacher = GetController.Instance.GetUser(evaluation.IdTeacher);
+            if ( student != null)
             {
                 Student.Content = $"{student.Lastname} {student.Name} {student.Surname}";
                 lbIdStudent.Content = student.Id;
@@ -252,7 +248,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         {
             if(int.TryParse(tbIdStudent.Text, out int id))
             {
-                User? student = AdminController.Users?.FirstOrDefault(x => x.Id == id);
+                User? student = GetController.Instance.GetUser(id);
                 if(student != null)
                 {
                     Student.Content = student.FullName;
@@ -266,7 +262,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         {
             if (int.TryParse(tbIdTeacher.Text, out int id))
             {
-                User? teacher = AdminController.Users?.FirstOrDefault(x => x.Id == id);
+                User? teacher = GetController.Instance.GetUser(id);
                 if (teacher != null)
                 {
                     Teacher.Content = teacher.FullName;
@@ -295,9 +291,9 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 int.TryParse(tbIdStudent.Text, out int idStudent))
             {
                 // Если студент и преподаватель с такими id существуют и нет оценки, выставленной этим этому
-                if (AdminController.Users?.FirstOrDefault(u => u.Id == idTeacerh) != null &&
-                    AdminController.Users?.FirstOrDefault(u => u.Id == idStudent) != null &&
-                    AdminController.Evaluations?.Where(e => e.IdTeacher != idTeacerh && e.IdStudent != idStudent)
+                if (GetController.Instance.GetUser(idTeacerh) != null &&
+                    GetController.Instance.GetUser(idStudent) != null &&
+                    GetController.Instance.Evaluations?.Where(e => e.IdTeacher != idTeacerh && e.IdStudent != idStudent)
                     .FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null)
                 {
                     // Создаю экземпляр оценки

@@ -31,21 +31,6 @@ namespace Course_project_wpf.Controllers
         // Действия над Жалобами
         
 
-        public Report? ChangeStatusReport(int id)
-        {
-            GetReports();
-            return GetReport(id);
-        }
-
-
-        // Действия над отзывами
-        
-
-        public Review? ChangeStatusReview(int id)
-        {
-            GetReviews();
-            return GetReview(id);
-        }
 
 
         // Действия над связкой Преподаватель-Дисциплина
