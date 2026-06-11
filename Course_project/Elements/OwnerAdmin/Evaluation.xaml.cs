@@ -27,21 +27,16 @@ namespace Course_project_wpf.Elements.OwnerAdmin
     {
         private Models.FullModels.Evaluation _evaluation;
         private bool _isAdd;
-        public Evaluation( bool isAdd)
+        public Evaluation()
         {
             InitializeComponent();
-
-            // Если это новая оценка, вызываю метод обновления
-            if(isAdd)
-            {
-                _isAdd = true;
-                Update(this, new RoutedEventArgs());
-            }
+            _isAdd = true;
+            Update(this, new RoutedEventArgs());
         }
-        public Evaluation(Models.FullModels.Evaluation evaluation) : this(false)
+        public Evaluation(Models.FullModels.Evaluation evaluation)
         {
             InitializeResources(evaluation);
-            //InitializeComponent();
+            InitializeComponent();
             _evaluation = evaluation;
 
             DeleteButton.Visibility = Visibility.Collapsed;
@@ -84,14 +79,14 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
 
             // Если пользователь не Owner, 
-            //if(App.CurrentUser.Role != "Owner")
-            //{
-            //MainGrid.MouseEnter -= MainGrid_MouseEnter;
-            //MainGrid.MouseLeave -= MainGrid_MouseLeave;
-            //gdActions.Visibility = Visibility.Collapsed;
-            //}
+            if (App.CurrentUser?.Role == null || App.CurrentUser.Role != "Owner")
+            {
+                MainGrid.MouseEnter -= MainGrid_MouseEnter;
+                MainGrid.MouseLeave -= MainGrid_MouseLeave;
+                gdActions.Visibility = Visibility.Collapsed;
+            }
         }
-
+        // Раскрашиваю элемент
         private void InitializeResources(Models.FullModels.Evaluation evaluation)
         {
             try
@@ -247,9 +242,9 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         private void tbIdStudent_TextChanged(object sender, TextChangedEventArgs e)
         {
             if(int.TryParse(tbIdStudent.Text, out int id))
-            {
+           {
                 User? student = GetController.Instance.GetUser(id);
-                if(student != null)
+                if(student != null && student.Id_role == 4)
                 {
                     Student.Content = student.FullName;
                     return;
@@ -263,13 +258,13 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             if (int.TryParse(tbIdTeacher.Text, out int id))
             {
                 User? teacher = GetController.Instance.GetUser(id);
-                if (teacher != null)
+                if (teacher != null && teacher.Id_role == 5)
                 {
                     Teacher.Content = teacher.FullName;
                     return;
                 }
             }
-            Student.Content = "Не удалось найти студента";
+            Teacher.Content = "Не удалось найти преподавателя";
         }
         // Отменить изменения
         private void Cancel(object sender, RoutedEventArgs e)
@@ -290,31 +285,47 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             if (int.TryParse(tbIdTeacher.Text, out int idTeacerh) &&
                 int.TryParse(tbIdStudent.Text, out int idStudent))
             {
-                // Если студент и преподаватель с такими id существуют и нет оценки, выставленной этим этому
-                if (GetController.Instance.GetUser(idTeacerh) != null &&
-                    GetController.Instance.GetUser(idStudent) != null &&
-                    GetController.Instance.Evaluations?.Where(e => e.IdTeacher != idTeacerh && e.IdStudent != idStudent)
-                    .FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null)
-                {
-                    // Создаю экземпляр оценки
-                    Models.FullModels.Evaluation? updatedEvaluation = new Models.FullModels.Evaluation()
+                if (int.TryParse(tbAttitude.Text, out int attitude) &&
+                    int.TryParse(tbResponsiveness.Text, out int responsiveness) &&
+                    int.TryParse(tbPresentation.Text, out int presentation) &&
+                    0 < attitude && attitude < 10 && 0 < responsiveness && responsiveness < 10 && 0 < presentation && presentation < 10)
                     {
-                        IdStudent = int.Parse(tbIdStudent.Text),
-                        IdTeacher = int.Parse(tbIdTeacher.Text),
-                        Presentation = byte.Parse(tbPresentation.Text),
-                        Attitude = byte.Parse(tbAttitude.Text),
-                        Responsiveness = byte.Parse(tbResponsiveness.Text),
-                        DateTime = DateTime.Now
-                    };
-                    updatedEvaluation = await _ownerController.UpdateEvaluation(updatedEvaluation);
+                    // Если студент и преподаватель с такими id существуют и нет оценки, выставленной этим этому
+                    if (GetController.Instance.GetUser(idTeacerh)?.Id_role == 5 &&
+                        GetController.Instance.GetUser(idStudent)?.Id_role == 4)
+                    {
+                        if (GetController.Instance.Evaluations?
+                        .FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null ||
+                        idStudent == _evaluation.IdStudent && idTeacerh == _evaluation.IdTeacher)
+                        {
+                            // Создаю экземпляр оценки
+                            Models.FullModels.Evaluation? updatedEvaluation = new Models.FullModels.Evaluation()
+                            {
+                                IdStudent = int.Parse(tbIdStudent.Text),
+                                IdTeacher = int.Parse(tbIdTeacher.Text),
+                                Presentation = byte.Parse(tbPresentation.Text),
+                                Attitude = byte.Parse(tbAttitude.Text),
+                                Responsiveness = byte.Parse(tbResponsiveness.Text),
+                                DateTime = DateTime.Now
+                            };
+                            updatedEvaluation = await PutController.Instance.UpdateEvaluation(updatedEvaluation);
 
-                    if(updatedEvaluation != null)
-                    {
-                        InitializeVariables(updatedEvaluation);
+                            if (updatedEvaluation != null)
+                            {
+                                _evaluation = updatedEvaluation;
+                                InitializeVariables(updatedEvaluation);
+                                Cancel(new object(), new RoutedEventArgs());
+                                MessageBox.Show("Оценка успешно изменена!");
+                            }
+                        }
+                        else
+                            MessageBox.Show("Оценка этого студента этому преподавателю уже выставлена");
                     }
+                    else
+                        MessageBox.Show("Ошибка: Не существует студента/преподавателя с указанным id");
                 }
                 else
-                    MessageBox.Show("Ошибка: Или не существует студента/преподавателя с указанным id, либо оценка этого студента этому преподавателю уже выставлена");
+                    MessageBox.Show("Введены некорректные значения оценок.\nКаждая оценка должна быть в промежутке от 1 до 9");
             }
             else
                 MessageBox.Show("Введены некорректные значения Id");

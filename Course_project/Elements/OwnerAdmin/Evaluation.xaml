@@ -7,9 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" Width="800">
     <UserControl.Resources>
-        <!-- Цвета по умолчанию -->
-        <SolidColorBrush x:Key="LocalColorTheme" Color="Gray"/>
-        <SolidColorBrush x:Key="LocalDarkColorTheme" Color="DarkGray"/>
         <!-- Чистый стиль для кнопок без стандартных эффектов -->
         <Style x:Key="CleanButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
@@ -123,6 +120,7 @@
                         MouseLeave="StudentButton_MouseLeave"
                         Click="GoToStudent"
                         Content="Не удалось найти студента"
+                        Padding="5, 0, 0, 0"
                         BorderThickness="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
@@ -136,6 +134,7 @@
                         MouseLeave="TeacherButton_MouseLeave"
                         Click="GoToTeacher"
                         Content="Не удалось найти препода"
+                        Padding="5, 0, 0, 0"
                         BorderThickness="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"

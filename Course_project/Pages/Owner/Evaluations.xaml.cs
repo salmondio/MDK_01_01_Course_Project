@@ -50,11 +50,12 @@ namespace Course_project_wpf.Pages.Owner
         private async void GetEvaluations()
         {
             Parent.Children.Clear();
-            await _adminController.GetUsers();
-            _evaluations = await _adminController.GetEvaluations();
+            await GetController.Instance.GetUsers();
+            _evaluations = await GetController.Instance.GetEvaluations();
+
             if (_evaluations != null && _evaluations.Count != 0)
                 foreach (var evaluation in _evaluations)
-                    Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation, _adminController));
+                    Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation));
             else
                 Parent.Children.Add(new Label()
                 {

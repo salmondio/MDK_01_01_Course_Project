@@ -5,6 +5,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Course_project_wpf.Helpers;
+using Course_project_wpf.Models.FullModels;
+using Couse_project_RestAPI.Models;
 
 namespace Course_project_wpf.Controllers
 {
@@ -28,7 +30,40 @@ namespace Course_project_wpf.Controllers
             }
         }
 
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, Action<T> postData, string dataName)
+
+        /*
+            Действия Овнера 
+        */
+
+        // Оценки
+        public async Task<Evaluation?> AddEvaluation(Evaluation newEvaluation)
+        {
+            return await ExecuteRequestAsync("api/Evaluation/Owner/Add", newEvaluation, "ценка");
+        }
+
+
+        /*
+            Действия Админа
+        */
+
+        // Преподаватель-Дисциплина
+        public async Task<TeacherDiscipline?> AddTeacherDiscipline(TeacherDiscipline newTeacherDiscipline)
+        {
+            return await ExecuteRequestAsync<TeacherDiscipline>("api/TeacherDiscipline/Admin/Add", newTeacherDiscipline, "дисциплина препода");
+        }
+
+
+        // Пользователь
+        public async Task<User?> AddUser(User newUser)
+        {
+            return await ExecuteRequestAsync<User>("api/User/Admin/Add", newUser, "пользователь");
+        }
+
+
+        /*
+            Вспомогательные методы
+        */
+        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, T postData, string dataName)
         {
             if (_isLoading)
                 return default;
@@ -46,7 +81,7 @@ namespace Course_project_wpf.Controllers
 
                     if (data != null)
                     {
-                        postData(data);
+                        //postData(data);
                         DataChanged?.Invoke();
                         return data;
                     }

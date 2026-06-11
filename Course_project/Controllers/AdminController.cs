@@ -33,22 +33,6 @@ namespace Course_project_wpf.Controllers
 
 
 
-        // Действия над связкой Преподаватель-Дисциплина
-        public void AddTeacherDiscipline (TeacherDiscipline newTeacherDiscipline)
-        {
-            TeacherDiscipline teacherDiscipline = new TeacherDiscipline();
-        }
-
-
-        // Действия над пользователями
-        
-
-        public User? AddUser(User newUser)
-        {
-            User user = new User();
-            GetUsers();
-            return GetUser(user.Id);
-        }
 
         
     }

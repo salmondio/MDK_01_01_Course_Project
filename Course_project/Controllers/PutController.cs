@@ -31,43 +31,67 @@ namespace Course_project_wpf.Controllers
             }
         }
 
+        /*
+            Действия Овнера 
+        */
+
+        // Оценки
+        public async Task<Evaluation?> UpdateEvaluation(Evaluation updatedEvaluation)
+        {
+            return await ExecuteRequestAsync<Evaluation>("api/Evaluation/Owner/Update", updatedEvaluation, "обновить оценку");
+        }
 
         /*
             Действия Админа
         */
 
         // Пользователь
-        public User? ChangeActiveUser(int id)
+        public async Task<User?> ChangeActiveUser(int id)
         {
-            return GetController.Instance.GetUser(id);
+            return await ExecuteRequestAsync<User>(
+                "api/User/Admin/ChangeActive",
+                id,
+                "обновить активность пользователя"
+                );
         }
 
         public async Task<User?> UpdateUser(User user)
         {
-            User updatedUser = ExecuteRequestAsync(
+            return await ExecuteRequestAsync<User>(
                 "api/User/Admin/Update",
-
-                )
-
-            return updatedUser;
+                user,
+                "обновить пользователя"
+                );
         }
-        public Report? ChangeStatusReport(int id)
+
+        // Жалобы
+        public async Task<Report?> ChangeStatusReport(int id)
         {
-            GetReports();
-            return GetReport(id);
+            return await ExecuteRequestAsync<Report>(
+                "api/Report/ChangeStatus",
+                id,
+                "обновить статус жалобы"
+                );
         }
 
 
-        // Действия над отзывами
-
-
-        public Review? ChangeStatusReview(int id)
+        // Отзывы
+        public async Task<Review?> ChangeStatusReview(int id)
         {
-            GetReviews();
-            return GetReview(id);
+            return await ExecuteRequestAsync<Review>(
+                "api/Review/ChangeStatus",
+                id,
+                "обновить статус отзыва"
+                );
         }
 
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, Action<T> putData, string dataName)
+
+        /*
+            Вспомогательные методы 
+        */
+
+        // Выполненеие запроса, принимающего и возвращающего модель
+        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, T putData, string dataName)
         {
             if (_isLoading)
                 return default;
@@ -85,20 +109,18 @@ namespace Course_project_wpf.Controllers
 
                     if (data != null)
                     {
-                        putData(data);
                         DataChanged?.Invoke();
                         return data;
                     }
                 }
                 else
                 {
-                    // Логирование ошибки без MessageBox
-                    LogError($"Не удалось получить список {dataName}", response);
+                    LogError($"Не удалось выполнить дествие: {dataName}", response);
                 }
             }
             catch (Exception ex)
             {
-                LogError($"Не удалось получить список {dataName}", ex);
+                LogError($"Не удалось выполнить дествие: {dataName}", ex);
             }
             finally
             {
@@ -108,10 +130,49 @@ namespace Course_project_wpf.Controllers
             return default;
         }
 
+        // Выполненеие запроса, принимающего только id и возвращающего модель
+        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, int id, string dataName)
+        {
+            if (_isLoading)
+                return default;
 
+            _isLoading = true;
+
+            try
+            {
+                var response = await ApiClient.PutAsync(endpoint, id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var data = JsonSerializer.Deserialize<T>(responseBody);
+
+                    if (data != null)
+                    {
+                        DataChanged?.Invoke();
+                        return data;
+                    }
+                }
+                else
+                {
+                    LogError($"Не удалось выполнить дествие: {dataName}", response);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Не удалось выполнить дествие: {dataName}", ex);
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+
+            return default;
+        }
+
+        // Логирование
         private void LogError(string message, object error)
         {
-            // Используйте логгер вместо MessageBox
             System.Diagnostics.Debug.WriteLine($"{message}: {error}");
         }
     }

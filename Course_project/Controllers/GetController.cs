@@ -36,7 +36,7 @@ namespace Course_project_wpf.Controllers
             }
         }
 
-        // Списки (теперь не статические)
+        // Списки для хранения таблиц
         public List<Discipline>? Disciplines { get; private set; }
         public List<Role>? Roles { get; private set; }
         public List<Evaluation>? Evaluations { get; private set; }
@@ -47,17 +47,7 @@ namespace Course_project_wpf.Controllers
         // Флаг загрузки
         public bool IsLoading { get; private set; }
 
-        // Очистка данных (например, при выходе из аккаунта)
-        public void ClearData()
-        {
-            Disciplines = null;
-            Roles = null;
-            Evaluations = null;
-            Reports = null;
-            Reviews = null;
-            Users = null;
-            DataChanged?.Invoke();
-        }
+
 
         /*
             Действия админа
@@ -168,11 +158,12 @@ namespace Course_project_wpf.Controllers
 
         public User? GetUser(int id)
         {
-            return Users?.FirstOrDefault(x => x.Id == id);
+            User? findUser = Users?.FirstOrDefault(x => x.Id == id);
+            return findUser;
         }
 
         /*
-            Общие действия
+            Вспомогательные методы
          */
 
         // Общий метод для выполнения запросов (DRY принцип)
@@ -201,7 +192,6 @@ namespace Course_project_wpf.Controllers
                 }
                 else
                 {
-                    // Логирование ошибки без MessageBox
                     LogError($"Не удалось получить список {dataName}", response);
                 }
             }
@@ -217,10 +207,22 @@ namespace Course_project_wpf.Controllers
             return default;
         }
 
+        // Логирование
         private void LogError(string message, object error)
         {
-            // Используйте логгер вместо MessageBox
             System.Diagnostics.Debug.WriteLine($"{message}: {error}");
+        }
+
+        // Очистка данных
+        public void ClearData()
+        {
+            Disciplines = null;
+            Roles = null;
+            Evaluations = null;
+            Reports = null;
+            Reviews = null;
+            Users = null;
+            DataChanged?.Invoke();
         }
     }
 }
