@@ -312,6 +312,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
                             if (updatedEvaluation != null)
                             {
+
                                 _evaluation = updatedEvaluation;
                                 InitializeVariables(updatedEvaluation);
                                 Cancel(new object(), new RoutedEventArgs());
