@@ -1,22 +1,13 @@
 ﻿using Course_project;
 using Course_project_wpf.Controllers;
-using Course_project_wpf.Models.FullModels;
-using Course_project_wpf.Pages.Owner;
-using Course_project_wpf.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Course_project_wpf.Controllers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+
+
 
 namespace Course_project_wpf.Elements.OwnerAdmin
 {
@@ -44,12 +35,6 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
 
 
-            //var themeBrush = Resources["LocalColorTheme"] as SolidColorBrush;
-            //if (themeBrush != null)
-            //{
-            //    Student.Background = themeBrush;
-            //    Teacher.Background = themeBrush;
-            //}
             InitializeVariables(evaluation);
         }
 
@@ -57,8 +42,8 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         private void InitializeVariables(Models.FullModels.Evaluation evaluation)
         {
             // Заполняем текстовые поля
-            User? student = GetController.Instance.GetUser(evaluation.IdStudent);
-            User? teacher = GetController.Instance.GetUser(evaluation.IdTeacher);
+            Models.FullModels.User? student = GetController.Instance.GetUser(evaluation.IdStudent);
+            Models.FullModels.User? teacher = GetController.Instance.GetUser(evaluation.IdTeacher);
             if ( student != null)
             {
                 Student.Content = $"{student.Lastname} {student.Name} {student.Surname}";
@@ -124,14 +109,26 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             }
         }
 
+
+
         private void GoToStudent(object sender, RoutedEventArgs e)
         {
-
+            // Переход на страницу студента
+            var student = GetController.Instance.GetUser(_evaluation.IdStudent);
+            //if (student != null && NavigationService != null)
+            //{
+            //    // NavigationService.Navigate(new UserDetailsPage(student));
+            //}
         }
 
         private void GoToTeacher(object sender, RoutedEventArgs e)
         {
-
+            // Переход на страницу преподавателя
+            var teacher = GetController.Instance.GetUser(_evaluation.IdTeacher);
+            //if (teacher != null && NavigationService != null)
+            //{
+            //    // NavigationService.Navigate(new UserDetailsPage(teacher));
+            //}
         }
 
         private void MainGrid_MouseEnter(object sender, MouseEventArgs e)
@@ -243,7 +240,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         {
             if(int.TryParse(tbIdStudent.Text, out int id))
            {
-                User? student = GetController.Instance.GetUser(id);
+                Models.FullModels.User? student = GetController.Instance.GetUser(id);
                 if(student != null && student.Id_role == 4)
                 {
                     Student.Content = student.FullName;
@@ -257,7 +254,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
         {
             if (int.TryParse(tbIdTeacher.Text, out int id))
             {
-                User? teacher = GetController.Instance.GetUser(id);
+                Models.FullModels.User? teacher = GetController.Instance.GetUser(id);
                 if (teacher != null && teacher.Id_role == 5)
                 {
                     Teacher.Content = teacher.FullName;
@@ -290,10 +287,11 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                     int.TryParse(tbPresentation.Text, out int presentation) &&
                     0 < attitude && attitude < 10 && 0 < responsiveness && responsiveness < 10 && 0 < presentation && presentation < 10)
                     {
-                    // Если студент и преподаватель с такими id существуют и нет оценки, выставленной этим этому
+                    // Если студент и преподаватель с такими id существуют 
                     if (GetController.Instance.GetUser(idTeacerh)?.Id_role == 5 &&
                         GetController.Instance.GetUser(idStudent)?.Id_role == 4)
                     {
+                        // И нет оценки, выставленной этим этому
                         if (GetController.Instance.Evaluations?
                         .FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null ||
                         idStudent == _evaluation.IdStudent && idTeacerh == _evaluation.IdTeacher)
@@ -332,9 +330,35 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 MessageBox.Show("Введены некорректные значения Id");
         }
 
-        private void Delete(object sender, RoutedEventArgs e)
+        private async void Delete(object sender, RoutedEventArgs e)
         {
+            var result = MessageBox.Show($"Вы уверены, что хотите удалить оценку?\nСтудент: {Student.Content}\nПреподаватель: {Teacher.Content}",
+                "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var deletedEvaluation = await DeleteController.Instance.DeleteEvaluation(_evaluation.IdStudent, _evaluation.IdTeacher);
+
+                    if (deletedEvaluation != null)
+                    {
+                        if (Parent is Panel parentPanel)
+                        {
+                            parentPanel.Children.Remove(this);
+                        }
+                        MessageBox.Show("Оценка успешно удалена", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удалось удалить оценку", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

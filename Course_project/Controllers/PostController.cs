@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.FullModels;
+using Course_project_wpf.Models.DTO;
 using Couse_project_RestAPI.Models;
 
 namespace Course_project_wpf.Controllers
@@ -17,7 +15,7 @@ namespace Course_project_wpf.Controllers
         public event Action? DataChanged;
         private bool _isLoading;
 
-        public static PostController? Instance
+        public static PostController Instance
         {
             get
             {
@@ -30,40 +28,73 @@ namespace Course_project_wpf.Controllers
             }
         }
 
-
         /*
-            Действия Овнера 
+            Действия Owner - работают с полными моделями
         */
 
-        // Оценки
         public async Task<Evaluation?> AddEvaluation(Evaluation newEvaluation)
         {
-            return await ExecuteRequestAsync("api/Evaluation/Owner/Add", newEvaluation, "ценка");
+            return await ExecutePostRequestAsync<Evaluation, Evaluation>("api/Evaluation/Owner/Add", newEvaluation, "оценку");
         }
 
+        public async Task<Discipline?> AddDiscipline(Discipline discipline)
+        {
+            return await ExecutePostRequestAsync<Discipline, Discipline>("api/Discipline/Owner/Add", discipline, "дисциплину");
+        }
+
+        public async Task<Role?> AddRole(Role role)
+        {
+            return await ExecutePostRequestAsync<Role, Role>("api/Role/Owner/Add", role, "роль");
+        }
+
+        public async Task<Report?> AddReport(Report report)
+        {
+            return await ExecutePostRequestAsync<Report, Report>("api/Report/Owner/Add", report, "жалобу");
+        }
+
+        public async Task<Review?> AddReview(Review review)
+        {
+            return await ExecutePostRequestAsync<Review, Review>("api/Review/Owner/Add", review, "отзыв");
+        }
 
         /*
-            Действия Админа
+            Действия Admin - работают с полными моделями
         */
 
-        // Преподаватель-Дисциплина
-        public async Task<TeacherDiscipline?> AddTeacherDiscipline(TeacherDiscipline newTeacherDiscipline)
+        public async Task<TeacherDiscipline?> AddTeacherDiscipline(TeacherDiscipline teacherDiscipline)
         {
-            return await ExecuteRequestAsync<TeacherDiscipline>("api/TeacherDiscipline/Admin/Add", newTeacherDiscipline, "дисциплина препода");
+            return await ExecutePostRequestAsync<TeacherDiscipline, TeacherDiscipline>("api/TeacherDiscipline/Admin/Add", teacherDiscipline, "связь преподавателя и дисциплины");
         }
 
-
-        // Пользователь
-        public async Task<User?> AddUser(User newUser)
+        public async Task<User?> AddUser(User user)
         {
-            return await ExecuteRequestAsync<User>("api/User/Admin/Add", newUser, "пользователь");
+            return await ExecutePostRequestAsync<User, User>("api/User/Admin/Add", user, "пользователя");
         }
 
+        /*
+            Действия Student - используют DTO
+        */
+
+        public async Task<EvaluationCreateDTO?> AddEvaluationByStudent(EvaluationCreateDTO evaluation)
+        {
+            return await ExecutePostRequestAsync<EvaluationCreateDTO, EvaluationCreateDTO>("api/Evaluation/Add", evaluation, "оценку");
+        }
+
+        public async Task<ReportCreateDTO?> AddReportByStudent(ReportCreateDTO report)
+        {
+            return await ExecutePostRequestAsync<ReportCreateDTO, ReportCreateDTO>("api/Report/Add", report, "жалобу");
+        }
+
+        public async Task<ReviewCreateDTO?> AddReviewByStudent(ReviewCreateDTO review)
+        {
+            return await ExecutePostRequestAsync<ReviewCreateDTO, ReviewCreateDTO>("api/Review/Add", review, "отзыв");
+        }
 
         /*
             Вспомогательные методы
         */
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, T postData, string dataName)
+
+        private async Task<TResponse?> ExecutePostRequestAsync<TRequest, TResponse>(string endpoint, TRequest postData, string dataName)
         {
             if (_isLoading)
                 return default;
@@ -77,24 +108,26 @@ namespace Course_project_wpf.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var responseBody = await response.Content.ReadAsStringAsync();
-                    var data = JsonSerializer.Deserialize<T>(responseBody);
+                    var data = JsonSerializer.Deserialize<TResponse>(responseBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
                     if (data != null)
                     {
-                        //postData(data);
                         DataChanged?.Invoke();
                         return data;
                     }
                 }
                 else
                 {
-                    // Логирование ошибки без MessageBox
-                    LogError($"Не удалось получить список {dataName}", response);
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    LogError($"Не удалось добавить {dataName}. Status: {response.StatusCode}, Error: {errorBody}", response);
                 }
             }
             catch (Exception ex)
             {
-                LogError($"Не удалось получить список {dataName}", ex);
+                LogError($"Не удалось добавить {dataName}", ex);
             }
             finally
             {
@@ -104,10 +137,8 @@ namespace Course_project_wpf.Controllers
             return default;
         }
 
-
         private void LogError(string message, object error)
         {
-            // Используйте логгер вместо MessageBox
             System.Diagnostics.Debug.WriteLine($"{message}: {error}");
         }
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.FullModels;
+using Course_project_wpf.Models.DTO;
 using Couse_project_RestAPI.Models;
 
 namespace Course_project_wpf.Controllers
@@ -16,13 +17,22 @@ namespace Course_project_wpf.Controllers
         private static GetController? _instance;
         private static readonly object _lock = new object();
 
-        // Событие для уведомления об изменении данных
         public event Action? DataChanged;
+        public bool IsLoading { get; private set; }
 
-        // Приватный конструктор
+        // Списки для хранения полных моделей
+        public List<Discipline>? Disciplines { get; private set; }
+        public List<Role>? Roles { get; private set; }
+        public List<Evaluation>? Evaluations { get; private set; }
+        public List<Report>? Reports { get; private set; }
+        public List<Review>? Reviews { get; private set; }
+        public List<User>? Users { get; private set; }
+
+        // Списки для DTO (если нужно кэшировать)
+        public List<UserDTO>? Teachers { get; private set; }
+
         private GetController() { }
 
-        // Синглтон
         public static GetController Instance
         {
             get
@@ -36,24 +46,10 @@ namespace Course_project_wpf.Controllers
             }
         }
 
-        // Списки для хранения таблиц
-        public List<Discipline>? Disciplines { get; private set; }
-        public List<Role>? Roles { get; private set; }
-        public List<Evaluation>? Evaluations { get; private set; }
-        public List<Report>? Reports { get; private set; }
-        public List<Review>? Reviews { get; private set; }
-        public List<User>? Users { get; private set; }
-
-        // Флаг загрузки
-        public bool IsLoading { get; private set; }
-
-
-
         /*
-            Действия админа
-         */
+            Действия Admin
+        */
 
-        // Дисциплины
         public async Task<List<Discipline>?> GetDisciplines(bool forceRefresh = false)
         {
             if (Disciplines != null && !forceRefresh)
@@ -66,30 +62,18 @@ namespace Course_project_wpf.Controllers
             );
         }
 
-        public Discipline? GetDiscipline(int id)
-        {
-            return Disciplines?.FirstOrDefault(x => x.Id == id);
-        }
-
-        // Роли
         public async Task<List<Role>?> GetRoles(bool forceRefresh = false)
         {
             if (Roles != null && !forceRefresh)
                 return Roles;
 
             return await ExecuteRequestAsync<List<Role>>(
-                "/api/Roles/Admin/List",
+                "/api/Role/Admin/List",
                 data => Roles = data,
                 "ролей"
             );
         }
 
-        public Role? GetRole(int id)
-        {
-            return Roles?.FirstOrDefault(x => x.Id == id);
-        }
-
-        // Оценки
         public async Task<List<Evaluation>?> GetEvaluations(bool forceRefresh = false)
         {
             if (Evaluations != null && !forceRefresh)
@@ -102,12 +86,6 @@ namespace Course_project_wpf.Controllers
             );
         }
 
-        public Evaluation? GetEvaluation(int idStudent, int idTeacher)
-        {
-            return Evaluations?.FirstOrDefault(x => x.IdStudent == idStudent && x.IdTeacher == idTeacher);
-        }
-
-        // Жалобы
         public async Task<List<Report>?> GetReports(bool forceRefresh = false)
         {
             if (Reports != null && !forceRefresh)
@@ -120,12 +98,6 @@ namespace Course_project_wpf.Controllers
             );
         }
 
-        public Report? GetReport(int id)
-        {
-            return Reports?.FirstOrDefault(x => x.Id == id);
-        }
-
-        // Отзывы
         public async Task<List<Review>?> GetReviews(bool forceRefresh = false)
         {
             if (Reviews != null && !forceRefresh)
@@ -138,12 +110,6 @@ namespace Course_project_wpf.Controllers
             );
         }
 
-        public Review? GetReview(int id)
-        {
-            return Reviews?.FirstOrDefault(x => x.Id == id);
-        }
-
-        // Пользователи
         public async Task<List<User>?> GetUsers(bool forceRefresh = false)
         {
             if (Users != null && !forceRefresh)
@@ -156,18 +122,77 @@ namespace Course_project_wpf.Controllers
             );
         }
 
-        public User? GetUser(int id)
+        /*
+            Действия Student (возвращают DTO)
+        */
+
+        public async Task<List<UserDTO>?> GetTeachers(bool forceRefresh = false)
         {
-            User? findUser = Users?.FirstOrDefault(x => x.Id == id);
-            return findUser;
+            if (Teachers != null && !forceRefresh)
+                return Teachers;
+
+            return await ExecuteRequestAsync<List<UserDTO>>(
+                "/api/User/ListTeacher",
+                data => Teachers = data,
+                "преподавателей"
+            );
+        }
+
+        public async Task<UserDTO?> GetTeacher(int id)
+        {
+            return await ExecuteSingleRequestAsync<UserDTO>($"/api/User/ListTeacher/{id}", "преподавателя");
+        }
+
+        public async Task<List<EvaluationDTO>?> GetEvaluationsForCurrentUser(bool forceRefresh = false)
+        {
+            return await ExecuteRequestAsync<List<EvaluationDTO>>(
+                "/api/Evaluation/List",
+                null,
+                "оценок для текущего пользователя",
+                false
+            );
+        }
+
+        public async Task<EvaluationDTO?> GetEvaluationForCurrentUser(int idStudent, int idTeacher)
+        {
+            return await ExecuteSingleRequestAsync<EvaluationDTO>($"/api/Evaluation/{idStudent}/{idTeacher}", "оценки");
+        }
+
+        public async Task<List<ReportDTO>?> GetReportsForCurrentStudent(bool forceRefresh = false)
+        {
+            return await ExecuteRequestAsync<List<ReportDTO>>(
+                "/api/Report/List",
+                null,
+                "жалоб текущего студента",
+                false
+            );
+        }
+
+        public async Task<ReportDTO?> GetReportForCurrentStudent(int id)
+        {
+            return await ExecuteSingleRequestAsync<ReportDTO>($"/api/Report/{id}", "жалобы");
+        }
+
+        public async Task<List<ReviewDTO>?> GetReviewsForCurrentStudent(bool forceRefresh = false)
+        {
+            return await ExecuteRequestAsync<List<ReviewDTO>>(
+                "/api/Review/List",
+                null,
+                "отзывов текущего студента",
+                false
+            );
+        }
+
+        public async Task<ReviewDTO?> GetReviewForCurrentStudent(int id)
+        {
+            return await ExecuteSingleRequestAsync<ReviewDTO>($"/api/Review/{id}", "отзыва");
         }
 
         /*
             Вспомогательные методы
-         */
+        */
 
-        // Общий метод для выполнения запросов (DRY принцип)
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, Action<T> updateData, string dataName)
+        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, Action<T>? updateData, string dataName, bool useCache = true)
         {
             if (IsLoading)
                 return default;
@@ -177,22 +202,27 @@ namespace Course_project_wpf.Controllers
             try
             {
                 var response = await ApiClient.GetAsync(endpoint);
+                if (response == null) return default;
 
                 if (response.IsSuccessStatusCode)
                 {
                     var responseBody = await response.Content.ReadAsStringAsync();
-                    var data = JsonSerializer.Deserialize<T>(responseBody);
+                    var data = JsonSerializer.Deserialize<T>(responseBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
                     if (data != null)
                     {
-                        updateData(data);
+                        updateData?.Invoke(data);
                         DataChanged?.Invoke();
                         return data;
                     }
                 }
                 else
                 {
-                    LogError($"Не удалось получить список {dataName}", response);
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    LogError($"Не удалось получить список {dataName}. Status: {response.StatusCode}, Error: {errorBody}", response);
                 }
             }
             catch (Exception ex)
@@ -207,13 +237,45 @@ namespace Course_project_wpf.Controllers
             return default;
         }
 
-        // Логирование
+        private async Task<T?> ExecuteSingleRequestAsync<T>(string endpoint, string dataName)
+        {
+            try
+            {
+                var response = await ApiClient.GetAsync(endpoint);
+                if (response == null) return default;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var data = JsonSerializer.Deserialize<T>(responseBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    return data;
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return default;
+                }
+                else
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    LogError($"Не удалось получить {dataName}. Status: {response.StatusCode}, Error: errorBody", response);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Не удалось получить {dataName}", ex);
+            }
+
+            return default;
+        }
+
         private void LogError(string message, object error)
         {
             System.Diagnostics.Debug.WriteLine($"{message}: {error}");
         }
 
-        // Очистка данных
         public void ClearData()
         {
             Disciplines = null;
@@ -222,7 +284,17 @@ namespace Course_project_wpf.Controllers
             Reports = null;
             Reviews = null;
             Users = null;
+            Teachers = null;
             DataChanged?.Invoke();
         }
+
+        // Методы для получения одиночных объектов из кэша
+        public Discipline? GetDiscipline(int id) => Disciplines?.FirstOrDefault(x => x.Id == id);
+        public Role? GetRole(int id) => Roles?.FirstOrDefault(x => x.Id == id);
+        public Evaluation? GetEvaluation(int idStudent, int idTeacher) => Evaluations?.FirstOrDefault(x => x.IdStudent == idStudent && x.IdTeacher == idTeacher);
+        public Report? GetReport(int id) => Reports?.FirstOrDefault(x => x.Id == id);
+        public Review? GetReview(int id) => Reviews?.FirstOrDefault(x => x.Id == id);
+        public User? GetUser(int id) => Users?.FirstOrDefault(x => x.Id == id);
+        public UserDTO? GetTeacherFromCache(int id) => Teachers?.FirstOrDefault(x => x.Id == id);
     }
 }

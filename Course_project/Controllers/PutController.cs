@@ -8,6 +8,9 @@ using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.FullModels;
 using System.Windows;
 using Couse_project_RestAPI.Models;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Course_project_wpf.Models.DTO;
 
 namespace Course_project_wpf.Controllers
 {
@@ -18,7 +21,7 @@ namespace Course_project_wpf.Controllers
         public event Action? DataChanged;
         private bool _isLoading;
 
-        public static PutController? Instance
+        public static PutController Instance
         {
             get
             {
@@ -32,66 +35,80 @@ namespace Course_project_wpf.Controllers
         }
 
         /*
-            Действия Овнера 
+            Действия Owner 
         */
 
         // Оценки
         public async Task<Evaluation?> UpdateEvaluation(Evaluation updatedEvaluation)
         {
-            return await ExecuteRequestAsync<Evaluation>("api/Evaluation/Owner/Update", updatedEvaluation, "обновить оценку");
+            return await ExecutePutRequestAsync<Evaluation>("api/Evaluation/Owner/Update", updatedEvaluation, "обновить оценку");
+        }
+
+        // Дисциплины
+        public async Task<Discipline?> UpdateDiscipline(Discipline discipline)
+        {
+            return await ExecutePutRequestAsync<Discipline>("api/Discipline/Owner/Update", discipline, "обновить дисциплину");
+        }
+
+        // Роли
+        public async Task<Role?> UpdateRole(Role role)
+        {
+            return await ExecutePutRequestAsync<Role>("api/Role/Owner/Update", role, "обновить роль");
+        }
+
+        // Жалобы (Owner)
+        public async Task<Report?> OwnerUpdateReport(Report report)
+        {
+            return await ExecutePutRequestAsync<Report>("api/Report/Owner/Update", report, "обновить жалобу");
+        }
+
+        // Отзывы (Owner)
+        public async Task<Review?> OwnerUpdateReview(Review review)
+        {
+            return await ExecutePutRequestAsync<Review>("api/Review/Owner/Update", review, "обновить отзыв");
         }
 
         /*
-            Действия Админа
+            Действия Admin
         */
 
-        // Пользователь
-        public async Task<User?> ChangeActiveUser(int id)
+        // Пользователь (Admin)
+        public async Task<User?> AdminUpdateUser(User user)
         {
-            return await ExecuteRequestAsync<User>(
-                "api/User/Admin/ChangeActive",
-                id,
-                "обновить активность пользователя"
-                );
+            return await ExecutePutRequestAsync<User>("api/User/Admin/Update", user, "обновить пользователя");
         }
 
-        public async Task<User?> UpdateUser(User user)
+        // Преподаватель-Дисциплина (Admin)
+        public async Task<TeacherDiscipline?> UpdateTeacherDiscipline(TeacherDiscipline teacherDiscipline)
         {
-            return await ExecuteRequestAsync<User>(
-                "api/User/Admin/Update",
-                user,
-                "обновить пользователя"
-                );
+            return await ExecutePutRequestAsync<TeacherDiscipline>("api/TeacherDiscipline/Admin/Update", teacherDiscipline, "обновить связь преподавателя и дисциплины");
         }
 
-        // Жалобы
-        public async Task<Report?> ChangeStatusReport(int id)
+        /*
+            Действия пользователя
+        */
+
+        // Обновление информации о себе
+        public async Task<UserDTO?> UpdateSelf(UserDTO user)
         {
-            return await ExecuteRequestAsync<Report>(
-                "api/Report/ChangeStatus",
-                id,
-                "обновить статус жалобы"
-                );
+            return await ExecutePutRequestAsync<UserDTO>("api/User/Update", user, "обновить свои данные");
         }
 
-
-        // Отзывы
-        public async Task<Review?> ChangeStatusReview(int id)
+        // Обновление оценки студентом
+        public async Task<EvaluationCreateDTO?> UpdateEvaluationByStudent(EvaluationCreateDTO evaluation)
         {
-            return await ExecuteRequestAsync<Review>(
-                "api/Review/ChangeStatus",
-                id,
-                "обновить статус отзыва"
-                );
+            return await ExecutePutRequestAsync<EvaluationCreateDTO>("api/Evaluation/Update", evaluation, "обновить оценку");
         }
 
+        // Обновление жалобы студентом (ChangeActive - это PATCH, но он в DeleteController)
+        // Оставлено в DeleteController
 
         /*
             Вспомогательные методы 
         */
 
-        // Выполненеие запроса, принимающего и возвращающего модель
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, T putData, string dataName)
+        // Выполнение PUT-запроса, принимающего и возвращающего модель
+        private async Task<T?> ExecutePutRequestAsync<T>(string endpoint, T putData, string dataName)
         {
             if (_isLoading)
                 return default;
@@ -115,52 +132,13 @@ namespace Course_project_wpf.Controllers
                 }
                 else
                 {
-                    LogError($"Не удалось выполнить дествие: {dataName}", response);
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    LogError($"Не удалось выполнить действие: {dataName}. Status: {response.StatusCode}, Error: {errorBody}", response);
                 }
             }
             catch (Exception ex)
             {
-                LogError($"Не удалось выполнить дествие: {dataName}", ex);
-            }
-            finally
-            {
-                _isLoading = false;
-            }
-
-            return default;
-        }
-
-        // Выполненеие запроса, принимающего только id и возвращающего модель
-        private async Task<T?> ExecuteRequestAsync<T>(string endpoint, int id, string dataName)
-        {
-            if (_isLoading)
-                return default;
-
-            _isLoading = true;
-
-            try
-            {
-                var response = await ApiClient.PutAsync(endpoint, id);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    var data = JsonSerializer.Deserialize<T>(responseBody);
-
-                    if (data != null)
-                    {
-                        DataChanged?.Invoke();
-                        return data;
-                    }
-                }
-                else
-                {
-                    LogError($"Не удалось выполнить дествие: {dataName}", response);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Не удалось выполнить дествие: {dataName}", ex);
+                LogError($"Не удалось выполнить действие: {dataName}", ex);
             }
             finally
             {

@@ -34,15 +34,15 @@ namespace Course_project_wpf.Helpers
             return await _httpClient.PostAsync(endpoint, content);
         }
 
-        public static async Task<HttpResponseMessage>? GetAsync(string endpoint)
+        public static async Task<HttpResponseMessage> GetAsync(string endpoint)
         {
             try
             {
                 return await _httpClient.GetAsync(endpoint);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("Ошибка: Не удалось выполнить Get-запрос. " +  ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Ошибка: Не удалось выполнить Get-запрос. " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -57,6 +57,25 @@ namespace Course_project_wpf.Helpers
         public static async Task<HttpResponseMessage> DeleteAsync(string endpoint)
         {
             return await _httpClient.DeleteAsync(endpoint);
+        }
+
+        // PATCH-запрос без тела
+        public static async Task<HttpResponseMessage> PatchAsync(string endpoint)
+        {
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), endpoint);
+            return await _httpClient.SendAsync(request);
+        }
+
+        // PATCH-запрос с телом
+        public static async Task<HttpResponseMessage> PatchAsync<T>(string endpoint, T data)
+        {
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), endpoint)
+            {
+                Content = content
+            };
+            return await _httpClient.SendAsync(request);
         }
     }
 }

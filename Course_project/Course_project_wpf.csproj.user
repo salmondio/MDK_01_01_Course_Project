@@ -8,6 +8,9 @@
     <Compile Update="Elements\OwnerAdmin\Evaluation.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Elements\OwnerAdmin\User.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Elements\SortableHeader.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
