@@ -47,7 +47,8 @@
         <SolidColorBrush x:Key="UpdateColorDark" Color="#3A6280"/>
         <SolidColorBrush x:Key="DeleteColorDark" Color="#A84A4A"/>
         <!-- Цвета текста -->
-        <SolidColorBrush x:Key="Hint" Color="Gray"/>
+        <SolidColorBrush x:Key="Hint" Color="#666666"/>
+        <SolidColorBrush x:Key="ActiveColor" Color="#333333"/>
 
         <!-- Стили навигационного меню -->
         <Style TargetType="TabControl">

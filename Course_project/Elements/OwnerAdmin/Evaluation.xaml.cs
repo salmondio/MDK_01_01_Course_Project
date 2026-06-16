@@ -1,69 +1,91 @@
 ﻿using Course_project;
 using Course_project_wpf.Controllers;
-using Course_project_wpf.Controllers;
+using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Navigation;
-
-
 
 namespace Course_project_wpf.Elements.OwnerAdmin
 {
-    /// <summary>
-    /// Логика взаимодействия для Evaluation.xaml
-    /// </summary>
     public partial class Evaluation : UserControl
     {
         private Models.FullModels.Evaluation _evaluation;
         private bool _isAdd;
+
         public Evaluation()
         {
+            CreateDefaultResources();
             InitializeComponent();
             _isAdd = true;
             Update(this, new RoutedEventArgs());
         }
+
         public Evaluation(Models.FullModels.Evaluation evaluation)
         {
-            InitializeResources(evaluation);
-            InitializeComponent();
             _evaluation = evaluation;
+            _isAdd = false;
+
+            CreateResourcesFromEvaluation(evaluation);
+            InitializeComponent();
 
             DeleteButton.Visibility = Visibility.Collapsed;
             EditButton.Visibility = Visibility.Collapsed;
 
-
-
             InitializeVariables(evaluation);
         }
 
+        private void CreateDefaultResources()
+        {
+            var defaultColor = Color.FromRgb(111, 158, 123);
+            var defaultDarkColor = Color.FromRgb(82, 139, 104);
+
+            Resources["LocalColorTheme"] = new SolidColorBrush(defaultColor);
+            Resources["LocalDarkColorTheme"] = new SolidColorBrush(defaultDarkColor);
+        }
+
+        private void CreateResourcesFromEvaluation(Models.FullModels.Evaluation evaluation)
+        {
+            var (themeColor, darkThemeColor) = GetEvaluationColors(evaluation);
+
+            Resources["LocalColorTheme"] = new SolidColorBrush(themeColor);
+            Resources["LocalDarkColorTheme"] = new SolidColorBrush(darkThemeColor);
+        }
 
         private void InitializeVariables(Models.FullModels.Evaluation evaluation)
         {
-            // Заполняем текстовые поля
             Models.FullModels.User? student = GetController.Instance.GetUser(evaluation.IdStudent);
             Models.FullModels.User? teacher = GetController.Instance.GetUser(evaluation.IdTeacher);
-            if ( student != null)
+
+            if (student != null)
             {
                 Student.Content = $"{student.Lastname} {student.Name} {student.Surname}";
                 lbIdStudent.Content = student.Id;
             }
-            if( teacher != null)
+            else
+            {
+                Student.Content = $"Студент #{evaluation.IdStudent}";
+                lbIdStudent.Content = evaluation.IdStudent;
+            }
+
+            if (teacher != null)
             {
                 Teacher.Content = $"{teacher.Lastname} {teacher.Name} {teacher.Surname}";
                 lbIdTeacher.Content = teacher.Id;
             }
-            lbIdStudent.Content = evaluation.IdStudent;
-            lbIdTeacher.Content= evaluation.IdTeacher;
+            else
+            {
+                Teacher.Content = $"Преподаватель #{evaluation.IdTeacher}";
+                lbIdTeacher.Content = evaluation.IdTeacher;
+            }
+
             Presentation.Content = evaluation.Presentation.ToString();
             Responsiveness.Content = evaluation.Responsiveness.ToString();
             Attitude.Content = evaluation.Attitude.ToString();
             lbDate.Content = evaluation.DateTime.Date.ToString("dd.MM.yyyy");
             lbTime.Content = evaluation.DateTime.ToString("HH:mm");
 
-
-            // Если пользователь не Owner, 
             if (App.CurrentUser?.Role == null || App.CurrentUser.Role != "Owner")
             {
                 MainGrid.MouseEnter -= MainGrid_MouseEnter;
@@ -71,65 +93,94 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 gdActions.Visibility = Visibility.Collapsed;
             }
         }
-        // Раскрашиваю элемент
-        private void InitializeResources(Models.FullModels.Evaluation evaluation)
+
+        // Обновляет цвета (создает новые кисти)
+        private void RefreshColors()
+        {
+            var (themeColor, darkThemeColor) = GetEvaluationColors(_evaluation);
+
+            // СОЗДАЕМ НОВЫЕ кисти вместо изменения существующих
+            var newColorBrush = new SolidColorBrush(themeColor);
+            var newDarkColorBrush = new SolidColorBrush(darkThemeColor);
+
+            // Обновляем ресурсы
+            Resources["LocalColorTheme"] = newColorBrush;
+            Resources["LocalDarkColorTheme"] = newDarkColorBrush;
+
+            // Применяем ко всем элементам
+            ApplyColorsToElements(newColorBrush, newDarkColorBrush);
+        }
+
+        // Применяет кисти ко всем элементам
+        private void ApplyColorsToElements(SolidColorBrush colorBrush, SolidColorBrush darkColorBrush)
+        {
+            bdId.Background = colorBrush;
+            gdPeople.Background = colorBrush;
+            gdEvaluation.Background = colorBrush;
+            bdDateTime.Background = colorBrush;
+
+            Student.Background = colorBrush;
+            Teacher.Background = colorBrush;
+        }
+
+        private (Color themeColor, Color darkThemeColor) GetEvaluationColors(Models.FullModels.Evaluation evaluation)
         {
             try
             {
-                SolidColorBrush themeBrush;
-                SolidColorBrush darkThemeBrush;
+                double average = evaluation.Average;
 
-                if (evaluation.Average < 3)
+                if (average < 3)
                 {
-                    themeBrush = (SolidColorBrush)FindResource("BadColor");
-                    darkThemeBrush = (SolidColorBrush)FindResource("BadColorDark");
+                    var themeBrush = (SolidColorBrush)FindResource("BadColor");
+                    var darkBrush = (SolidColorBrush)FindResource("BadColorDark");
+                    return (themeBrush.Color, darkBrush.Color);
                 }
-                else if (evaluation.Average < 6)
+                else if (average < 6)
                 {
-                    themeBrush = (SolidColorBrush)FindResource("NormalColor");
-                    darkThemeBrush = (SolidColorBrush)FindResource("NormalColorDark");
+                    var themeBrush = (SolidColorBrush)FindResource("NormalColor");
+                    var darkBrush = (SolidColorBrush)FindResource("NormalColorDark");
+                    return (themeBrush.Color, darkBrush.Color);
                 }
                 else
                 {
-                    themeBrush = (SolidColorBrush)FindResource("GoodColor");
-                    darkThemeBrush = (SolidColorBrush)FindResource("GoodColorDark");
+                    var themeBrush = (SolidColorBrush)FindResource("GoodColor");
+                    var darkBrush = (SolidColorBrush)FindResource("GoodColorDark");
+                    return (themeBrush.Color, darkBrush.Color);
                 }
-
-                // Создаем новые ресурсы (не переиспользуем существующие)
-                Resources["LocalColorTheme"] = new SolidColorBrush(themeBrush.Color);
-                Resources["LocalDarkColorTheme"] = new SolidColorBrush(darkThemeBrush.Color);
             }
             catch
             {
-                MessageBox.Show("Ошибка: не удалось найти системные цвета", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                // Устанавливаем цвета по умолчанию
-                Resources["LocalColorTheme"] = new SolidColorBrush(Color.FromRgb(111, 158, 123));
-                Resources["LocalDarkColorTheme"] = new SolidColorBrush(Color.FromRgb(82, 139, 104));
+                return (Color.FromRgb(111, 158, 123), Color.FromRgb(82, 139, 104));
             }
         }
 
+        // Получает текущую основную кисть из ресурсов
+        private SolidColorBrush GetCurrentColorBrush()
+        {
+            return (SolidColorBrush)Resources["LocalColorTheme"];
+        }
 
+        // Получает текущую темную кисть из ресурсов
+        private SolidColorBrush GetCurrentDarkColorBrush()
+        {
+            return (SolidColorBrush)Resources["LocalDarkColorTheme"];
+        }
+
+        #region Navigation Events
 
         private void GoToStudent(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу студента
             var student = GetController.Instance.GetUser(_evaluation.IdStudent);
-            //if (student != null && NavigationService != null)
-            //{
-            //    // NavigationService.Navigate(new UserDetailsPage(student));
-            //}
         }
 
         private void GoToTeacher(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу преподавателя
             var teacher = GetController.Instance.GetUser(_evaluation.IdTeacher);
-            //if (teacher != null && NavigationService != null)
-            //{
-            //    // NavigationService.Navigate(new UserDetailsPage(teacher));
-            //}
         }
+
+        #endregion
+
+        #region Mouse Events
 
         private void MainGrid_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -145,42 +196,39 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
         private void StudentButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            Student.Background = (SolidColorBrush)Resources["LocalDarkColorTheme"];
+            Student.Background = GetCurrentDarkColorBrush();
         }
 
         private void StudentButton_MouseLeave(object sender, MouseEventArgs e)
         {
-            Student.Background = (SolidColorBrush)Resources["LocalColorTheme"];
+            Student.Background = GetCurrentColorBrush();
         }
 
         private void TeacherButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            Teacher.Background = (SolidColorBrush)Resources["LocalDarkColorTheme"];
+            Teacher.Background = GetCurrentDarkColorBrush();
         }
 
         private void TeacherButton_MouseLeave(object sender, MouseEventArgs e)
         {
-            Teacher.Background = (SolidColorBrush)Resources["LocalColorTheme"];
+            Teacher.Background = GetCurrentColorBrush();
         }
 
-        
-        // Действия
+        #endregion
 
-        // Изменить запись
+        #region Actions
+
         private void Update(object sender, RoutedEventArgs e)
         {
-            // Показываю текстбоксы вместо лейблов
             GetVisionTextBox();
-            // Меняю кнопки
             EditButton.Visibility = Visibility.Collapsed;
             DeleteButton.Visibility = Visibility.Collapsed;
             SaveButton.Visibility = Visibility.Visible;
             CancelButton.Visibility = Visibility.Visible;
         }
-        // Скрывает лейблы, показывает текстбоксы
+
         private void GetVisionTextBox()
         {
-            // Устанавливаю соответствующий текст в текстбоксы
             tbIdStudent.Text = lbIdStudent.Content.ToString();
             tbIdTeacher.Text = lbIdTeacher.Content.ToString();
             tbPresentation.Text = Presentation.Content.ToString();
@@ -188,7 +236,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             tbResponsiveness.Text = Responsiveness.Content.ToString();
             tbDate.Text = lbDate.Content.ToString();
             tbTime.Text = lbTime.Content.ToString();
-            // Скрываю лейблы
+
             lbIdStudent.Visibility = Visibility.Collapsed;
             lbIdTeacher.Visibility = Visibility.Collapsed;
             Presentation.Visibility = Visibility.Collapsed;
@@ -196,7 +244,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             Responsiveness.Visibility = Visibility.Collapsed;
             lbDate.Visibility = Visibility.Collapsed;
             lbTime.Visibility = Visibility.Collapsed;
-            // Раскрываю текстбоксы
+
             tbIdStudent.Visibility = Visibility.Visible;
             tbIdTeacher.Visibility = Visibility.Visible;
             tbPresentation.Visibility = Visibility.Visible;
@@ -204,16 +252,15 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             tbResponsiveness.Visibility = Visibility.Visible;
             tbDate.Visibility = Visibility.Visible;
             tbTime.Visibility = Visibility.Visible;
-            // Меняю кнопки
+
             EditButton.Visibility = Visibility.Collapsed;
             DeleteButton.Visibility = Visibility.Collapsed;
             SaveButton.Visibility = Visibility.Visible;
             CancelButton.Visibility = Visibility.Visible;
         }
-        // Скрываю текстбоксы, показываю лейблы
+
         private void GetVisionLabel()
         {
-            // Скрываю текстбоксы
             tbIdStudent.Visibility = Visibility.Collapsed;
             tbIdTeacher.Visibility = Visibility.Collapsed;
             tbPresentation.Visibility = Visibility.Collapsed;
@@ -221,7 +268,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             tbResponsiveness.Visibility = Visibility.Collapsed;
             tbDate.Visibility = Visibility.Collapsed;
             tbTime.Visibility = Visibility.Collapsed;
-            // Раскрываю лейблы
+
             lbIdStudent.Visibility = Visibility.Visible;
             lbIdTeacher.Visibility = Visibility.Visible;
             Presentation.Visibility = Visibility.Visible;
@@ -229,19 +276,19 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             Responsiveness.Visibility = Visibility.Visible;
             lbDate.Visibility = Visibility.Visible;
             lbTime.Visibility = Visibility.Visible;
-            // Меняю кнопки
+
             EditButton.Visibility = Visibility.Visible;
             DeleteButton.Visibility = Visibility.Visible;
             SaveButton.Visibility = Visibility.Collapsed;
             CancelButton.Visibility = Visibility.Collapsed;
         }
-        // При изменении Id студента пытаюсь сразу вывести его ФИО
+
         private void tbIdStudent_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(int.TryParse(tbIdStudent.Text, out int id))
-           {
+            if (int.TryParse(tbIdStudent.Text, out int id))
+            {
                 Models.FullModels.User? student = GetController.Instance.GetUser(id);
-                if(student != null && student.Id_role == 4)
+                if (student != null && student.Id_role == 4)
                 {
                     Student.Content = student.FullName;
                     return;
@@ -249,7 +296,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             }
             Student.Content = "Не удалось найти студента";
         }
-        // При изменении Id препода пытаюсь сразу вывести его ФИО
+
         private void tbIdTeacher_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (int.TryParse(tbIdTeacher.Text, out int id))
@@ -263,7 +310,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             }
             Teacher.Content = "Не удалось найти преподавателя";
         }
-        // Отменить изменения
+
         private void Cancel(object sender, RoutedEventArgs e)
         {
             if (_isAdd)
@@ -275,59 +322,62 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             }
             GetVisionLabel();
         }
-        // Сохранить изменения
+
         private async void Save(object sender, RoutedEventArgs e)
         {
-            // Если введены корректные id
-            if (int.TryParse(tbIdTeacher.Text, out int idTeacerh) &&
+            if (int.TryParse(tbIdTeacher.Text, out int idTeacher) &&
                 int.TryParse(tbIdStudent.Text, out int idStudent))
             {
                 if (int.TryParse(tbAttitude.Text, out int attitude) &&
                     int.TryParse(tbResponsiveness.Text, out int responsiveness) &&
                     int.TryParse(tbPresentation.Text, out int presentation) &&
-                    0 < attitude && attitude < 10 && 0 < responsiveness && responsiveness < 10 && 0 < presentation && presentation < 10)
-                    {
-                    // Если студент и преподаватель с такими id существуют 
-                    if (GetController.Instance.GetUser(idTeacerh)?.Id_role == 5 &&
+                    0 < attitude && attitude < 10 &&
+                    0 < responsiveness && responsiveness < 10 &&
+                    0 < presentation && presentation < 10)
+                {
+                    if (GetController.Instance.GetUser(idTeacher)?.Id_role == 5 &&
                         GetController.Instance.GetUser(idStudent)?.Id_role == 4)
                     {
-                        // И нет оценки, выставленной этим этому
                         if (GetController.Instance.Evaluations?
-                        .FirstOrDefault(e => e.IdTeacher == idTeacerh && e.IdStudent == idStudent) == null ||
-                        idStudent == _evaluation.IdStudent && idTeacerh == _evaluation.IdTeacher)
+                            .FirstOrDefault(e => e.IdTeacher == idTeacher && e.IdStudent == idStudent) == null ||
+                            (idStudent == _evaluation.IdStudent && idTeacher == _evaluation.IdTeacher))
                         {
-                            // Создаю экземпляр оценки
-                            Models.FullModels.Evaluation? updatedEvaluation = new Models.FullModels.Evaluation()
+                            var updatedEvaluation = new Models.FullModels.Evaluation()
                             {
-                                IdStudent = int.Parse(tbIdStudent.Text),
-                                IdTeacher = int.Parse(tbIdTeacher.Text),
-                                Presentation = byte.Parse(tbPresentation.Text),
-                                Attitude = byte.Parse(tbAttitude.Text),
-                                Responsiveness = byte.Parse(tbResponsiveness.Text),
+                                IdStudent = idStudent,
+                                IdTeacher = idTeacher,
+                                Presentation = (byte)presentation,
+                                Attitude = (byte)attitude,
+                                Responsiveness = (byte)responsiveness,
                                 DateTime = DateTime.Now
                             };
+
                             updatedEvaluation = await PutController.Instance.UpdateEvaluation(updatedEvaluation);
 
                             if (updatedEvaluation != null)
                             {
-
                                 _evaluation = updatedEvaluation;
+
                                 InitializeVariables(updatedEvaluation);
+
+                                // Обновляем цвета - создаем новые кисти
+                                RefreshColors();
+
                                 Cancel(new object(), new RoutedEventArgs());
-                                MessageBox.Show("Оценка успешно изменена!");
+                                MessageBox.Show("Оценка успешно изменена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         else
-                            MessageBox.Show("Оценка этого студента этому преподавателю уже выставлена");
+                            MessageBox.Show("Оценка этого студента этому преподавателю уже выставлена", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                     else
-                        MessageBox.Show("Ошибка: Не существует студента/преподавателя с указанным id");
+                        MessageBox.Show("Ошибка: Не существует студента/преподавателя с указанным id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
-                    MessageBox.Show("Введены некорректные значения оценок.\nКаждая оценка должна быть в промежутке от 1 до 9");
+                    MessageBox.Show("Введены некорректные значения оценок.\nКаждая оценка должна быть в промежутке от 1 до 9", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
-                MessageBox.Show("Введены некорректные значения Id");
+                MessageBox.Show("Введены некорректные значения Id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private async void Delete(object sender, RoutedEventArgs e)
@@ -360,5 +410,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                 }
             }
         }
+
+        #endregion
     }
 }

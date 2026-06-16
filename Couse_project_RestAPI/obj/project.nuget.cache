@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "CKZVQlrw0e8=",
+  "dgSpecHash": "Z5fUvXBYANQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Сергей\\Downloads\\Новая сжатая ZIP-папка\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
+  "projectFilePath": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Сергей\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Сергей\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

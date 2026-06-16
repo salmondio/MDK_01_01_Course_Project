@@ -12,6 +12,7 @@ namespace Course_project
     /// </summary>
     public partial class App : Application
     {
+        public static Window CurrentMainWindow { get; set; }
         public static User? CurrentUser { get; set; }
         public static string? JwtToken { get; set; }
 

@@ -29,7 +29,7 @@ namespace Course_project_wpf.Windows
             InitializeComponent();
 
             // для теста
-            pbPassword.Password = "Asdfg1233";
+            pbPassword.Password = "Owner";
         }
 
 

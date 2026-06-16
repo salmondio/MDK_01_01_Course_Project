@@ -1,9 +1,8 @@
 ﻿using Course_project;
 using Course_project_wpf.Controllers;
 using Course_project_wpf.Models.FullModels;
-using Couse_project_RestAPI.Models;
+using Course_project_wpf.Windows;
 using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,117 +10,124 @@ using System.Windows.Media;
 
 namespace Course_project_wpf.Elements.OwnerAdmin
 {
-    /// <summary>
-    /// Логика взаимодействия для User.xaml
-    /// </summary>
     public partial class User : UserControl
     {
         private Models.FullModels.User _user;
-        private bool _isAddMode;
         private bool _isOwner;
+        private bool _canToggleActive;
+
+        // Храним кисти для применения к элементам
+        private SolidColorBrush _colorBrush;
+        private SolidColorBrush _darkColorBrush;
 
         public User()
         {
+            CreateDefaultResources();
             InitializeComponent();
-            _isAddMode = true;
             _isOwner = App.CurrentUser?.Role == "Owner";
-            SetEditMode(false);
+            ApplyColorsToElements();
         }
 
         public User(Models.FullModels.User user)
         {
             _user = user;
-            _isAddMode = false;
             _isOwner = App.CurrentUser?.Role == "Owner";
 
-            InitializeResources(user);
+            // Проверяем, может ли текущий пользователь менять статус
+            _canToggleActive = CheckTogglePermissions();
+
+            CreateResourcesFromUser(user);
             InitializeComponent();
+            ApplyColorsToElements();
+
             InitializeVariables(user);
 
-            // Если не Owner, скрываем кнопки действий
-            if (!_isOwner)
+            // Если пользователь не может менять статус - скрываем кнопку
+            if (!_canToggleActive)
             {
+                ToggleActiveButton.Visibility = Visibility.Collapsed;
                 MainGrid.MouseEnter -= MainGrid_MouseEnter;
                 MainGrid.MouseLeave -= MainGrid_MouseLeave;
-                bdActions.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private bool CheckTogglePermissions()
+        {
+            // Если текущий пользователь Owner - может менять статус всем
+            if (_isOwner)
+                return true;
+
+            // Если текущий пользователь Admin
+            if (App.CurrentUser?.Id_role == 2) // Admin
+            {
+                // Admin может менять статус только у пользователей с ролью ниже (Moderator, Student, Teacher)
+                return _user.Id_role >= 3;
+            }
+
+            return false;
+        }
+
+        private void CreateDefaultResources()
+        {
+            var defaultColor = Color.FromRgb(100, 100, 100);
+            var defaultDarkColor = Color.FromRgb(70, 70, 70);
+
+            _colorBrush = new SolidColorBrush(defaultColor);
+            _darkColorBrush = new SolidColorBrush(defaultDarkColor);
+        }
+
+        private void CreateResourcesFromUser(Models.FullModels.User user)
+        {
+            Color mainColor;
+
+            switch (user.Id_role)
+            {
+                case 1: mainColor = Color.FromRgb(106, 27, 154); break;   // Owner
+                case 2: mainColor = Color.FromRgb(21, 101, 192); break;   // Admin
+                case 3: mainColor = Color.FromRgb(46, 125, 50); break;    // Moderator
+                case 4: mainColor = Color.FromRgb(0, 131, 143); break;    // Student
+                case 5: mainColor = Color.FromRgb(230, 81, 0); break;     // Teacher
+                default: mainColor = Color.FromRgb(100, 100, 100); break;
+            }
+
+            var darkColor = DarkenColor(mainColor, 0.7);
+
+            _colorBrush = new SolidColorBrush(mainColor);
+            _darkColorBrush = new SolidColorBrush(darkColor);
+        }
+
+        private Color DarkenColor(Color color, double factor)
+        {
+            return Color.FromRgb(
+                (byte)(color.R * factor),
+                (byte)(color.G * factor),
+                (byte)(color.B * factor)
+            );
+        }
+
+        private void ApplyColorsToElements()
+        {
+            bdId.Background = _colorBrush;
+            bdName.Background = _colorBrush;
+            bdEmail.Background = _colorBrush;
+            bdPhone.Background = _colorBrush;
+            bdRole.Background = _colorBrush;
+            bdActions.Background = _colorBrush;
         }
 
         private void InitializeVariables(Models.FullModels.User user)
         {
-            // ID
             lbId.Content = user.Id.ToString();
-            tbId.Text = user.Id.ToString();
 
-            // ФИО
             lbLastname.Text = user.Lastname;
             lbName.Text = $" {user.Name}";
             lbSurname.Text = user.Surname ?? "";
 
-            tbLastname.Text = user.Lastname;
-            tbName.Text = user.Name;
-            tbSurname.Text = user.Surname ?? "";
-
-            // Email
             lbEmail.Text = user.Email;
-            tbEmail.Text = user.Email;
-
-            // Телефон
             lbPhone.Text = user.Phone_number ?? "Не указан";
-            tbPhone.Text = user.Phone_number ?? "";
-
-            // Роль
             lbRole.Text = GetRoleName(user.Id_role);
 
-            // Статус активности
             SetActiveStatus(user.Is_active);
-        }
-
-        private void InitializeResources(Models.FullModels.User user)
-        {
-            try
-            {
-                SolidColorBrush themeBrush;
-                SolidColorBrush darkThemeBrush;
-
-                // Выбор цвета в зависимости от роли
-                switch (user.Id_role)
-                {
-                    case 1: // Owner
-                        themeBrush = (SolidColorBrush)FindResource("OwnerColor");
-                        darkThemeBrush = new SolidColorBrush(Color.FromRgb(74, 20, 110));
-                        break;
-                    case 2: // Admin
-                        themeBrush = (SolidColorBrush)FindResource("AdminColor");
-                        darkThemeBrush = new SolidColorBrush(Color.FromRgb(21, 81, 162));
-                        break;
-                    case 3: // Moderator
-                        themeBrush = (SolidColorBrush)FindResource("ModerColor");
-                        darkThemeBrush = new SolidColorBrush(Color.FromRgb(40, 100, 45));
-                        break;
-                    case 4: // Student
-                        themeBrush = (SolidColorBrush)FindResource("StudentColor");
-                        darkThemeBrush = new SolidColorBrush(Color.FromRgb(0, 100, 110));
-                        break;
-                    case 5: // Teacher
-                        themeBrush = (SolidColorBrush)FindResource("TeacherColor");
-                        darkThemeBrush = new SolidColorBrush(Color.FromRgb(200, 70, 0));
-                        break;
-                    default:
-                        themeBrush = (SolidColorBrush)FindResource("BaseColor");
-                        darkThemeBrush = new SolidColorBrush(Color.FromRgb(200, 200, 200));
-                        break;
-                }
-
-                Resources["LocalColorTheme"] = new SolidColorBrush(themeBrush.Color);
-                Resources["LocalDarkColorTheme"] = new SolidColorBrush(darkThemeBrush.Color);
-            }
-            catch
-            {
-                // Цвета по умолчанию
-                Resources["LocalColorTheme"] = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-                Resources["LocalDarkColorTheme"] = new SolidColorBrush(Color.FromRgb(70, 70, 70));
-            }
         }
 
         private string GetRoleName(int roleId)
@@ -136,227 +142,91 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             {
                 ActiveIndicator.Background = new SolidColorBrush(Color.FromRgb(76, 175, 80));
                 lbActive.Text = "Активен";
-                lbActive.Foreground = new SolidColorBrush(Color.FromRgb(200, 255, 200));
+                ToggleIcon.Text = "◉";
+                ToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(76, 175, 80));
             }
             else
             {
                 ActiveIndicator.Background = new SolidColorBrush(Color.FromRgb(244, 67, 54));
                 lbActive.Text = "Заблокирован";
-                lbActive.Foreground = new SolidColorBrush(Color.FromRgb(255, 200, 200));
+                ToggleIcon.Text = "◯";
+                ToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(244, 67, 54));
             }
-        }
-
-        private void SetEditMode(bool isEditing)
-        {
-            if (isEditing)
-            {
-                // Скрываем лейблы, показываем поля ввода
-                lbId.Visibility = Visibility.Collapsed;
-                lbLastname.Visibility = Visibility.Collapsed;
-                lbName.Visibility = Visibility.Collapsed;
-                lbSurname.Visibility = Visibility.Collapsed;
-                lbEmail.Visibility = Visibility.Collapsed;
-                lbPhone.Visibility = Visibility.Collapsed;
-                lbRole.Visibility = Visibility.Collapsed;
-
-                tbId.Visibility = Visibility.Visible;
-                tbLastname.Visibility = Visibility.Visible;
-                tbName.Visibility = Visibility.Visible;
-                tbSurname.Visibility = Visibility.Visible;
-                tbEmail.Visibility = Visibility.Visible;
-                tbPhone.Visibility = Visibility.Visible;
-                cbRole.Visibility = Visibility.Visible;
-
-                // Загружаем роли в комбобокс
-                LoadRolesToComboBox();
-
-                // Меняем кнопки
-                EditButton.Visibility = Visibility.Collapsed;
-                DeleteButton.Visibility = Visibility.Collapsed;
-                SaveButton.Visibility = Visibility.Visible;
-                CancelButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                // Показываем лейблы, скрываем поля ввода
-                lbId.Visibility = Visibility.Visible;
-                lbLastname.Visibility = Visibility.Visible;
-                lbName.Visibility = Visibility.Visible;
-                lbSurname.Visibility = Visibility.Visible;
-                lbEmail.Visibility = Visibility.Visible;
-                lbPhone.Visibility = Visibility.Visible;
-                lbRole.Visibility = Visibility.Visible;
-
-                tbId.Visibility = Visibility.Collapsed;
-                tbLastname.Visibility = Visibility.Collapsed;
-                tbName.Visibility = Visibility.Collapsed;
-                tbSurname.Visibility = Visibility.Collapsed;
-                tbEmail.Visibility = Visibility.Collapsed;
-                tbPhone.Visibility = Visibility.Collapsed;
-                cbRole.Visibility = Visibility.Collapsed;
-
-                // Меняем кнопки
-                EditButton.Visibility = Visibility.Visible;
-                DeleteButton.Visibility = Visibility.Visible;
-                SaveButton.Visibility = Visibility.Collapsed;
-                CancelButton.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private async void LoadRolesToComboBox()
-        {
-            var roles = await GetController.Instance.GetRoles();
-            if (roles != null)
-            {
-                cbRole.ItemsSource = roles;
-                cbRole.DisplayMemberPath = "Name";
-                cbRole.SelectedValuePath = "Id";
-
-                // Выбираем текущую роль пользователя
-                var currentRole = roles.FirstOrDefault(r => r.Id == _user.Id_role);
-                if (currentRole != null)
-                {
-                    cbRole.SelectedItem = currentRole;
-                }
-            }
-        }
-
-        private void tbId_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // Можно добавить валидацию ID
         }
 
         #region Mouse Events
 
         private void MainGrid_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (_isOwner && !_isAddMode)
+            if (_canToggleActive)
             {
-                EditButton.Visibility = Visibility.Visible;
-                DeleteButton.Visibility = Visibility.Visible;
+                ToggleActiveButton.Visibility = Visibility.Visible;
+                ViewProfileButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ViewProfileButton.Visibility = Visibility.Visible;
             }
         }
 
         private void MainGrid_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (!SaveButton.IsVisible)
-            {
-                EditButton.Visibility = Visibility.Collapsed;
-                DeleteButton.Visibility = Visibility.Collapsed;
-            }
+            ToggleActiveButton.Visibility = Visibility.Collapsed;
+            ViewProfileButton.Visibility = Visibility.Collapsed;
         }
 
         #endregion
 
         #region Actions
 
-        private void Update(object sender, RoutedEventArgs e)
+        private async void ToggleActive_Click(object sender, RoutedEventArgs e)
         {
-            SetEditMode(true);
-        }
-
-        private void Cancel(object sender, RoutedEventArgs e)
-        {
-            if (_isAddMode)
-            {
-                if (Parent is Panel parentPanel)
-                {
-                    parentPanel.Children.Remove(this);
-                }
-            }
-            else
-            {
-                SetEditMode(false);
-                // Восстанавливаем исходные данные
-                InitializeVariables(_user);
-            }
-        }
-
-        private async void Save(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // Валидация
-                if (string.IsNullOrWhiteSpace(tbName.Text) ||
-                    string.IsNullOrWhiteSpace(tbLastname.Text) ||
-                    string.IsNullOrWhiteSpace(tbEmail.Text))
-                {
-                    MessageBox.Show("Имя, фамилия и email обязательны для заполнения",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                // Создаем обновленного пользователя
-                var updatedUser = new Models.FullModels.User
-                {
-                    Id = int.Parse(tbId.Text),
-                    Name = tbName.Text.Trim(),
-                    Lastname = tbLastname.Text.Trim(),
-                    Surname = string.IsNullOrWhiteSpace(tbSurname.Text) ? null : tbSurname.Text.Trim(),
-                    Email = tbEmail.Text.Trim(),
-                    Phone_number = string.IsNullOrWhiteSpace(tbPhone.Text) ? null : tbPhone.Text.Trim(),
-                    Id_role = ((Role)cbRole.SelectedItem)?.Id ?? _user.Id_role,
-                    Is_active = _user.Is_active,
-                    Password = _user.Password
-                };
-
-                // Отправляем на сервер
-                var result = await PutController.Instance.AdminUpdateUser(updatedUser);
-
-                if (result != null)
-                {
-                    _user = result;
-                    InitializeVariables(result);
-                    InitializeResources(result);
-                    SetEditMode(false);
-                    MessageBox.Show("Данные пользователя успешно обновлены!",
-                        "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Не удалось обновить данные пользователя",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async void Delete(object sender, RoutedEventArgs e)
-        {
-            var result = MessageBox.Show($"Вы уверены, что хотите удалить пользователя {_user.FullName}?\nЭто действие необратимо.",
-                "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var action = _user.Is_active ? "деактивировать" : "активировать";
+            var result = MessageBox.Show($"Вы уверены, что хотите {action} пользователя {_user.FullName}?",
+                "Подтверждение действия", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    var deletedUser = await DeleteController.Instance.DeleteUser(_user.Id);
+                    bool? isActive = await PutController.Instance.ChangeUserActive(_user.Id);
 
-                    if (deletedUser != null)
+                    if (isActive != null || isActive == false)
                     {
-                        if (Parent is Panel parentPanel)
-                        {
-                            parentPanel.Children.Remove(this);
-                        }
-                        MessageBox.Show("Пользователь успешно удален",
+                        _user.Is_active = !_user.Is_active;
+                        SetActiveStatus(_user.Is_active);
+
+                        // Обновляем кэш
+                        await GetController.Instance.GetUsers(true);
+
+                        MessageBox.Show($"Пользователь успешно {(_user.Is_active ? "активирован" : "деактивирован")}",
                             "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        MessageBox.Show("Не удалось удалить пользователя",
-                            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Ошибка: Не удалось сменить активность пользователя.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void ViewProfile_Click(object sender, RoutedEventArgs e)
+        {
+            // Открываем страницу профиля
+            if (MainWindowOwner.OwnerWindow != null)
+            {
+                MainWindowOwner.OwnerWindow.PageParent.Navigate(new Pages.Owner.UserProfile(_user));
+            }
+        }
+
+        private void MainButton_Click(object sender, RoutedEventArgs e)
+        {
+            // При клике на карточку открываем профиль
+            ViewProfile_Click(sender, e);
         }
 
         #endregion

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QO/LmMVOJLY=",
+  "dgSpecHash": "34O5qvea90g=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Сергей\\Downloads\\Новая сжатая ZIP-папка\\MDK_01_01_Course_Project\\Course_project\\Course_project_wpf.csproj",
+  "projectFilePath": "C:\\VisualStudioProjects\\Course_project\\Course_project\\Course_project_wpf.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Сергей\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\9.0.16\\microsoft.aspnetcore.authentication.jwtbearer.9.0.16.nupkg.sha512",
     "C:\\Users\\Сергей\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",

@@ -20,11 +20,9 @@ namespace Course_project_wpf.Windows
     /// </summary>
     public partial class MainWindowAdmin : Window
     {
-        public static AdminController AdminController { get; private set; }
         public MainWindowAdmin()
         {
             InitializeComponent();
-            AdminController = new AdminController();
         }
     }
 }

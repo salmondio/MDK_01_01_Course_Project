@@ -271,7 +271,7 @@ namespace Couse_project_RestAPI.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<ActionResult> ChangeActive(int id)
         {
             try

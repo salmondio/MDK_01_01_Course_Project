@@ -8438,11 +8438,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Сергей\\Downloads\\Новая сжатая ZIP-папка\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
+      "projectUniqueName": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
       "projectName": "Couse_project_RestAPI",
-      "projectPath": "C:\\Users\\Сергей\\Downloads\\Новая сжатая ZIP-папка\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
+      "projectPath": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\Couse_project_RestAPI.csproj",
       "packagesPath": "C:\\Users\\Сергей\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Сергей\\Downloads\\Новая сжатая ZIP-папка\\MDK_01_01_Course_Project\\Couse_project_RestAPI\\obj\\",
+      "outputPath": "C:\\VisualStudioProjects\\Course_project\\Couse_project_RestAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -8541,7 +8541,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

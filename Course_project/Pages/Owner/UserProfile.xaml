@@ -1,0 +1,233 @@
+﻿<Page x:Class="Course_project_wpf.Pages.Owner.UserProfile"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="800"
+      Title="UserProfile"
+      Background="{StaticResource BaseColor}">
+
+    <Page.Resources>
+        <!-- Стиль для кнопок с закругленными углами -->
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="30,12"/>
+            <Setter Property="Margin" Value="0,0,15,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для полей ввода -->
+        <Style x:Key="ProfileTextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Hint}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Заголовок -->
+            <Grid x:Name="Header" Grid.Row="0" Grid.ColumnSpan="4">
+                <TextBlock Text="Профиль пользователя"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource ActiveColor}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+            </Grid>
+
+            <!-- ID -->
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Text="ID:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBlock x:Name="tbId" Grid.Row="2" Grid.Column="1"
+                       Text="1"
+                       FontSize="16"
+                       Foreground="{StaticResource ActiveColor}"
+                       VerticalAlignment="Center"/>
+
+            <!-- Роль -->
+            <TextBlock Grid.Row="2" Grid.Column="2"
+                       Text="Роль:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBlock x:Name="tbRole" Grid.Row="2" Grid.Column="3"
+                       Text="Студент"
+                       FontSize="16"
+                       Foreground="{StaticResource ActiveColor}"
+                       VerticalAlignment="Center"/>
+
+            <!-- Фамилия -->
+            <TextBlock Grid.Row="3" Grid.Column="0"
+                       Text="Фамилия:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBox x:Name="tbLastname" Grid.Row="3" Grid.Column="1"
+                     Text="Иванов"
+                     Style="{StaticResource ProfileTextBoxStyle}"
+                     IsEnabled="False"/>
+
+            <!-- Имя -->
+            <TextBlock Grid.Row="3" Grid.Column="2"
+                       Text="Имя:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBox x:Name="tbName" Grid.Row="3" Grid.Column="3"
+                     Text="Иван"
+                     Style="{StaticResource ProfileTextBoxStyle}"
+                     IsEnabled="False"/>
+
+            <!-- Отчество -->
+            <TextBlock Grid.Row="4" Grid.Column="0"
+                       Text="Отчество:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBox x:Name="tbSurname" Grid.Row="4" Grid.Column="1"
+                     Text="Иванович"
+                     Style="{StaticResource ProfileTextBoxStyle}"
+                     IsEnabled="False"/>
+
+            <!-- Email -->
+            <TextBlock Grid.Row="4" Grid.Column="2"
+                       Text="Email:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBox x:Name="tbEmail" Grid.Row="4" Grid.Column="3"
+                     Text="user@example.com"
+                     Style="{StaticResource ProfileTextBoxStyle}"
+                     IsEnabled="False"/>
+
+            <!-- Телефон -->
+            <TextBlock Grid.Row="5" Grid.Column="0"
+                       Text="Телефон:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <TextBox x:Name="tbPhone" Grid.Row="5" Grid.Column="1"
+                     Text="+7 (999) 123-45-67"
+                     Style="{StaticResource ProfileTextBoxStyle}"
+                     IsEnabled="False"/>
+
+            <!-- Статус -->
+            <TextBlock Grid.Row="5" Grid.Column="2"
+                       Text="Статус:"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource Hint}"
+                       VerticalAlignment="Center"/>
+            <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                <Border x:Name="StatusIndicator" 
+                        Width="16" Height="16" 
+                        CornerRadius="8" 
+                        Background="#4CAF50"
+                        Margin="0,0,10,0"/>
+                <TextBlock x:Name="tbStatus" 
+                           Text="Активен"
+                           FontSize="16"
+                           Foreground="{StaticResource ActiveColor}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Кнопки действий -->
+            <StackPanel Grid.Row="7" Grid.ColumnSpan="4" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0">
+                <Button x:Name="EditButton"
+                        Content="✎ Редактировать"
+                        Click="EditButton_Click"
+                        Background="{StaticResource UpdateColor}"
+                        Style="{StaticResource RoundedButtonStyle}"/>
+
+                <Button x:Name="SaveButton"
+                        Content="✓ Сохранить"
+                        Click="SaveButton_Click"
+                        Background="#4CAF50"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Visibility="Collapsed"/>
+
+                <Button x:Name="CancelButton"
+                        Content="↺ Отменить"
+                        Click="CancelButton_Click"
+                        Background="#FF9800"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Visibility="Collapsed"/>
+
+                <Button x:Name="DeleteButton"
+                        Content="✕ Удалить"
+                        Click="DeleteButton_Click"
+                        Background="{StaticResource DeleteColor}"
+                        Style="{StaticResource RoundedButtonStyle}"/>
+            </StackPanel>
+
+            <!-- Сообщение об ошибке/ограничениях -->
+            <TextBlock x:Name="tbError" Grid.Row="8" Grid.ColumnSpan="4"
+                       Text=""
+                       FontSize="14"
+                       Foreground="{StaticResource DeleteColor}"
+                       HorizontalAlignment="Center"
+                       Margin="0,15,0,0"
+                       Visibility="Collapsed"/>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -29,7 +29,7 @@
                  Height="30"
                  VerticalContentAlignment="Center"
                    Foreground="Black"
-                     Text="serg.serzhanin@yandex.ru"/>
+                     Text="serg.serzhaninOwner@yandex.ru"/>
             <Label Content="Пароль"
                Width="260"
                Margin="0, 10, 0, 0"

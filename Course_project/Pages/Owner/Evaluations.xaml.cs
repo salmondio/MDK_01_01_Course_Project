@@ -2,48 +2,40 @@
 using Course_project_wpf.Elements;
 using Course_project_wpf.Elements.OwnerAdmin;
 using Course_project_wpf.Models.FullModels;
-using Course_project_wpf.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Course_project_wpf.Pages.Owner
 {
-    /// <summary>
-    /// Логика взаимодействия для Evaluations.xaml
-    /// </summary>
     public partial class Evaluations : Page
     {
         private List<Models.FullModels.Evaluation>? _evaluations;
-        private AdminController _adminController;
-        private OwnerController _ownerController;
-        public Evaluations(AdminController adminController)
+        private SortableHeader? _sortableHeader;
+
+        public Evaluations()
         {
             InitializeComponent();
-            _adminController = adminController;
-
             Design();
         }
 
         private void Design()
         {
-            // Линия сортировки
-            Elements.SortableHeader sortableHeader = new Elements.SortableHeader();
-            sortableHeader.SortRequested += SortHeader_SortRequested;
-            Search.Children.Add(sortableHeader);
+            _sortableHeader = new SortableHeader();
+            _sortableHeader.SortRequested += SortHeader_SortRequested;
 
-            // Заполнение оценками
+            // Добавляем колонки для оценок
+            _sortableHeader.AddColumnFixed("IdStudent", "ID", 60, HorizontalAlignment.Center);
+            _sortableHeader.AddColumnStar("FullName", "Студент → Преподаватель", 1, HorizontalAlignment.Left);
+            _sortableHeader.AddColumnFixed("Evaluation", "Оценки", 200, HorizontalAlignment.Center);
+            _sortableHeader.AddColumnFixed("DateTime", "Дата/Время", 100, HorizontalAlignment.Center);
+            _sortableHeader.AddColumnFixed("Actions", "Действия", 150, HorizontalAlignment.Center);
+
+            Search.Children.Add(_sortableHeader);
+
             GetEvaluations();
         }
 
@@ -54,21 +46,57 @@ namespace Course_project_wpf.Pages.Owner
             _evaluations = await GetController.Instance.GetEvaluations();
 
             if (_evaluations != null && _evaluations.Count != 0)
+            {
                 foreach (var evaluation in _evaluations)
                     Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation));
+            }
             else
+            {
                 Parent.Children.Add(new Label()
                 {
-                    Content = "Оценок.net",
+                    Content = "Оценок нет",
                     FontSize = 20,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Foreground = (SolidColorBrush)FindResource("Hint")
                 });
+            }
         }
 
         private void SortHeader_SortRequested(object sender, SortEventArgs e)
         {
+            // Логика сортировки для оценок
+            if (_evaluations == null || _evaluations.Count == 0)
+                return;
 
+            IEnumerable<Models.FullModels.Evaluation> sortedEvaluations;
+
+            switch (e.ColumnName)
+            {
+                case "IdStudent":
+                    sortedEvaluations = e.IsAscending
+                        ? _evaluations.OrderBy(ev => ev.IdStudent)
+                        : _evaluations.OrderByDescending(ev => ev.IdStudent);
+                    break;
+                case "DateTime":
+                    sortedEvaluations = e.IsAscending
+                        ? _evaluations.OrderBy(ev => ev.DateTime)
+                        : _evaluations.OrderByDescending(ev => ev.DateTime);
+                    break;
+                case "Evaluation":
+                    sortedEvaluations = e.IsAscending
+                        ? _evaluations.OrderBy(ev => ev.Average)
+                        : _evaluations.OrderByDescending(ev => ev.Average);
+                    break;
+                default:
+                    sortedEvaluations = _evaluations;
+                    break;
+            }
+
+            Parent.Children.Clear();
+            foreach (var evaluation in sortedEvaluations)
+            {
+                Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation));
+            }
         }
     }
 }

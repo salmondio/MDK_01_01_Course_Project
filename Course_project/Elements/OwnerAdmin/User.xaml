@@ -4,38 +4,34 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="80" Width="800">
+             d:DesignHeight="80" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <!-- Чистый стиль для кнопок без стандартных эффектов -->
-        <Style x:Key="CleanButtonStyle" TargetType="Button">
-            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Height" Value="35"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Border"
-                            Background="{TemplateBinding Background}"
-                            BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Margin="{TemplateBinding Padding}"/>
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Border" 
-                                    Property="Background" 
-                                    Value="{DynamicResource LocalDarkColorTheme}"/>
+                                        Property="Background" 
+                                        Value="#40FFFFFF"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="Border" 
-                                    Property="Background" 
-                                    Value="{DynamicResource LocalColorTheme}"/>
+                                        Property="Background" 
+                                        Value="#20FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -43,167 +39,116 @@
             </Setter>
         </Style>
 
-        <!-- Стиль для статусного индикатора -->
         <Style x:Key="StatusIndicatorStyle" TargetType="Border">
             <Setter Property="Width" Value="12"/>
             <Setter Property="Height" Value="12"/>
             <Setter Property="CornerRadius" Value="6"/>
             <Setter Property="Margin" Value="5,0,0,0"/>
         </Style>
-
-        <!-- Конвертер для выбора цвета роли -->
-        <local:RoleToColorConverter x:Key="RoleToColorConverter"/>
-        <local:RoleToDarkColorConverter x:Key="RoleToDarkColorConverter"/>
-        <local:ActiveToOpacityConverter x:Key="ActiveToOpacityConverter"/>
     </UserControl.Resources>
 
-    <!-- Border для пэддингов -->
     <Border Padding="0, 5, 0, 5"
             Height="80"
             MouseEnter="MainGrid_MouseEnter"
             MouseLeave="MainGrid_MouseLeave"
             Background="Transparent">
 
-        <Grid x:Name="MainGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1.5*"/>
-                <ColumnDefinition Width="1.5*"/>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="150"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- ID и активность -->
-            <Border x:Name="bdId"
-                    CornerRadius="8, 0, 0, 8"
-                    ClipToBounds="True"
-                    Background="{StaticResource LocalColorTheme}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
+        <Button x:Name="MainButton"
+                Click="MainButton_Click"
+                Cursor="Hand"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="0">
+            <Grid x:Name="MainGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
                     <!-- ID -->
-                    <Label x:Name="lbId"
-                           Grid.Row="0"
-                           Content="1"
-                           HorizontalContentAlignment="Center"
-                           VerticalContentAlignment="Center"
-                           FontSize="20"
-                           FontWeight="Bold"/>
+                    <ColumnDefinition Width="2*"/>
+                    <!-- ФИО -->
+                    <ColumnDefinition Width="1.5*"/>
+                    <!-- Email -->
+                    <ColumnDefinition Width="1.5*"/>
+                    <!-- Телефон -->
+                    <ColumnDefinition Width="120"/>
+                    <!-- Роль -->
+                    <ColumnDefinition Width="100"/>
+                    <!-- Действия -->
+                </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="tbId"
-                             Grid.Row="0"
-                             HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"
-                             FontSize="20"
-                             FontWeight="Bold"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             Visibility="Collapsed"
-                             TextChanged="tbId_TextChanged"/>
+                <!-- ID -->
+                <Border x:Name="bdId"
+                        CornerRadius="8, 0, 0, 8"
+                        ClipToBounds="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                    <!-- Статус активности -->
-                    <StackPanel Grid.Row="1"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Margin="0, 0, 0, 5">
-                        <Border x:Name="ActiveIndicator"
-                                Style="{StaticResource StatusIndicatorStyle}"
-                                Background="#4CAF50"/>
-                        <TextBlock x:Name="lbActive"
-                                   Text="Активен"
-                                   FontSize="10"
-                                   Foreground="White"
-                                   VerticalAlignment="Center"
-                                   Margin="3,0,0,0"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
+                        <Label x:Name="lbId"
+                               Grid.Row="0"
+                               Content="1"
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"/>
 
-            <!-- ФИО -->
-            <Border x:Name="bdName"
-                    Grid.Column="1"
-                    Background="{StaticResource LocalColorTheme}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0, 0, 0, 5">
+                            <Border x:Name="ActiveIndicator"
+                                    Style="{StaticResource StatusIndicatorStyle}"
+                                    Background="#4CAF50"/>
+                            <TextBlock x:Name="lbActive"
+                                       Text="Активен"
+                                       FontSize="10"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"
+                                       Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <!-- Фамилия Имя -->
-                    <StackPanel Grid.Row="0"
-                                Orientation="Horizontal"
-                                VerticalAlignment="Bottom"
-                                Margin="10, 0, 0, 5">
-                        <TextBlock x:Name="lbLastname"
-                                   Text="Иванов"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   Foreground="White"/>
-                        <TextBlock x:Name="lbName"
-                                   Text=" Иван"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   Foreground="White"/>
-                    </StackPanel>
+                <!-- ФИО -->
+                <Border x:Name="bdName"
+                        Grid.Column="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <TextBox x:Name="tbLastname"
-                             Grid.Row="0"
-                             Text="Иванов"
-                             FontSize="16"
-                             FontWeight="SemiBold"
-                             Foreground="White"
-                             Background="Transparent"
-                             BorderThickness="0,0,0,1"
-                             BorderBrush="White"
-                             Visibility="Collapsed"
-                             VerticalAlignment="Bottom"
-                             Margin="10, 0, 0, 5"/>
+                        <StackPanel Grid.Row="0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Bottom"
+                                    Margin="10, 0, 0, 5">
+                            <TextBlock x:Name="lbLastname"
+                                       Text="Иванов"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"/>
+                            <TextBlock x:Name="lbName"
+                                       Text=" Иван"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"/>
+                        </StackPanel>
 
-                    <TextBox x:Name="tbName"
-                             Grid.Row="0"
-                             Text="Иван"
-                             FontSize="16"
-                             FontWeight="SemiBold"
-                             Foreground="White"
-                             Background="Transparent"
-                             BorderThickness="0,0,0,1"
-                             BorderBrush="White"
-                             Visibility="Collapsed"
-                             VerticalAlignment="Bottom"
-                             Margin="80, 0, 0, 5"/>
+                        <TextBlock x:Name="lbSurname"
+                                   Grid.Row="1"
+                                   Text="Иванович"
+                                   FontSize="14"
+                                   Foreground="#E0E0E0"
+                                   VerticalAlignment="Top"
+                                   Margin="10, 5, 0, 0"/>
+                    </Grid>
+                </Border>
 
-                    <!-- Отчество -->
-                    <TextBlock x:Name="lbSurname"
-                               Grid.Row="1"
-                               Text="Иванович"
-                               FontSize="14"
-                               Foreground="#E0E0E0"
-                               VerticalAlignment="Top"
-                               Margin="10, 5, 0, 0"/>
-
-                    <TextBox x:Name="tbSurname"
-                             Grid.Row="1"
-                             Text="Иванович"
-                             FontSize="14"
-                             Foreground="White"
-                             Background="Transparent"
-                             BorderThickness="0,0,0,1"
-                             BorderBrush="#E0E0E0"
-                             Visibility="Collapsed"
-                             VerticalAlignment="Top"
-                             Margin="10, 5, 0, 0"/>
-                </Grid>
-            </Border>
-
-            <!-- Email -->
-            <Border x:Name="bdEmail"
-                    Grid.Column="2"
-                    Background="{StaticResource LocalColorTheme}">
-                <Grid>
+                <!-- Email -->
+                <Border x:Name="bdEmail"
+                        Grid.Column="2">
                     <TextBlock x:Name="lbEmail"
                                Text="user@example.com"
                                FontSize="14"
@@ -212,25 +157,11 @@
                                HorizontalAlignment="Left"
                                Margin="10, 0, 0, 0"
                                TextTrimming="CharacterEllipsis"/>
+                </Border>
 
-                    <TextBox x:Name="tbEmail"
-                             Text="user@example.com"
-                             FontSize="14"
-                             Foreground="White"
-                             Background="Transparent"
-                             BorderThickness="0,0,0,1"
-                             BorderBrush="White"
-                             Visibility="Collapsed"
-                             VerticalAlignment="Center"
-                             Margin="10, 0, 0, 0"/>
-                </Grid>
-            </Border>
-
-            <!-- Телефон -->
-            <Border x:Name="bdPhone"
-                    Grid.Column="3"
-                    Background="{StaticResource LocalColorTheme}">
-                <Grid>
+                <!-- Телефон -->
+                <Border x:Name="bdPhone"
+                        Grid.Column="3">
                     <TextBlock x:Name="lbPhone"
                                Text="+7 (999) 123-45-67"
                                FontSize="14"
@@ -239,27 +170,13 @@
                                HorizontalAlignment="Left"
                                Margin="10, 0, 0, 0"
                                TextTrimming="CharacterEllipsis"/>
+                </Border>
 
-                    <TextBox x:Name="tbPhone"
-                             Text="+7 (999) 123-45-67"
-                             FontSize="14"
-                             Foreground="White"
-                             Background="Transparent"
-                             BorderThickness="0,0,0,1"
-                             BorderBrush="White"
-                             Visibility="Collapsed"
-                             VerticalAlignment="Center"
-                             Margin="10, 0, 0, 0"/>
-                </Grid>
-            </Border>
-
-            <!-- Роль -->
-            <Border x:Name="bdRole"
-                    Grid.Column="4"
-                    CornerRadius="0"
-                    ClipToBounds="True"
-                    Background="{StaticResource LocalColorTheme}">
-                <Grid>
+                <!-- Роль -->
+                <Border x:Name="bdRole"
+                        Grid.Column="4"
+                        CornerRadius="0"
+                        ClipToBounds="True">
                     <TextBlock x:Name="lbRole"
                                Text="Студент"
                                FontSize="16"
@@ -267,80 +184,43 @@
                                Foreground="White"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center"/>
+                </Border>
 
-                    <ComboBox x:Name="cbRole"
-                              Visibility="Collapsed"
-                              VerticalAlignment="Center"
-                              HorizontalAlignment="Stretch"
-                              Margin="5, 0, 5, 0"
-                              Background="Transparent"
-                              Foreground="White"
-                              BorderBrush="White"
-                              FontSize="14"/>
-                </Grid>
-            </Border>
+                <!-- Действия -->
+                <Border x:Name="bdActions"
+                        Grid.Column="5"
+                        CornerRadius="0, 8, 8, 0"
+                        ClipToBounds="True">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-            <!-- Действия -->
-            <Border x:Name="bdActions"
-                    Grid.Column="5"
-                    CornerRadius="0, 8, 8, 0"
-                    ClipToBounds="True"
-                    Background="{StaticResource LocalColorTheme}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="0.5*"/>
-                    </Grid.ColumnDefinitions>
+                        <!-- Кнопка активации/деактивации -->
+                        <Button x:Name="ToggleActiveButton"
+                                Click="ToggleActive_Click"
+                                Grid.Column="0"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="5"
+                                Visibility="Collapsed"
+                                ToolTip="Изменить статус">
+                            <TextBlock x:Name="ToggleIcon" Text="◉" FontSize="22" Foreground="White"/>
+                        </Button>
 
-                    <!-- Изменить -->
-                    <Button x:Name="EditButton"
-                            Click="Update"
-                            Grid.Column="0"
-                            Style="{StaticResource CleanButtonStyle}"
-                            Margin="5, 0, 5, 0"
-                            Visibility="Collapsed">
-                        <Image Source="/Resources/Icons/EditWhite.png"
-                               Height="30"
-                               Width="30"/>
-                    </Button>
-
-                    <!-- Сохранить -->
-                    <Button x:Name="SaveButton"
-                            Click="Save"
-                            Grid.Column="0"
-                            Style="{StaticResource CleanButtonStyle}"
-                            Margin="5, 0, 5, 0"
-                            Visibility="Collapsed">
-                        <Image Source="/Resources/Icons/SaveWhite.png"
-                               Height="30"
-                               Width="30"/>
-                    </Button>
-
-                    <!-- Удалить -->
-                    <Button x:Name="DeleteButton"
-                            Click="Delete"
-                            Grid.Column="1"
-                            Style="{StaticResource CleanButtonStyle}"
-                            Margin="5, 0, 5, 0"
-                            Visibility="Collapsed">
-                        <Image Source="/Resources/Icons/DeleteWhite.png"
-                               Height="30"
-                               Width="30"/>
-                    </Button>
-
-                    <!-- Отменить -->
-                    <Button x:Name="CancelButton"
-                            Click="Cancel"
-                            Grid.Column="1"
-                            Style="{StaticResource CleanButtonStyle}"
-                            Margin="5, 0, 5, 0"
-                            Visibility="Collapsed">
-                        <Image Source="/Resources/Icons/CancelWhite.png"
-                               Height="30"
-                               Width="30"/>
-                    </Button>
-                </Grid>
-            </Border>
-        </Grid>
+                        <!-- Кнопка просмотра профиля -->
+                        <Button x:Name="ViewProfileButton"
+                                Click="ViewProfile_Click"
+                                Grid.Column="1"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="5"
+                                Visibility="Collapsed"
+                                ToolTip="Просмотреть профиль">
+                            <TextBlock Text="👤" FontSize="18" Foreground="White"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Button>
     </Border>
 </UserControl>
