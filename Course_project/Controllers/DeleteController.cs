@@ -1,7 +1,6 @@
 ﻿using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.DTO;
 using Course_project_wpf.Models.FullModels;
-using Couse_project_RestAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

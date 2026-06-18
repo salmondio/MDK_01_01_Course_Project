@@ -240,27 +240,27 @@ namespace Couse_project_RestAPI.Controllers
         /// <summary>
         /// Метод позволяет обновить статус жалобы администратору
         /// </summary>
-        /// <param name="status"></param>
+        /// <param name="statusId"></param>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPatch("UpdateStatus/{id}")]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        [Authorize(Roles = "Admin,Moderator")]
-        public async Task<ActionResult<Report>> Update([FromBody] MessageStatus status, int id)
+        [Authorize(Roles = "Owner,Admin,Moderator")]
+        public async Task<ActionResult<Report>> Update([FromBody]int statusId, int id)
         {
             try
             {
                 // Ищем жалобу по Id
-                Report updatedReport = await _context.Reports.FindAsync(id);
+                Report? updatedReport = await _context.Reports.FindAsync(id);
 
                 // Если такой жалобы нет
                 if (updatedReport == null)
                     return NotFound($"Жалобы с id = {id} не существует");
 
                 // Обновляем статус и сохраняем изменения
-                updatedReport.Id_status = status.Id;
+                updatedReport.Id_status = statusId;
                 await _context.SaveChangesAsync();
 
                 return Ok(updatedReport);

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.FullModels;
 using System.Windows;
-using Couse_project_RestAPI.Models;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Course_project_wpf.Models.DTO;
@@ -118,9 +117,13 @@ namespace Course_project_wpf.Controllers
         }
 
         // Изменение статуса жалобы (Admin/Moderator)
-        public async Task<Report?> ChangeReportStatus(int id, MessageStatus status)
+        public async Task<Report?> ChangeReportStatus(int id, int newStatusId)
         {
-            return await ExecutePatchRequestWithBodyAsync<Report, MessageStatus>($"api/Report/UpdateStatus/{id}", status, "изменить статус жалобы");
+            return await ExecutePatchRequestWithBodyAsync<Report, int>(
+                $"api/Report/UpdateStatus/{id}",
+                newStatusId,
+                "изменить статус жалобы"
+            );
         }
 
         // Изменение статуса отзыва (Admin/Moderator)

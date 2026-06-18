@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Couse_project_RestAPI.Models
+namespace Course_project_wpf.Models.FullModels
 {
     public class Review
     {

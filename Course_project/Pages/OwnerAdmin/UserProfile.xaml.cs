@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Course_project_wpf.Pages.Owner
+namespace Course_project_wpf.Pages.OwnerAdmin
 {
     public partial class UserProfile : Page
     {
@@ -37,48 +37,23 @@ namespace Course_project_wpf.Pages.Owner
 
         private int GetCurrentUserRoleId()
         {
-            // Пытаемся получить из App.CurrentUser
-            if (App.CurrentUser != null)
-            {
-                return App.CurrentUser.Id_role;
-            }
-
-            // Если по какой-то причине нет, пробуем получить из токена через GetController
-            try
-            {
-                // Можно добавить метод в GetController для получения текущего пользователя
-                var users = GetController.Instance.GetUsers(false).GetAwaiter().GetResult();
-                if (users != null)
-                {
-                    // Ищем пользователя по email или другим данным
-                    // Пока возвращаем 4 (Student) как дефолт
-                    return 4;
-                }
-            }
-            catch { }
-
-            return 4; // По умолчанию Student
+            return App.CurrentUser?.Id_role ?? 4;
         }
 
         private void CheckEditPermissions()
         {
-            // Если пользователь Owner - может редактировать всех
             if (_currentUserRoleId == 1) // Owner
             {
                 _canEdit = true;
                 return;
             }
 
-            // Если пользователь Admin - может редактировать только тех, у кого роль ниже
             if (_currentUserRoleId == 2) // Admin
             {
-                // Admin может редактировать: Moderator (3), Student (4), Teacher (5)
-                // НЕ может редактировать: Owner (1), Admin (2)
                 _canEdit = _targetUserRoleId >= 3;
                 return;
             }
 
-            // Остальные роли не могут редактировать
             _canEdit = false;
         }
 

@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Course_project_wpf.Pages.Owner
+namespace Course_project_wpf.Pages.OwnerAdmin
 {
     public partial class Evaluations : Page
     {
@@ -64,7 +64,6 @@ namespace Course_project_wpf.Pages.Owner
 
         private void SortHeader_SortRequested(object sender, SortEventArgs e)
         {
-            // Логика сортировки для оценок
             if (_evaluations == null || _evaluations.Count == 0)
                 return;
 
@@ -92,8 +91,10 @@ namespace Course_project_wpf.Pages.Owner
                     break;
             }
 
+            _evaluations = sortedEvaluations.ToList(); // <-- Обновляем список
+
             Parent.Children.Clear();
-            foreach (var evaluation in sortedEvaluations)
+            foreach (var evaluation in _evaluations)
             {
                 Parent.Children.Add(new Elements.OwnerAdmin.Evaluation(evaluation));
             }

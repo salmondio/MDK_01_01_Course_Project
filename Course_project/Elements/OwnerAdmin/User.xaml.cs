@@ -189,9 +189,9 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             {
                 try
                 {
-                    bool? isActive = await PutController.Instance.ChangeUserActive(_user.Id);
+                    bool? isSuccess = await PutController.Instance.ChangeUserActive(_user.Id);
 
-                    if (isActive != null || isActive == false)
+                    if (isSuccess != null && isSuccess == true)
                     {
                         _user.Is_active = !_user.Is_active;
                         SetActiveStatus(_user.Is_active);
@@ -219,7 +219,7 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             // Открываем страницу профиля
             if (MainWindowOwner.OwnerWindow != null)
             {
-                MainWindowOwner.OwnerWindow.PageParent.Navigate(new Pages.Owner.UserProfile(_user));
+                MainWindowOwner.OwnerWindow.PageParent.Navigate(new Pages.OwnerAdmin.UserProfile(_user));
             }
         }
 

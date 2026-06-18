@@ -1,0 +1,313 @@
+﻿<UserControl x:Class="Course_project_wpf.Elements.OwnerAdmin.Report"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Course_project_wpf.Elements.OwnerAdmin"
+             mc:Ignorable="d" 
+             d:DesignHeight="90" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <!-- Стиль для кнопок без стандартных эффектов -->
+        <Style x:Key="CleanButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" 
+                                    Property="Background" 
+                                    Value="{Binding Source={StaticResource LocalDarkColorTheme}, FallbackValue=#528B68}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" 
+                                    Property="Background" 
+                                    Value="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для статуса -->
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+
+        <!-- Стиль для ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <!-- Стиль для TextBox -->
+        <Style x:Key="ReportTextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="/Resources/Fonts/Inter/#Inter"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- Основной контейнер с изменяемой высотой -->
+    <Border Padding="0, 5, 0, 5"
+            MouseEnter="MainGrid_MouseEnter"
+            MouseLeave="MainGrid_MouseLeave"
+            Background="Transparent">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Основная строка (всегда видима) -->
+            <Grid x:Name="MainGrid" Grid.Row="0" Height="80">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Id жалобы и статус -->
+                <Border x:Name="bdId"
+                        CornerRadius="8, 0, 0, 8"
+                        ClipToBounds="True"
+                        Background="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label x:Name="lbId"
+                                Grid.Row="0"
+                                Content="1"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                FontSize="20"
+                                FontWeight="Bold"
+                                Foreground="White"/>
+
+                        <!-- Статус (лейбл) -->
+                        <TextBlock x:Name="lbStatus"
+                                   Grid.Row="1"
+                                   Text="Новая"
+                                   Style="{StaticResource StatusTextStyle}"
+                                   Margin="0, 0, 0, 3"/>
+                    </Grid>
+                </Border>
+
+                <!-- От кого и кому -->
+                <Grid x:Name="gdPeople"
+                        Grid.Column="1"
+                        Background="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Отправитель (Студент) -->
+                    <Button x:Name="Sender"
+                            Style="{StaticResource CleanButtonStyle}"
+                            MouseEnter="SenderButton_MouseEnter"
+                            MouseLeave="SenderButton_MouseLeave"
+                            Click="GoToSender"
+                            Content="Не удалось найти отправителя"
+                            Padding="5, 0, 0, 0"
+                            BorderThickness="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            FontSize="16"
+                            Cursor="Hand"/>
+
+                    <!-- Получатель (Преподаватель) -->
+                    <Button x:Name="Receiver"
+                            Style="{StaticResource CleanButtonStyle}"
+                            MouseEnter="ReceiverButton_MouseEnter"
+                            MouseLeave="ReceiverButton_MouseLeave"
+                            Click="GoToReceiver"
+                            Content="Не удалось найти получателя"
+                            Padding="5, 0, 0, 0"
+                            BorderThickness="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Grid.Row="1"
+                            FontSize="16"
+                            Cursor="Hand"/>
+                </Grid>
+
+                <!-- Текст жалобы -->
+                <Border x:Name="bdText"
+                        Grid.Column="2"
+                        Background="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="OnTextClick">
+                    <Grid>
+                        <!-- Лейбл для отображения текста -->
+                        <TextBlock x:Name="lbText"
+                                   Text="Текст жалобы"
+                                   FontSize="14"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Left"
+                                   Margin="10, 0, 0, 0"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="NoWrap"/>
+
+                        <!-- TextBox для редактирования -->
+                        <TextBox x:Name="tbText"
+                                 Style="{StaticResource ReportTextBoxStyle}"
+                                 Margin="5"
+                                 Visibility="Collapsed"
+                                 VerticalAlignment="Stretch"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"/>
+                    </Grid>
+                </Border>
+
+                <!-- Дата и время -->
+                <Border x:Name="bdDateTime"
+                        Grid.Column="3"
+                        CornerRadius="0, 8, 8, 0"
+                        ClipToBounds="True"
+                        Background="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}">
+                    <Grid x:Name="gdDateTime">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Дата -->
+                        <Label x:Name="lbDate"
+                            Grid.Row="0"
+                            Content="01.10.2026"
+                            FontSize="14"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Foreground="White"/>
+
+                        <!-- Время -->
+                        <Label x:Name="lbTime"
+                            Grid.Row="1"
+                            Content="10:51"
+                            FontSize="14"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Foreground="White"/>
+                    </Grid>
+                </Border>
+
+                <!-- Действия -->
+                <Grid Name="gdActions"
+                        Grid.Column="4"
+                        Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Изменить -->
+                    <Button x:Name="EditButton"
+                            Click="EditButton_Click"
+                            Grid.Column="0"
+                            Style="{StaticResource HoverOverButtonUpdate}"
+                            Margin="5, 0, 5, 0"
+                            Visibility="Collapsed"
+                            ToolTip="Редактировать жалобу">
+                        <TextBlock Text="✎" FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+
+                    <!-- Сохранить (появляется при редактировании) -->
+                    <Button x:Name="SaveButton"
+                            Click="SaveButton_Click"
+                            Grid.Column="0"
+                            Style="{StaticResource HoverOverButtonUpdate}"
+                            Margin="5, 0, 5, 0"
+                            Background="#4CAF50"
+                            Visibility="Collapsed"
+                            ToolTip="Сохранить изменения">
+                        <TextBlock Text="✓" FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+
+                    <!-- Удалить -->
+                    <Button x:Name="DeleteButton"
+                            Click="Delete"
+                            Grid.Column="1"
+                            Style="{StaticResource HoverOverButtonDelete}"
+                            Visibility="Collapsed"
+                            ToolTip="Удалить жалобу">
+                        <TextBlock Text="✕" FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+
+                    <!-- Отмена (появляется при редактировании) -->
+                    <Button x:Name="CancelButton"
+                            Click="CancelButton_Click"
+                            Grid.Column="1"
+                            Style="{StaticResource HoverOverButtonDelete}"
+                            Background="#FF9800"
+                            Visibility="Collapsed"
+                            ToolTip="Отменить изменения">
+                        <TextBlock Text="↺" FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+                </Grid>
+            </Grid>
+
+            <!-- Разворачиваемая область для полного текста -->
+            <Border x:Name="ExpandedArea"
+                    Grid.Row="1"
+                    Background="{Binding Source={StaticResource LocalColorTheme}, FallbackValue=#6F9E7B}"
+                    CornerRadius="0, 0, 8, 8"
+                    Visibility="Collapsed"
+                    Margin="0, -5, 0, 5">
+                <Border Margin="10">
+                    <ScrollViewer MaxHeight="200"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock x:Name="lbFullText"
+                                   Text=""
+                                   FontSize="14"
+                                   Foreground="White"
+                                   TextWrapping="Wrap"/>
+                    </ScrollViewer>
+                </Border>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

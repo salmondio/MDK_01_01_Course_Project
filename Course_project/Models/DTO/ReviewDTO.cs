@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using Couse_project_RestAPI.Models;
+using Course_project_wpf.Models.FullModels;
 
 namespace Course_project_wpf.Models.DTO
 {

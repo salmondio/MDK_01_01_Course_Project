@@ -36,17 +36,16 @@ namespace Course_project_wpf.Windows
             switch (nameOfPage)
             {
                 case "Оценки":
-                    PageParent.Navigate(new Pages.Owner.Evaluations());
+                    PageParent.Navigate(new Pages.OwnerAdmin.Evaluations());
                     break;
                 case "Пользователи":
-                    PageParent.Navigate(new Pages.Owner.Users());
+                    PageParent.Navigate(new Pages.OwnerAdmin.Users());
                     break;
-                // Добавь другие страницы по мере необходимости
                 case "Жалобы":
-                    // PageParent.Navigate(new Pages.Owner.Reports());
+                    PageParent.Navigate(new Pages.OwnerAdmin.Reports());
                     break;
                 case "Отзывы":
-                    // PageParent.Navigate(new Pages.Owner.Reviews());
+                    // PageParent.Navigate(new Pages.OwnerAdmin.Reviews());
                     break;
                 default:
                     MessageBox.Show("Ошибка: неизвестное имя страницы");
@@ -56,7 +55,7 @@ namespace Course_project_wpf.Windows
 
         public void NavigateToUserProfile(Models.FullModels.User user)
         {
-            PageParent.Navigate(new Pages.Owner.UserProfile(user));
+            PageParent.Navigate(new Pages.OwnerAdmin.UserProfile(user));
         }
     }
 }

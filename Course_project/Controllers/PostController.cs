@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.FullModels;
 using Course_project_wpf.Models.DTO;
-using Couse_project_RestAPI.Models;
 
 namespace Course_project_wpf.Controllers
 {

@@ -13,6 +13,9 @@
     <Compile Update="Elements\OwnerAdmin\Evaluation.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Elements\OwnerAdmin\Report.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Elements\OwnerAdmin\User.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -22,13 +25,16 @@
     <Compile Update="Elements\Student\RatingScale.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Pages\Owner\Evaluations.xaml.cs">
+    <Compile Update="Pages\OwnerAdmin\Evaluations.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Pages\Owner\UserProfile.xaml.cs">
+    <Compile Update="Pages\OwnerAdmin\Reports.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Pages\Owner\Users.xaml.cs">
+    <Compile Update="Pages\OwnerAdmin\UserProfile.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Pages\OwnerAdmin\Users.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Windows\MainWindowAdmin.xaml.cs">

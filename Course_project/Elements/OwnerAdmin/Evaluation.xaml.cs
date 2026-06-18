@@ -13,13 +13,14 @@ namespace Course_project_wpf.Elements.OwnerAdmin
     {
         private Models.FullModels.Evaluation _evaluation;
         private bool _isAdd;
+        private bool _isLoading = false;
 
         public Evaluation()
         {
             CreateDefaultResources();
             InitializeComponent();
             _isAdd = true;
-            Update(this, new RoutedEventArgs());
+            GetVisionTextBox();
         }
 
         public Evaluation(Models.FullModels.Evaluation evaluation)
@@ -325,59 +326,110 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
         private async void Save(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(tbIdTeacher.Text, out int idTeacher) &&
-                int.TryParse(tbIdStudent.Text, out int idStudent))
+            if (_isLoading) return;
+
+            if (!int.TryParse(tbIdTeacher.Text, out int idTeacher) ||
+                !int.TryParse(tbIdStudent.Text, out int idStudent))
             {
-                if (int.TryParse(tbAttitude.Text, out int attitude) &&
-                    int.TryParse(tbResponsiveness.Text, out int responsiveness) &&
-                    int.TryParse(tbPresentation.Text, out int presentation) &&
-                    0 < attitude && attitude < 10 &&
-                    0 < responsiveness && responsiveness < 10 &&
-                    0 < presentation && presentation < 10)
+                MessageBox.Show("Введены некорректные значения Id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(tbAttitude.Text, out int attitude) ||
+                !int.TryParse(tbResponsiveness.Text, out int responsiveness) ||
+                !int.TryParse(tbPresentation.Text, out int presentation) ||
+                attitude < 1 || attitude > 9 ||
+                responsiveness < 1 || responsiveness > 9 ||
+                presentation < 1 || presentation > 9)
+            {
+                MessageBox.Show("Введены некорректные значения оценок.\nКаждая оценка должна быть в промежутке от 1 до 9",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var teacher = GetController.Instance.GetUser(idTeacher);
+            var student = GetController.Instance.GetUser(idStudent);
+
+            if (teacher?.Id_role != 5)
+            {
+                MessageBox.Show("Ошибка: Не существует преподавателя с указанным id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (student?.Id_role != 4)
+            {
+                MessageBox.Show("Ошибка: Не существует студента с указанным id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Проверка на дубликат только при добавлении
+            if (_isAdd)
+            {
+                var existing = GetController.Instance.Evaluations?
+                    .FirstOrDefault(e => e.IdTeacher == idTeacher && e.IdStudent == idStudent);
+                if (existing != null)
                 {
-                    if (GetController.Instance.GetUser(idTeacher)?.Id_role == 5 &&
-                        GetController.Instance.GetUser(idStudent)?.Id_role == 4)
+                    MessageBox.Show("Оценка этого студента этому преподавателю уже выставлена",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            _isLoading = true;
+            SaveButton.IsEnabled = false;
+
+            try
+            {
+                var updatedEvaluation = new Models.FullModels.Evaluation()
+                {
+                    IdStudent = idStudent,
+                    IdTeacher = idTeacher,
+                    Presentation = (byte)presentation,
+                    Attitude = (byte)attitude,
+                    Responsiveness = (byte)responsiveness,
+                    DateTime = DateTime.Now
+                };
+
+                Models.FullModels.Evaluation result;
+
+                if (_isAdd)
+                {
+                    result = await PostController.Instance.AddEvaluation(updatedEvaluation);
+                    if (result != null)
                     {
-                        if (GetController.Instance.Evaluations?
-                            .FirstOrDefault(e => e.IdTeacher == idTeacher && e.IdStudent == idStudent) == null ||
-                            (idStudent == _evaluation.IdStudent && idTeacher == _evaluation.IdTeacher))
-                        {
-                            var updatedEvaluation = new Models.FullModels.Evaluation()
-                            {
-                                IdStudent = idStudent,
-                                IdTeacher = idTeacher,
-                                Presentation = (byte)presentation,
-                                Attitude = (byte)attitude,
-                                Responsiveness = (byte)responsiveness,
-                                DateTime = DateTime.Now
-                            };
-
-                            updatedEvaluation = await PutController.Instance.UpdateEvaluation(updatedEvaluation);
-
-                            if (updatedEvaluation != null)
-                            {
-                                _evaluation = updatedEvaluation;
-
-                                InitializeVariables(updatedEvaluation);
-
-                                // Обновляем цвета - создаем новые кисти
-                                RefreshColors();
-
-                                Cancel(new object(), new RoutedEventArgs());
-                                MessageBox.Show("Оценка успешно изменена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                        }
-                        else
-                            MessageBox.Show("Оценка этого студента этому преподавателю уже выставлена", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        _evaluation = result;
+                        _isAdd = false;
+                        InitializeVariables(result);
+                        RefreshColors();
+                        GetVisionLabel();
+                        MessageBox.Show("Оценка успешно добавлена!", "Успех",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
                     }
-                    else
-                        MessageBox.Show("Ошибка: Не существует студента/преподавателя с указанным id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
-                    MessageBox.Show("Введены некорректные значения оценок.\nКаждая оценка должна быть в промежутке от 1 до 9", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                {
+                    result = await PutController.Instance.UpdateEvaluation(updatedEvaluation);
+                    if (result != null)
+                    {
+                        _evaluation = result;
+                        InitializeVariables(result);
+                        RefreshColors();
+                        GetVisionLabel();
+                        MessageBox.Show("Оценка успешно изменена!", "Успех",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
             }
-            else
-                MessageBox.Show("Введены некорректные значения Id", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _isLoading = false;
+                SaveButton.IsEnabled = true;
+            }
         }
 
         private async void Delete(object sender, RoutedEventArgs e)

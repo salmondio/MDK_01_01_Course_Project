@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Course_project_wpf.Pages.Owner
+namespace Course_project_wpf.Pages.OwnerAdmin
 {
     public partial class Users : Page
     {
@@ -107,8 +107,10 @@ namespace Course_project_wpf.Pages.Owner
                     break;
             }
 
+            _users = sortedUsers.ToList(); // <-- Обновляем список
+
             Parent.Children.Clear();
-            foreach (var user in sortedUsers)
+            foreach (var user in _users)
             {
                 Parent.Children.Add(new Elements.OwnerAdmin.User(user));
             }

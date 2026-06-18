@@ -8,7 +8,6 @@ using System.Windows;
 using Course_project_wpf.Helpers;
 using Course_project_wpf.Models.FullModels;
 using Course_project_wpf.Models.DTO;
-using Couse_project_RestAPI.Models;
 
 namespace Course_project_wpf.Controllers
 {
@@ -21,6 +20,7 @@ namespace Course_project_wpf.Controllers
         public bool IsLoading { get; private set; }
 
         // Списки для хранения полных моделей
+        public List<MessageStatus>? MessageStatuses { get; private set; }
         public List<Discipline>? Disciplines { get; private set; }
         public List<Role>? Roles { get; private set; }
         public List<Evaluation>? Evaluations { get; private set; }
@@ -121,6 +121,24 @@ namespace Course_project_wpf.Controllers
                 "пользователей"
             );
         }
+
+        /*
+            Действия Moderator 
+        */
+
+        public async Task<List<MessageStatus>?> GetMessageStatuses(bool forceRefresh = false)
+        {
+            if (MessageStatuses != null && !forceRefresh)
+                return MessageStatuses;
+
+            return await ExecuteRequestAsync<List<MessageStatus>>(
+                "/api/MessageStatus/List",
+                data => MessageStatuses = data,
+                "статусов сообщений"
+            );
+        }
+
+
 
         /*
             Действия Student (возвращают DTO)
@@ -290,6 +308,7 @@ namespace Course_project_wpf.Controllers
 
         // Методы для получения одиночных объектов из кэша
         public Discipline? GetDiscipline(int id) => Disciplines?.FirstOrDefault(x => x.Id == id);
+        public MessageStatus? GetMessageStatus(int id) => MessageStatuses?.FirstOrDefault(x => x.Id == id);
         public Role? GetRole(int id) => Roles?.FirstOrDefault(x => x.Id == id);
         public Evaluation? GetEvaluation(int idStudent, int idTeacher) => Evaluations?.FirstOrDefault(x => x.IdStudent == idStudent && x.IdTeacher == idTeacher);
         public Report? GetReport(int id) => Reports?.FirstOrDefault(x => x.Id == id);
