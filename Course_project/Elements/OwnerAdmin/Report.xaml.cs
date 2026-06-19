@@ -5,6 +5,7 @@ using Course_project_wpf.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -152,7 +153,6 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
             await Dispatcher.InvokeAsync(() =>
             {
-                lbId.Content = report.Id.ToString();
                 InitializeUserNames(report);
                 InitializeTextContent(report);
                 lbDate.Content = report.Date_time.ToString("dd.MM.yyyy");
@@ -279,10 +279,12 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
         private void ApplyColorsToElements(SolidColorBrush colorBrush, SolidColorBrush darkColorBrush)
         {
+            MainBorder.Background = colorBrush;
             bdId.Background = colorBrush;
             gdPeople.Background = colorBrush;
             bdText.Background = colorBrush;
             bdDateTime.Background = colorBrush;
+            bdActions.Background = colorBrush;
             ExpandedArea.Background = colorBrush;
             Sender.Background = colorBrush;
             Receiver.Background = colorBrush;
@@ -484,7 +486,8 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Width = 80,
-                    Height = 25
+                    Height = 25,
+                    FontSize = 12
                 };
 
                 var statuses = GetController.Instance.MessageStatuses;
@@ -504,7 +507,8 @@ namespace Course_project_wpf.Elements.OwnerAdmin
                     }
                 }
 
-                var parent = lbStatus.Parent as Grid;
+                // Теперь заменяем lbStatus в gdDateTime (Grid)
+                var parent = gdDateTime;
                 if (parent != null)
                 {
                     var row = Grid.GetRow(lbStatus);
@@ -524,27 +528,6 @@ namespace Course_project_wpf.Elements.OwnerAdmin
             {
                 System.Diagnostics.Debug.WriteLine($"Error creating status combobox: {ex.Message}");
             }
-        }
-
-        private void ExitEditMode()
-        {
-            _isEditing = false;
-
-            SaveButton.Visibility = Visibility.Collapsed;
-            CancelButton.Visibility = Visibility.Collapsed;
-
-            if (_canEdit)
-            {
-                EditButton.Visibility = Visibility.Visible;
-                DeleteButton.Visibility = Visibility.Visible;
-            }
-
-            RemoveStatusComboBox();
-
-            tbText.Visibility = Visibility.Collapsed;
-            lbText.Visibility = Visibility.Visible;
-
-            this.Height = NormalHeight;
         }
 
         private void RemoveStatusComboBox()
@@ -572,6 +555,27 @@ namespace Course_project_wpf.Elements.OwnerAdmin
 
                 _statusComboBox = null;
             }
+        }
+
+        private void ExitEditMode()
+        {
+            _isEditing = false;
+
+            SaveButton.Visibility = Visibility.Collapsed;
+            CancelButton.Visibility = Visibility.Collapsed;
+
+            if (_canEdit)
+            {
+                EditButton.Visibility = Visibility.Visible;
+                DeleteButton.Visibility = Visibility.Visible;
+            }
+
+            RemoveStatusComboBox();
+
+            tbText.Visibility = Visibility.Collapsed;
+            lbText.Visibility = Visibility.Visible;
+
+            this.Height = NormalHeight;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

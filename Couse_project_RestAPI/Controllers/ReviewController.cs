@@ -186,6 +186,13 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
+                // Проверка на существование получателя
+                User? teacher = await _context.Users.FindAsync(review.Id_teacher);
+                // Если такого студента или препода нет
+                if (teacher == null ||
+                    teacher.Id_role != 5)
+                    return BadRequest($"Преподавателя с указанными Id не существует.");
+
                 // Создаем объект полноценной модели жалобы
                 Review newReview = new Review()
                 {
@@ -222,6 +229,15 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
+                // Проверка на существование студента и препода
+                User? student = await _context.Users.FindAsync(review.Id_student);
+                User? teacher = await _context.Users.FindAsync(review.Id_teacher);
+                // Если такого студента или препода нет
+                if (student == null || teacher == null ||
+                    student.Id_role != 4 ||
+                    teacher.Id_role != 5)
+                    return BadRequest($"Студента или преподавателя с указанными Id не существует.");
+
                 // Создаем объект полноценной модели жалобы
                 if (await _context.Reviews.AnyAsync(r => r.Id == review.Id))
                     return BadRequest($"Отзыв с Id = {review.Id} уже существует");
@@ -339,6 +355,15 @@ namespace Couse_project_RestAPI.Controllers
                 // Если такой жалобы нет
                 if (updatedReview == null)
                     return NotFound($"Жалобы с id = {review.Id} не существует");
+
+                // Проверка на существование студента и препода
+                User? student = await _context.Users.FindAsync(review.Id_student);
+                User? teacher = await _context.Users.FindAsync(review.Id_teacher);
+                // Если такого студента или препода нет
+                if (student == null || teacher == null ||
+                    student.Id_role != 4 ||
+                    teacher.Id_role != 5)
+                    return BadRequest($"Студента или преподавателя с указанными Id не существует.");
 
                 // Обновляем статус и сохраняем изменения
                 updatedReview.Id_student = review.Id_status;

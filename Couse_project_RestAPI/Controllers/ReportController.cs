@@ -185,6 +185,12 @@ namespace Couse_project_RestAPI.Controllers
         {
             try
             {
+                User? teacher = await _context.Users.FindAsync(report.Id_teacher);
+                // Если такого препода нет
+                if (teacher == null ||
+                    teacher.Id_role != 5)
+                    return BadRequest($"Преподавателя с указанными Id не существует.");
+
                 // Создаем объект полноценной модели жалобы
                 Report newReport = new Report()
                 {
@@ -223,6 +229,14 @@ namespace Couse_project_RestAPI.Controllers
             {
                 if (await _context.Reports.AnyAsync(r => r.Id == report.Id))
                     return BadRequest($"Жалоба с Id = {report.Id} уже существует");
+
+                User? student = await _context.Users.FindAsync(report.Id_student);
+                User? teacher = await _context.Users.FindAsync(report.Id_teacher);
+                // Если такого студента или препода нет
+                if (student == null || teacher == null ||
+                    student.Id_role != 4 ||
+                    teacher.Id_role != 5)
+                    return BadRequest($"Студента или преподавателя с указанными Id не существует.");
 
                 // Добавляем и сохраняем жалобу в БД
                 await _context.Reports.AddAsync(report);
@@ -338,8 +352,16 @@ namespace Couse_project_RestAPI.Controllers
                 if (updatedReport == null)
                     return NotFound($"Жалобы с id = {report.Id} не существует");
 
+                User? student = await _context.Users.FindAsync(report.Id_student);
+                User? teacher = await _context.Users.FindAsync(report.Id_teacher);
+                // Если такого студента или препода нет
+                if (student == null || teacher == null ||
+                    student.Id_role != 4 ||
+                    teacher.Id_role != 5)
+                    return BadRequest($"Студента или преподавателя с указанными Id не существует.");
+
                 // Обновляем статус и сохраняем изменения
-                updatedReport.Id_student = report.Id_status;
+                updatedReport.Id_student = report.Id_student;
                 updatedReport.Id_teacher = report.Id_teacher;
                 updatedReport.Id_status = report.Id_status;
                 updatedReport.Id_inspector = report.Id_inspector;
